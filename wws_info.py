@@ -22,7 +22,7 @@ headers = {
 async def get_AccountInfo(info):
     try:
         if isinstance (info,int):
-            url = 'https://api.wows.linxun.link/api/wows/account/user/info'
+            url = 'https://api.wows.linxun.link/public/wows/account/platform/user/info'
             params = {
             "platformType": "QQ",
             "platformId": info

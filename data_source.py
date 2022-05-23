@@ -110,8 +110,6 @@ pr_select = [
 
 async def set_infoparams(List):
     try:
-        description,prValueColor = await select_prvalue_and_color(List['pr']['value'])
-        
         result = {
             "guild":List['clanInfo']['tag'],
             "userName":List['userName'],
@@ -120,7 +118,7 @@ async def set_infoparams(List):
             "newDamage":List['dwpDataVO']['damage'],
             "newWins":round(List['dwpDataVO']['wins'],2),
             "newPr":List['dwpDataVO']['pr'],
-            "prValue":f"{List['pr']['value']} {description}",
+            "prValue":f"{List['pr']['value']} {List['pr']['name']}",
             "time":time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(List['lastDateTime'])),
             "battles":List['pvp']['battles'],
             "wins":List['pvp']['wins'],
@@ -176,7 +174,7 @@ async def set_infoparams(List):
             "lv8":List['battleCountAll']['8'],
             "lv9":List['battleCountAll']['9'],
             "lv10":List['battleCountAll']['10'],
-            "prValueColor":prValueColor,
+            "prValueColor":List['pr']['color'],
         }
         return result
     except Exception:
