@@ -15,7 +15,7 @@ headers = {
 async def get_nation_list():
     try:
         msg = ''
-        url = 'https://api.wows.linxun.link/public/wows/nation/list'
+        url = 'https://api.wows.linxun.link/public/wows/encyclopedia/nation/list'
         async with httpx.AsyncClient(headers=headers) as client:
             resp = await client.get(url, timeout=10)
             result = resp.json()
@@ -57,7 +57,7 @@ async def get_ship_name(infolist:List):
             "shipName":'',
             "shipType":param_shiptype
         }
-        url = 'https://api.wows.linxun.link/public/wows/ship/search'
+        url = 'https://api.wows.linxun.link/public/wows/encyclopedia/ship/search'
         async with httpx.AsyncClient(headers=headers) as client:
             resp = await client.get(url, params=params, timeout=10)
             result = resp.json()
