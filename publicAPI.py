@@ -31,7 +31,7 @@ async def get_ship_name(infolist:List):
         for nation in nations :
             for kw in nation.keywords:
                 for match_kw in infolist:
-                    if match_kw == kw or match_kw == kw.upper() or match_kw == kw.lower():
+                    if match_kw == kw or match_kw.upper() == kw.upper() or match_kw.lower() == kw.lower():
                         param_nation = nation.match_keywords
                         infolist.remove(match_kw)
         if not param_nation:
@@ -39,7 +39,7 @@ async def get_ship_name(infolist:List):
         for shiptype in shiptypes :
             for kw in shiptype.keywords:
                 for match_kw in infolist:
-                    if match_kw == kw or match_kw == kw.upper() or match_kw == kw.lower():
+                    if match_kw == kw or match_kw.upper() == kw.upper() or match_kw.lower() == kw.lower():
                         param_shiptype = shiptype.match_keywords
                         infolist.remove(match_kw)
         if not param_shiptype:

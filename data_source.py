@@ -182,6 +182,28 @@ async def set_infoparams(List):
     except Exception:
         traceback.print_exc()
 
+async def set_recentparams(List):
+    try:   
+        historyData = await set_historyData(List['recentList'])
+        result = {
+            "guild":List['clanInfo']['tag'],
+            "userName":List['userName'],
+            "serverName":List['serverName'],
+            "prValue":f"{List['data']['pr']['value']} {List['data']['pr']['name']}",
+            "reTime":time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(List['recordTime'])),
+            "battles":List['data']['battles'],
+            "wins":List['data']['wins'],
+            "damage":List['data']['damage'],
+            "xp":List['data']['xp'],
+            "kd":List['data']['kd'],
+            "hit":List['data']['hit'],
+            "historyData":historyData,
+            "prValueColor":List['data']['pr']['color'],
+        }
+        return result
+    except Exception:
+        traceback.print_exc()
+
 async def select_prvalue_and_color(pr:int):
     for select in pr_select :
         if pr > select['value']:
@@ -189,8 +211,17 @@ async def select_prvalue_and_color(pr:int):
             color = select['color']
     return describe,color
 
-async def check_none(input):
-    if not input:
-        return 0
-    else:
-        return input
+async def set_historyData(List):
+    historyData = ''
+    for ship in List:
+        historyData += r'<tr>'
+        historyData += r'<td class="blueColor">'+f"{ship['shipInfo']['nameCn']}"+r'</td>'
+        historyData += r'<td class="blueColor">'+f"{ship['shipInfo']['level']}"+r'</td>'
+        historyData += r'<td class="blueColor">'+f"{ship['battles']}"+r'</td>'
+        historyData += r'<td class="blueColor">'+f"{ship['pr']['value']}"+r'</td>'
+        historyData += r'<td class="blueColor">'+f"{ship['xp']}"+r'</td>'
+        historyData += r'<td class="blueColor">'+f"{ship['wins']}%"+r'</td>'
+        historyData += r'<td class="blueColor">'+f"{ship['damage']}"+r'</td>'
+        historyData += r'<td class="blueColor">'+f"{ship['hit']}%"+r'</td>'
+        historyData += r'</tr>'
+    return historyData

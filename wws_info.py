@@ -31,7 +31,7 @@ async def get_AccountInfo(info):
             for server in servers :
                 for kw in server.keywords:
                     for match_kw in info:
-                        if match_kw == kw or match_kw == kw.upper() or match_kw == kw.lower():
+                        if match_kw == kw or match_kw.upper() == kw.upper() or match_kw.lower() == kw.lower():
                             param_server = server.match_keywords
                             info.remove(match_kw)
             if not param_server:
