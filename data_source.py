@@ -14,6 +14,7 @@ command_list = [
     matching(("ship","单船",),"ship"),
     matching(("查询绑定","绑定查询","绑定列表","查绑定"),"bindlist"),
     matching(("切换绑定","更换绑定","更改绑定"),"changebind"),
+    matching(("搜船名","查船名","船名"),"searchship"),
     matching(("bind","绑定","set"),"bind"),
 ]
 
@@ -209,6 +210,35 @@ async def set_recentparams(List):
         return result
     except Exception:
         traceback.print_exc()
+        
+async def set_shipparams(List):
+    try:   
+        result = {
+            "shipNameEn":List['shipInfo']['shipInfo']['nameEnglish'],
+            "shipNameCn":List['shipInfo']['shipInfo']['nameCn'],
+            "damageTop":List['dwpDataVO']['damage'],
+            "winsTop":List['dwpDataVO']['wins'],
+            "prTop":List['dwpDataVO']['pr'],
+            "prValue":f"{List['shipInfo']['pr']['value']} {List['shipInfo']['pr']['name']}",
+            "lastTime":time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(List['shipInfo']['lastBattlesTime'])),
+            "battles":List['shipInfo']['battles'],
+            "wins":List['shipInfo']['wins'],
+            "damage":List['shipInfo']['damage'],
+            "xp":List['shipInfo']['xp'],
+            "kda":List['shipInfo']['kd'],
+            "hit":List['shipInfo']['hit'],
+            "maxDamage":List['maxDamage'],
+            "maxDamageScouting":List['maxDamageScouting'],
+            "maxTotalAgro":List['maxTotalAgro'],
+            "maxXp":List['maxXp'],
+            "maxFragsBattle":List['maxFrags'],
+            "maxPlanesKilled":List['maxPlanesKilled'],
+            "prColor":List['shipInfo']['pr']['color'],
+        }
+        return result
+    except Exception:
+        traceback.print_exc()
+
 
 async def select_prvalue_and_color(pr:int):
     for select in pr_select :

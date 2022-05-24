@@ -1,6 +1,9 @@
 from os import getcwd
 from .browser import get_new_page
 import re
+import datetime
+from nonebot import scheduler
+from apscheduler.triggers.date import DateTrigger
 
 async def html_to_pic(
     html: str, wait: int = 0, template_path: str = f"file://{getcwd()}", **kwargs
@@ -15,7 +18,7 @@ async def html_to_pic(
     return img_raw
 
 async def match_keywords(match_list,Lists):
-    for List in Lists :                        #第一次匹配
+    for List in Lists :                        
         for kw in List.keywords:
             for match_kw in match_list:
                 if match_kw == kw or match_kw.upper() == kw.upper() or match_kw.lower() == kw.lower():
@@ -24,7 +27,7 @@ async def match_keywords(match_list,Lists):
     return None,match_list
 
 async def find_and_replace_keywords(match_list,Lists):
-    for List in Lists :                        #第一次匹配
+    for List in Lists :                        
         for kw in List.keywords:
             for i,match_kw in enumerate(match_list):
                 if (match_kw.find(kw)+1):
@@ -34,3 +37,23 @@ async def find_and_replace_keywords(match_list,Lists):
                     print(match_list)
                     return List.match_keywords,match_list
     return None,match_list
+
+
+def cancel_call_later(job_id):
+    scheduler.remove_job(job_id, "default")
+
+
+def call_later(delay, func, job_id):
+    if scheduler.get_job(job_id, "default"):
+        cancel_call_later(job_id)
+    now = datetime.datetime.now()
+    notify_time = now + datetime.timedelta(seconds=delay)
+    return scheduler.add_job(
+        func,
+        trigger=DateTrigger(notify_time),
+        id=job_id,
+        misfire_grace_time=60,
+        coalesce=True,
+        jobstore="default",
+        max_instances=1,
+    )

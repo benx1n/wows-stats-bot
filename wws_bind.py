@@ -52,7 +52,7 @@ async def get_BindInfo(user,info):
                     flag += 1
                     if bindinfo['defaultId']:
                         msg1 += f"{bindinfo['serverType']} {bindinfo['userName']}\n"
-                msg = msg1+msg2+"本人发送 切换绑定+序号 切换对应账号"
+                msg = msg1+msg2+"本人发送[wws 切换绑定+序号] 切换对应账号"
                 return msg
             else:
                 return '该用户似乎还没绑定窝窝屎账号'

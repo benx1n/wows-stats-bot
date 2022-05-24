@@ -4,6 +4,7 @@ import traceback
 import json
 import os
 from .data_source import nations,shiptypes,levels
+from .utils import match_keywords
 
 cfgpath = os.path.join(os.path.dirname(__file__), 'config.json')
 config = json.load(open(cfgpath, 'r', encoding='utf8'))
@@ -27,28 +28,16 @@ async def get_nation_list():
         
 async def get_ship_name(infolist:List):
     try:
-        msg,param_nation,param_shiptype,param_level = '','','',''
-        for nation in nations :
-            for kw in nation.keywords:
-                for match_kw in infolist:
-                    if match_kw == kw or match_kw.upper() == kw.upper() or match_kw.lower() == kw.lower():
-                        param_nation = nation.match_keywords
-                        infolist.remove(match_kw)
+        msg = ''
+        param_nation,infolist = await match_keywords(infolist,nations)
         if not param_nation:
             return '请检查国家名是否正确'
-        for shiptype in shiptypes :
-            for kw in shiptype.keywords:
-                for match_kw in infolist:
-                    if match_kw == kw or match_kw.upper() == kw.upper() or match_kw.lower() == kw.lower():
-                        param_shiptype = shiptype.match_keywords
-                        infolist.remove(match_kw)
+        
+        param_shiptype,infolist = await match_keywords(infolist,shiptypes)
         if not param_shiptype:
             return '请检查船只类别是否正确'
-        for level in levels :
-            for kw in level.keywords:
-                for match_kw in infolist:
-                    if kw == match_kw:
-                        param_level = level.match_keywords
+        
+        param_level,infolist = await match_keywords(infolist,levels)
         if not param_level:
             return '请检查船只等级是否正确'
         params = {
@@ -70,3 +59,26 @@ async def get_ship_name(infolist:List):
     except Exception:
         traceback.print_exc()
         return msg
+    
+async def get_ship_byName(shipname:str):
+    try:
+        url = 'https://api.wows.linxun.link/public/wows/encyclopedia/ship/search'
+        params = {
+        "county":'',
+        "level":'',
+        "shipName":shipname,
+        "shipType":''
+    }
+        async with httpx.AsyncClient(headers=headers) as client:
+            resp = await client.get(url, params=params, timeout=10)
+            result = resp.json()
+        List = []
+        if result['code'] == 200 and result['data']:
+            for each in result['data']:
+                List.append([each['id'],each['shipNameCn'],each['shipNameNumbers']])
+            return List
+        else:
+            return None
+    except Exception:
+        traceback.print_exc()
+        return None
