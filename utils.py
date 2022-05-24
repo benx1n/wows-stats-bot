@@ -34,7 +34,6 @@ async def find_and_replace_keywords(match_list,Lists):
                     match_list[i] = str(match_kw).replace(kw,"")
                     if match_list[i] == '':
                         match_list.remove('')
-                    print(match_list)
                     return List.match_keywords,match_list
     return None,match_list
 

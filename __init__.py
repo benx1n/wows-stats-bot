@@ -21,6 +21,10 @@ from io import BytesIO
 import traceback
 import re
 
+_max = 100
+EXCEED_NOTICE = f'您今天已经冲过{_max}次了，请明早5点后再来！'
+_nlmt = DailyNumberLimiter(_max)
+_flmt = FreqLimiter(5)
 WWS_help ="""
     帮助列表
     wws bind/set/绑定 服务器 游戏昵称：绑定QQ与游戏账号
@@ -53,6 +57,14 @@ async def send_nation_info(bot, ev:CQEvent):
 async def selet_command(bot,ev:CQEvent):
     try:
         qqid = ev['user_id']
+        if not _nlmt.check(qqid):
+            await bot.send(ev, EXCEED_NOTICE, at_sender=True)
+            return
+        if not _flmt.check(qqid):
+            await bot.send(ev, '您冲得太快了，请稍候再冲', at_sender=True)
+            return
+        _flmt.start_cd(qqid)
+        _nlmt.increase(qqid) 
         select_command = None
         searchtag = str(ev.message).strip()
         if not searchtag or searchtag=="":
@@ -91,7 +103,6 @@ async def selet_command(bot,ev:CQEvent):
         else:
             msg = '看不懂指令QAQ'
         if isinstance(msg,str):
-            print(msg)
             await bot.send(ev,msg)
         else:
             img_base64= base64.b64encode(msg).decode('utf8')
@@ -99,18 +110,14 @@ async def selet_command(bot,ev:CQEvent):
         return
     except Exception:
         traceback.print_exc()
-        await bot.send(ev,'呜呜呜发生了错误，如果过段时间不能恢复请联系麻麻哦~')
+        await bot.send(ev,'呜呜呜发生了错误，可能是网络问题，如果过段时间不能恢复请联系麻麻哦~')
         return
 
 @sv.on_message()
 async def change_select_state(bot, ev):
     msg = ev["raw_message"]
     qqid = ev['user_id']
-    print(msg,qqid)
     if SecletProcess[qqid].SelectList and str(msg).isdigit():
         SecletProcess[qqid] = SecletProcess[qqid]._replace(state = True)
         SecletProcess[qqid] = SecletProcess[qqid]._replace(SlectIndex = int(msg))
-        print(SecletProcess[qqid])
-    else:
-        print('111111111')
     return

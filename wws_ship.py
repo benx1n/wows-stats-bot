@@ -48,6 +48,10 @@ async def get_ShipInfo(qqid,info,bot,ev):
                     "accountId": match.group(1),
                     }
                     info[flag] = str(i).replace(f"[{match.group(0)}]",'')
+                    print(f"info删除前{info}")
+                    if not info[flag]:
+                        info.remove('')
+                        print(f"info删除后{info}")
                     break
             if not params and len(info) == 3:
                 param_server,info = await match_keywords(info,servers)
@@ -68,7 +72,6 @@ async def get_ShipInfo(qqid,info,bot,ev):
                 print(params)
             else:
                 return '您似乎准备用游戏昵称查询单船战绩，请检查参数中是否包含服务器、游戏昵称和船名，以空格区分'
-            print(str(info[0]))
             shipList = await get_ship_byName(str(info[0]))
             print(shipList)
             if shipList:
@@ -97,9 +100,8 @@ async def get_ShipInfo(qqid,info,bot,ev):
             return '参数似乎出了问题呢'
         print(params)
         async with httpx.AsyncClient(headers=headers) as client:
-            resp = await client.get(url, params=params, timeout=10)
+            resp = await client.get(url, params=params, timeout=20)
             result = resp.json()
-        print(result)
         if result['code'] == 200 and result['data']:
             template = env.get_template("wws-ship.html")
             template_data = await set_shipparams(result['data'])
@@ -110,7 +112,7 @@ async def get_ShipInfo(qqid,info,bot,ev):
         elif result['code'] == 500:
             return f"{result['message']}"
         else:
-            return 'wuwuu好像出了点问题，过一会儿还是不行的话请联系麻麻~'
+            return 'wuwuu好像出了点问题，可能是网络问题，过一会儿还是不行的话请联系麻麻~'
     except Exception:
         traceback.print_exc()
         return    

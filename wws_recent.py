@@ -48,7 +48,6 @@ async def get_RecentInfo(qqid,info):
                     "seconds": int(time.time())-86400*int(day)
                     }
                     break
-            print(info,params)
             if not params and len(info) == 2:
                 param_server,info = await match_keywords(info,servers)
                 if param_server:
@@ -74,7 +73,6 @@ async def get_RecentInfo(qqid,info):
         async with httpx.AsyncClient(headers=headers) as client:
             resp = await client.get(url, params=params, timeout=10)
             result = resp.json()
-        print(result)
         if result['code'] == 200 and result['data']:
             template = env.get_template("wws-info-recent.html")
             template_data = await set_recentparams(result['data'])
