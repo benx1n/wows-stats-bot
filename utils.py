@@ -13,4 +13,3 @@ async def html_to_pic(
         await page.wait_for_timeout(wait)
         img_raw = await page.screenshot(full_page=True)
     return img_raw
-

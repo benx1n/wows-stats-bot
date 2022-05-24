@@ -3,32 +3,24 @@ import httpx
 import traceback
 import json
 import jinja2
+import time
 from pathlib import Path
-from .data_source import servers,set_infoparams
-from .utils import html_to_pic
 
+from requests import head
+
+from .data_source import servers
+from .wws_info import get_AccountIdByName
 dir_path = Path(__file__).parent
-template_path = dir_path / "template"
 cfgpath = dir_path / 'config.json'
 config = json.load(open(cfgpath, 'r', encoding='utf8'))
-env = jinja2.Environment(
-    loader=jinja2.FileSystemLoader(template_path), enable_async=True
-)
-
 headers = {
     'Authorization': config['token']
 }
 
-async def get_AccountInfo(info):
+async def set_BindInfo(user,info):
     try:
         param_server = None
-        if isinstance (info,int):
-            url = 'https://api.wows.linxun.link/public/wows/account/platform/user/info'
-            params = {
-            "platformType": "QQ",
-            "platformId": info
-            }
-        elif isinstance (info,List):
+        if isinstance (info,List):
             for server in servers :
                 for kw in server.keywords:
                     for match_kw in info:
@@ -39,9 +31,10 @@ async def get_AccountInfo(info):
                 return '请检查服务器名是否正确'
             params_accountId = await get_AccountIdByName(param_server,str(info[0]))
             if params_accountId:
-                url = 'https://api.wows.linxun.link/public/wows/account/user/info'
+                url = 'https://api.wows.linxun.link/api/wows/bind/account/platform/bind/put'
                 params = {
-                "server": param_server,
+                "platformType": "QQ",
+                "platformId": str(user),
                 "accountId": params_accountId
                 }
             else:
@@ -51,34 +44,38 @@ async def get_AccountInfo(info):
         async with httpx.AsyncClient(headers=headers) as client:
             resp = await client.get(url, params=params, timeout=10)
             result = resp.json()
-        if result['data']:
-            template = env.get_template("wws-info.html")
-            template_data = await set_infoparams(result['data'])
-            print('template_data',template_data)
-            content = await template.render_async(template_data)
-            return await html_to_pic(content, wait=0, viewport={"width": 920, "height": 1000})
+        if result['code'] == 200 and result['message'] == "success":
+            return '绑定成功'
+        elif result['code'] == 500:
+            return result['message']
         else:
-            return '查询不到对应信息哦~可能是游戏昵称不正确或QQ未绑定'
+            return 'wuwuwu出了点问题，请联系麻麻解决'
     except Exception:
         traceback.print_exc()
         return 'wuwuwu出了点问题，请联系麻麻解决'
     
-async def get_AccountIdByName(server:str,name:str):
+async def get_BindInfo(user):
     try:
-        url = 'https://api.wows.linxun.link/public/wows/account/search/user'
+        url = 'https://api.wows.linxun.link/api/wows/bind/account/platform/bind/list'
         params = {
-            "server": server,
-            "userName": name
+        "platformType": "QQ",
+        "platformId": str(user)
         }
         async with httpx.AsyncClient(headers=headers) as client:
             resp = await client.get(url, params=params, timeout=10)
             result = resp.json()
-        if result['data']:
-            return result['data']['accountId']
-        else:
-            return None
+        if result['code'] == 200 and result['message'] == "success":
+            if result['data']:
+                msg1 = f'当前绑定账号\n'
+                msg2 = f'绑定账号列表\n'
+                for bindinfo in result['data']:
+                    msg2 += f"{bindinfo['serverType']} {bindinfo['userName']}\n"
+                    if bindinfo['defaultId']:
+                        msg1 += f"{bindinfo['serverType']} {bindinfo['userName']}\n"
+                msg = msg1+msg2
+                return msg
+            else:
+                return '该用户似乎还没绑定窝窝屎账号'
     except Exception:
         traceback.print_exc()
-        return None
-    
-
+        return 'wuwuwu出了点问题，请联系麻麻解决'

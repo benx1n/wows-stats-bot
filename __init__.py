@@ -10,6 +10,7 @@ from nonebot import NoticeSession, on_command
 from .publicAPI import get_nation_list,get_ship_name
 from .wws_info import get_AccountInfo
 from .wws_recent import get_RecentInfo
+from .wws_bind import set_BindInfo,get_BindInfo
 import base64
 from PIL import Image
 from io import BytesIO
@@ -104,6 +105,50 @@ async def send_recent_info(bot, ev:CQEvent):
             img_base64= base64.b64encode(msg).decode('utf8')
             await bot.send(ev,str(MessageSegment.image("base64://" + img_base64)))
         return
+    except Exception:
+        traceback.print_exc()
+        await bot.send(ev,'呜呜呜发生了错误，如果过段时间不能恢复请联系麻麻哦~')
+        return
+    
+@sv.on_prefix(('wws bind','wwsbind','wws 绑定','wws绑定'))
+async def send_bind_set(bot, ev:CQEvent):
+    try:
+        uid = ev['user_id']
+        searchtag = str(ev.message).strip()
+        if not searchtag or searchtag=="":
+            await bot.send(ev,'请在后方输入要绑定的服务器和游戏昵称，以空格分隔')
+            return
+        infolist = str(ev.message).split()
+        if len(infolist) != 2 :
+            await bot.send(ev,"参数格式不正确，请确保后面跟随服务器和游戏昵称，以空格分隔")
+            return
+        else:
+            msg = await set_BindInfo(uid,infolist)
+        if isinstance(msg, str):
+            await bot.send(ev,msg)
+        return
+    except Exception:
+        traceback.print_exc()
+        await bot.send(ev,'呜呜呜发生了错误，如果过段时间不能恢复请联系麻麻哦~')
+        return
+    
+@sv.on_prefix(('wws 查询绑定','wws查询绑定','wws 查绑定','wws查绑定'))
+async def send_bind_search(bot, ev:CQEvent):
+    try:
+        uid = ev['user_id']
+        searchtag = str(ev.message).strip()
+        if not searchtag or searchtag=="":
+            await bot.send(ev,'请在后方艾特要查询的QQ，查询自己请输入me')
+            return
+        elif ev.message[0].type == 'at':
+            user = int(ev.message[0].data['qq'])
+        elif str(ev.message).strip() == 'me':
+            user = uid
+        else:
+            await bot.send(ev,'参数格式不正确，请在后方艾特要查询的QQ，查询自己请输入me')
+            return
+        msg = await get_BindInfo(user)
+        await bot.send(ev,str(msg))
     except Exception:
         traceback.print_exc()
         await bot.send(ev,'呜呜呜发生了错误，如果过段时间不能恢复请联系麻麻哦~')

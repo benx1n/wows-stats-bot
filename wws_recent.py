@@ -23,8 +23,8 @@ headers = {
 
 async def get_RecentInfo(day,info):
     try:
-        param_server = ''
         print(day,info)
+        param_server = None
         if isinstance (info,int):
             print(1)
             url = 'https://api.wows.linxun.link/api/wows/recent/recent/info/platform'
@@ -43,7 +43,7 @@ async def get_RecentInfo(day,info):
                             info.remove(match_kw)
             if not param_server:
                 return '参数格式不正确，请确保后面按顺序跟随日期、服务器和游戏昵称（或艾特QQ），以空格分隔，日期留空则默认为一天'
-            params_accountId,test_accountname = await get_AccountIdByName(param_server,str(info[0]))
+            params_accountId = await get_AccountIdByName(param_server,str(info[0]))
             if params_accountId:
                 url = 'https://api.wows.linxun.link/api/wows/recent/recent/info'
                 params = {
@@ -53,9 +53,9 @@ async def get_RecentInfo(day,info):
                 }
                 print(params)
             else:
-                return '无法查询该游戏昵称Orz，可能是网络问题，请稍后再试'
+                return '无法查询该游戏昵称Orz，请检查昵称是否存在'
         else:
-            return 'wuwuwu出了点问题，可能是参数不正确，请联系麻麻解决'  
+            return '参数格式不正确，请确保后面按顺序跟随日期、服务器和游戏昵称（或艾特QQ），以空格分隔，日期留空则默认为一天'  
         async with httpx.AsyncClient(headers=headers) as client:
             resp = await client.get(url, params=params, timeout=10)
             result = resp.json()
