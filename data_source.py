@@ -8,6 +8,11 @@ import traceback
 class matching:
     keywords: Tuple[str, ...]
     match_keywords : str
+    
+command_list = [
+    matching(("recent","近期",),"recent"),
+    matching(("ship","单船",),"ship"),
+]
 
 nations = [
     matching(("commonwealth","英联邦",),"commonwealth"),
