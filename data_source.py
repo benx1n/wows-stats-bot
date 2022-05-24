@@ -12,6 +12,9 @@ class matching:
 command_list = [
     matching(("recent","近期",),"recent"),
     matching(("ship","单船",),"ship"),
+    matching(("查询绑定","绑定查询","绑定列表","查绑定"),"bindlist"),
+    matching(("切换绑定","更换绑定","更改绑定"),"changebind"),
+    matching(("bind","绑定","set"),"bind"),
 ]
 
 nations = [
