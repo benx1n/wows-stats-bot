@@ -22,7 +22,7 @@ _max = 100
 EXCEED_NOTICE = f'您今天已经冲过{_max}次了，请明早5点后再来！'
 _nlmt = DailyNumberLimiter(_max)
 _flmt = FreqLimiter(5)
-_version = "1.0.0"
+_version = "0.0.9"
 WWS_help ="""
     帮助列表
     wws bind/set/绑定 服务器 游戏昵称：绑定QQ与游戏账号
@@ -129,12 +129,13 @@ async def check_version(bot, ev:CQEvent):
     async with httpx.AsyncClient() as client:
         resp = await client.get(url, timeout=10)
         result = json.loads(resp.text)
-    print(result)
+    bot = hoshino.get_bot()
+    superid = hoshino.config.SUPERUSERS[0]
     match,msg = False,f'发现新版本\n'
     for each in result['data']:
         if each['version'] > _version:
             match = True
             msg += f"{each['date']} v{each['version']}\n  {each['description']}\n\n"
     if match:
-        await bot.send(ev,msg)
+        await bot.send_private_msg(user_id=superid, message=msg)
     return
