@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from re import L
-from turtle import color
 from typing import Tuple,List
 import time
 import traceback
@@ -243,12 +242,12 @@ async def set_shipparams(List):
             "xp":List['shipInfo']['xp'],
             "kda":List['shipInfo']['kd'],
             "hit":List['shipInfo']['hit'],
-            "maxDamage":List['maxDamage'],
-            "maxDamageScouting":List['maxDamageScouting'],
-            "maxTotalAgro":List['maxTotalAgro'],
-            "maxXp":List['maxXp'],
-            "maxFragsBattle":List['maxFrags'],
-            "maxPlanesKilled":List['maxPlanesKilled'],
+            "maxDamage":List['shipInfo']['extensionDataInfo']['maxDamage'],
+            "maxDamageScouting":List['shipInfo']['extensionDataInfo']['maxDamageScouting'],
+            "maxTotalAgro":List['shipInfo']['extensionDataInfo']['maxTotalAgro'],
+            "maxXp":List['shipInfo']['extensionDataInfo']['maxXp'],
+            "maxFragsBattle":List['shipInfo']['extensionDataInfo']['maxFrags'],
+            "maxPlanesKilled":List['shipInfo']['extensionDataInfo']['maxPlanesKilled'],
             "prColor":List['shipInfo']['pr']['color'],
         }
         return result
