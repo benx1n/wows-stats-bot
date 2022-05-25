@@ -1,6 +1,5 @@
 from nonebot.typing import State_T
 from nonebot.exceptions import CQHttpError
-from tomlkit import boolean
 import hoshino
 from hoshino import R, Service, priv, get_bot
 from hoshino.util import FreqLimiter, DailyNumberLimiter
