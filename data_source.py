@@ -130,6 +130,22 @@ color_data = {
 
 async def set_infoparams(List):
     try:
+        winsColor = await set_winColor(int(List['pvp']['wins']))
+        damageColor = await set_damageColor(None,int(List['pvp']['damage']))
+        bb_winsColor = await set_winColor(int(List['type']['Battleship']['wins']))
+        ca_winsColor = await set_winColor(int(List['type']['Cruiser']['wins']))
+        dd_winsColor = await set_winColor(int(List['type']['Destroyer']['wins']))
+        cv_winsColor = await set_winColor(int(List['type']['AirCarrier']['wins']))
+        bb_damageColor = await set_damageColor(None,int(List['type']['Battleship']['damage']))
+        ca_damageColor = await set_damageColor('Cruiser',int(List['type']['Cruiser']['damage']))
+        dd_damageColor = await set_damageColor('Destroyer',int(List['type']['Destroyer']['damage']))
+        cv_damageColor = await set_damageColor('AirCarrier',int(List['type']['AirCarrier']['damage']))
+        solo_winsColor = await set_winColor(int(List['pvpSolo']['wins']))
+        solo_damageColor = await set_damageColor(None,int(List['pvpSolo']['damage']))
+        div2_winsColor = await set_winColor(int(List['pvpTwo']['wins']))
+        div2_damageColor = await set_damageColor(None,int(List['pvpTwo']['damage']))
+        div3_winsColor = await set_winColor(int(List['pvpThree']['wins']))
+        div3_damageColor = await set_damageColor(None,int(List['pvpThree']['damage']))
         result = {
             "guild":List['clanInfo']['tag'],
             "userName":List['userName'],
@@ -194,7 +210,30 @@ async def set_infoparams(List):
             "lv8":List['battleCountAll']['8'],
             "lv9":List['battleCountAll']['9'],
             "lv10":List['battleCountAll']['10'],
+            "newDamageColor":None,
+            "newWinsColor":None,
+            "newPrColor":None,
             "prValueColor":List['pr']['color'],
+            "winsColor":winsColor,
+            "damageColor":damageColor,
+            "bb_prColor":List['type']['Battleship']['pr']['color'],
+            "ca_prColor":List['type']['Cruiser']['pr']['color'],
+            "dd_prColor":List['type']['Destroyer']['pr']['color'],
+            "cv_prColor":List['type']['AirCarrier']['pr']['color'],
+            "bb_winsColor":bb_winsColor,
+            "ca_winsColor":ca_winsColor,
+            "dd_winsColor":dd_winsColor,
+            "cv_winsColor":cv_winsColor,
+            "bb_damageColor":bb_damageColor,
+            "ca_damageColor":ca_damageColor,
+            "dd_damageColor":dd_damageColor,
+            "cv_damageColor":cv_damageColor,
+            "solo_winsColor":solo_winsColor,
+            "solo_damageColor":solo_damageColor,
+            "div2_winsColor":div2_winsColor,
+            "div2_damageColor":div2_damageColor,
+            "div3_winsColor":div3_winsColor,
+            "div3_damageColor":div3_damageColor
         }
         return result
     except Exception:
@@ -249,6 +288,9 @@ async def set_shipparams(List):
             "maxFragsBattle":List['shipInfo']['extensionDataInfo']['maxFrags'],
             "maxPlanesKilled":List['shipInfo']['extensionDataInfo']['maxPlanesKilled'],
             "prColor":List['shipInfo']['pr']['color'],
+            "damageTopColor":None,
+            "winsTopColor":None,
+            "prTopColor":None
         }
         return result
     except Exception:
