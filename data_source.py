@@ -11,12 +11,12 @@ class matching:
     match_keywords : str
     
 command_list = [
+    matching(("切换绑定","更换绑定","更改绑定"),"changebind"),
+    matching(("查询绑定","绑定查询","绑定列表","查绑定"),"bindlist"),
+    matching(("bind","绑定","set"),"bind"),
     matching(("recent","近期",),"recent"),
     matching(("ship","单船",),"ship"),
-    matching(("查询绑定","绑定查询","绑定列表","查绑定"),"bindlist"),
-    matching(("切换绑定","更换绑定","更改绑定"),"changebind"),
     matching(("搜船名","查船名","船名"),"searchship"),
-    matching(("bind","绑定","set"),"bind"),
 ]
 
 nations = [
