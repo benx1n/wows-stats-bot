@@ -1,5 +1,6 @@
 from nonebot.typing import State_T
 from nonebot.exceptions import CQHttpError
+from tomlkit import boolean
 import hoshino
 from hoshino import R, Service, priv, get_bot
 from hoshino.util import FreqLimiter, DailyNumberLimiter
@@ -14,11 +15,14 @@ from .data_source import command_list
 from .utils import match_keywords,find_and_replace_keywords
 import base64
 import traceback
+import httpx
+import json
 
 _max = 100
 EXCEED_NOTICE = f'您今天已经冲过{_max}次了，请明早5点后再来！'
 _nlmt = DailyNumberLimiter(_max)
 _flmt = FreqLimiter(5)
+_version = "1.0.0"
 WWS_help ="""
     帮助列表
     wws bind/set/绑定 服务器 游戏昵称：绑定QQ与游戏账号
@@ -120,5 +124,17 @@ async def change_select_state(bot, ev):
     return
 
 @sv.scheduled_job('cron',hour='4')
-async def check_version():
+async def check_version(bot, ev:CQEvent):
+    url = 'https://benx1n.oss-cn-beijing.aliyuncs.com/version.json'
+    async with httpx.AsyncClient() as client:
+        resp = await client.get(url, timeout=10)
+        result = json.loads(resp.text)
+    print(result)
+    match,msg = False,f'发现新版本\n'
+    for each in result['data']:
+        if each['version'] > _version:
+            match = True
+            msg += f"{each['date']} v{each['version']}\n  {each['description']}\n\n"
+    if match:
+        await bot.send(ev,msg)
     return
