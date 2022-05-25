@@ -29,7 +29,10 @@ WWS_help ="""
     wws [服务器+游戏昵称][@群友][me] ship 船名：查询单船总体战绩
     wws [搜/查船名] [国家][等级][类型]：查找符合条件的舰船中英文名称
     [待开发] wws ship recent
+    [待开发] wws rank
     以上指令参数顺序均无强制要求，即你完全可以发送wws eu 7 recent Test以查询欧服Test七天内的战绩
+    搭建bot请加官方群：967546463，如果您觉得bot还可以的话请点个star哦~
+    仓库地址：https://github.com/benx1n/wows-stats-bot
 """
 sv_help = WWS_help.strip()
 sv = Service('wows-stats-bot', manage_priv=priv.SUPERUSER, enable_on_default=True,help_ = sv_help)
@@ -114,4 +117,8 @@ async def change_select_state(bot, ev):
     if SecletProcess[qqid].SelectList and str(msg).isdigit():
         SecletProcess[qqid] = SecletProcess[qqid]._replace(state = True)
         SecletProcess[qqid] = SecletProcess[qqid]._replace(SlectIndex = int(msg))
+    return
+
+@sv.scheduled_job('cron',hour='4')
+async def check_version():
     return
