@@ -77,7 +77,7 @@ async def get_RecentInfo(qqid,info):
             template = env.get_template("wws-info-recent.html")
             template_data = await set_recentparams(result['data'])
             content = await template.render_async(template_data)
-            return await html_to_pic(content, wait=0, viewport={"width": 900, "height": 100})
+            return await html_to_pic(content, wait=0, viewport={"width": 1200, "height": 100})
         elif result['code'] == 404:
             return result['message']
         elif result['code'] == 500:

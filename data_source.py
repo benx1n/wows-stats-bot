@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from re import L
+from turtle import color
 from typing import Tuple,List
 import time
 import traceback
@@ -117,6 +118,17 @@ pr_select = [
     }
 ]
 
+color_data = {
+    "Bad": "#FE0E00",
+    "Below Average": "#FE7903",
+    "Average": "#FFC71F",
+    "Good": "#44B300",
+    "Very Good": "#318000",
+    "Great": "#02C9B3",
+    "Unicum": "#D042F3",
+    "Super Unicum": "#A00DC5"
+}
+
 async def set_infoparams(List):
     try:
         result = {
@@ -192,6 +204,8 @@ async def set_infoparams(List):
 async def set_recentparams(List):
     try:   
         historyData = await set_historyData(List['recentList'])
+        winsColor = await set_winColor(int(List['data']['wins']))
+        damageColor = await set_damageColor(None,int(List['data']['damage']))
         result = {
             "guild":List['clanInfo']['tag'],
             "userName":List['userName'],
@@ -206,6 +220,8 @@ async def set_recentparams(List):
             "hit":List['data']['hit'],
             "historyData":historyData,
             "prValueColor":List['data']['pr']['color'],
+            "winsColor":winsColor,
+            "damageColor":damageColor
         }
         return result
     except Exception:
@@ -254,10 +270,76 @@ async def set_historyData(List):
         historyData += r'<td class="blueColor">'+f"{ship['shipInfo']['nameCn']}"+r'</td>'
         historyData += r'<td class="blueColor">'+f"{ship['shipInfo']['level']}"+r'</td>'
         historyData += r'<td class="blueColor">'+f"{ship['battles']}"+r'</td>'
-        historyData += r'<td class="blueColor">'+f"{ship['pr']['value']}"+r'</td>'
+        historyData += f'''<td class="blueColor" style="color: {ship['pr']['color']}">{ship['pr']['value']} {ship['pr']['name']}</td>'''
         historyData += r'<td class="blueColor">'+f"{ship['xp']}"+r'</td>'
-        historyData += r'<td class="blueColor">'+f"{ship['wins']}%"+r'</td>'
-        historyData += r'<td class="blueColor">'+f"{ship['damage']}"+r'</td>'
+        wincolor = await set_winColor(int(ship['wins']))
+        historyData += f'''<td class="blueColor" style="color: {wincolor}">{ship['wins']}%</td>'''
+        damagecolor = await set_damageColor(ship['shipInfo']['shipType'],int(ship['damage']))
+        historyData += f'''<td class="blueColor" style="color: {damagecolor}">{ship['damage']}</td>'''
         historyData += r'<td class="blueColor">'+f"{ship['hit']}%"+r'</td>'
         historyData += r'</tr>'
     return historyData
+
+async def set_damageColor(type:str,value:int):
+    if type == 'Destroyer':
+        if value < 33000:
+            return color_data["Bad"]
+        elif value < 40000:
+            return color_data["Good"]
+        elif value < 55000:
+            return color_data["Great"]
+        elif value < 64000:
+            return color_data["Unicum"]
+        else:
+            return color_data["Super Unicum"]
+    elif type == 'Cruiser':
+        if value < 47000:
+            return color_data["Bad"]
+        elif value < 55000:
+            return color_data["Good"]
+        elif value < 83000:
+            return color_data["Great"]
+        elif value < 95000:
+            return color_data["Unicum"]
+        else:
+            return color_data["Super Unicum"]
+    elif type == 'AirCarrier':
+        if value < 60000:
+            return color_data["Bad"]
+        elif value < 71000:
+            return color_data["Good"]
+        elif value < 84000:
+            return color_data["Great"]
+        elif value < 113000:
+            return color_data["Unicum"]
+        else:
+            return color_data["Super Unicum"]
+    else:
+        if value < 64000:
+            return color_data["Bad"]
+        elif value < 72000:
+            return color_data["Good"]
+        elif value < 97000:
+            return color_data["Great"]
+        elif value < 108000:
+            return color_data["Unicum"]
+        else:
+            return color_data["Super Unicum"]
+    return None
+
+async def set_winColor(value:int):
+    if value < 45:
+        return color_data["Bad"]
+    elif value < 50:
+        return color_data["Below Average"]
+    elif value < 55:
+        return color_data["Average"]
+    elif value < 60:
+        return color_data["Good"]
+    elif value < 65:
+        return color_data["Great"]
+    elif value < 70:
+        return color_data["Unicum"]
+    else:
+        return color_data["Super Unicum"]
+    return None
