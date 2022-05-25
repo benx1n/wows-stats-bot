@@ -1,6 +1,5 @@
 from os import getcwd
 from .browser import get_new_page
-import re
 import datetime
 from nonebot import scheduler
 from apscheduler.triggers.date import DateTrigger

@@ -1,7 +1,4 @@
-from distutils.log import info
-from jmespath import search
 from nonebot.typing import State_T
-from pixivpy3 import *
 from nonebot.exceptions import CQHttpError
 import hoshino
 from hoshino import R, Service, priv, get_bot
@@ -16,10 +13,7 @@ from .wws_ship import get_ShipInfo,SecletProcess
 from .data_source import command_list
 from .utils import match_keywords,find_and_replace_keywords
 import base64
-from PIL import Image
-from io import BytesIO
 import traceback
-import re
 
 _max = 100
 EXCEED_NOTICE = f'您今天已经冲过{_max}次了，请明早5点后再来！'
