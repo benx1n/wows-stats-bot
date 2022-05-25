@@ -1,6 +1,7 @@
 # wows-stats-bot
 战舰世界水表查询插件，基于hoshinobot V2<br>
-水表人，出击！wws me recent！！！
+水表人，出击！wws me recent！！！<br>
+如果觉得本插件还不错的话请点个Star哦~
 
 ## 特点
 
@@ -81,3 +82,13 @@
 >```
 >error: Microsoft Visual C++ 14.0 or greater is required. Get it with "Microsoft C++ Build Tools": https://visualstudio.microsoft.com/visual-cpp-build-tools/
 >```
+
+## 感谢
+
+[HoshinoBot](https://github.com/Ice-Cirno/HoshinoBot)<br>
+[go-cqhttp](https://github.com/Mrs4s/go-cqhttp)<br>
+[战舰世界API平台](https://wows.linxun.link/)<br>
+
+## 开源协议
+
+GPL-3.0 License
