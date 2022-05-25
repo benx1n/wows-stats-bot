@@ -25,7 +25,7 @@
     >```
     >"token":"api_key:token"    //请加群联系雨季获取api_key和token
     >```
-4. 在 `config/__bot__.py`的模块列表里加入 `wows-stats-bot.git`
+4. 在 `config/__bot__.py`的模块列表里加入 `wows-stats-bot`
 5. 重启hoshinoBot
 6. 发送wws help查看帮助，首次使用插件时playwright会自动下载chromium，可在控制台中查看进度
 
