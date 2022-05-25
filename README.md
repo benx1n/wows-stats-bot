@@ -15,6 +15,10 @@
 >```
 1. 在[HoshinoBot](https://github.com/Ice-Cirno/HoshinoBot)的插件目录modules下clone本项目 `git clone https://github.com/benx1n/wows-stats-bot.git`
 2. 在项目文件夹下执行`pip install -r requirements.txt`安装依赖
+>```
+>如果您的网络环境比较糟糕，请尝试使用pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+>或使用--proxy 指定代理
+>```
 3. 将配置文件 `config_example.json` 拷贝一份后重命名为 `config.json` , 修改配置文件中的设置<br>
     >```
     >"token":"api_key:token"    //请加群联系雨季获取api_key和token
