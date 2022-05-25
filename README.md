@@ -11,12 +11,14 @@
 
 ## 首次部署
 >```
->以下部分以默认您成功部署并启动HoshinoBot和go-cqhttp，如未安装，请查看HoshinoBot仓库中的部署教程，本文附录中也收录了一些安装HoshinoBot时可能跟遇到的问题
+>以下部分以默认您成功部署并启动HoshinoBot和go-cqhttp，如未安装，请查看HoshinoBot仓库中的部署教程
+>本文附录中也收录了一些安装HoshinoBot时可能跟遇到的问题
 >```
 1. 在[HoshinoBot](https://github.com/Ice-Cirno/HoshinoBot)的插件目录modules下clone本项目 `git clone https://github.com/benx1n/wows-stats-bot.git`
 2. 在项目文件夹下执行`pip install -r requirements.txt`安装依赖
 >```
->如果您的网络环境比较糟糕，请尝试使用pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+>如果您的网络环境比较糟糕，请尝试使用
+>pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 >或使用--proxy 指定代理
 >```
 3. 将配置文件 `config_example.json` 拷贝一份后重命名为 `config.json` , 修改配置文件中的设置<br>
