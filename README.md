@@ -181,7 +181,7 @@
     can not import name 'soft_unicode' from 'markupsafe'
     ```
 
-6. Centos中调用playwrighy可能会出现如下报错,请先安装`apt-get`后执行`playwrighty install-deps`
+6. Centos中调用playwrighy可能会出现如下报错，请确保您当前的`python --version`是3.x，执行`python -m playwright install`，centos中默认python可能是2.7.5，因此您可能需要使用`python3.8` 或`py -3.8`
     ```
     playwright._impl.api_types.Error:
     ```
