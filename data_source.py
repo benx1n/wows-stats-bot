@@ -213,6 +213,7 @@ async def set_infoparams(List):
             "lv8":List['battleCountAll']['8'],
             "lv9":List['battleCountAll']['9'],
             "lv10":List['battleCountAll']['10'],
+            "lv11":List['battleCountAll']['11'],
             "newDamageColor":newDamageColor,
             "newWinsColor":newWinsColor,
             "newPrColor":newPrColor,

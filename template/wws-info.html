@@ -238,13 +238,14 @@
     function drawGraphs() {
         var ctx = document.getElementById('myChart').getContext('2d');
         Chart.plugins.register(ChartDataLabels);
-        const labels = ["Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ", "Ⅴ", "Ⅵ", "Ⅶ", "Ⅷ", "Ⅸ", "Ⅹ"];
+        const labels = ["Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ", "Ⅴ", "Ⅵ", "Ⅶ", "Ⅷ", "Ⅸ", "Ⅹ", "Ⅺ"];
         const data = {
             labels: labels,
             datasets: [{
                 label: '场次',
-                data: [{{lv1}}, {{lv2}}, {{lv3}}, {{lv4}}, {{lv5}}, {{lv6}}, {{lv7}}, {{lv8}}, {{lv9}}, {{lv10}}],
+                data: [{{lv1}}, {{lv2}}, {{lv3}}, {{lv4}}, {{lv5}}, {{lv6}}, {{lv7}}, {{lv8}}, {{lv9}}, {{lv10}}, {{lv11}}],
                 backgroundColor: [
+                    'rgba(54, 162, 235, 0.2)',
                     'rgba(54, 162, 235, 0.2)',
                     'rgba(54, 162, 235, 0.2)',
                     'rgba(54, 162, 235, 0.2)',
@@ -257,6 +258,7 @@
                     'rgba(54, 162, 235, 0.2)'
                 ],
                 borderColor: [
+                    'rgba(54, 162, 235, 0.2)',
                     'rgba(54, 162, 235, 0.2)',
                     'rgba(54, 162, 235, 0.2)',
                     'rgba(54, 162, 235, 0.2)',
