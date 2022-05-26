@@ -16,20 +16,24 @@
 >如果您已经成功运行Hohisno，请跳过此节转到插件部署
 >
 ### Windows系统
-1. 下载[notepad++](https://notepad-plus-plus.org/downloads/)和[Git](https://git-scm.com/download/win)
+1. 下载[notepad++](https://notepad-plus-plus.org/downloads/)和[Git](https://git-scm.com/download/win)并安装
 2. 打开一个合适的文件夹，鼠标右键——Git Bash here，输入以下命令克隆Hoshino仓库
     ```
     git clone https://github.com/Ice-Cirno/HoshinoBot.git
     ```
 3. 进入`hoshinio`文件夹，将`config_example`文件夹复制一份，并重命名为`config`,然后右键使用Notepad++打开其中的`__bot__.py`，按照其中的注释说明进行编辑。
+    >请在SUPERUSERS中添加你的QQ号
+    >
     >如果您不清楚某项设置的作用，请保持默认。
 
 3. 下载[Miniconda](https://docs.conda.io/en/latest/miniconda.html)
     >Conda是一个优秀的包、环境管理器，通过它你可以快速创建或切换不同版本的python环境，本文仅通过Conda创建python环境，不做包管理用
 
 4. 双击Miniconda，安装时请选择如下配置
-    >`Just Me`<br>
-    >`保持默认路径`<br>
+    >`Just Me`
+    >
+    >`保持默认路径`
+    >
     >`不要`勾选“Add Anaconda to my PATH environment variable”
 
 5. 安装完成后，开始菜单——右键点击Anaconda Prompt → 以管理员身份运行”，在Anaconda Prompt中输入 conda list ，可以查看已经安装的包名和版本号。若结果可以正常显示，则说明安装成功
@@ -50,7 +54,8 @@
     cd 您的Hoshino根目录
     pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
     ```
-    >您的Hoshino根目录即为存在requirements.txt的文件夹（Windows可以通过右键标题栏，将地址复制为文本）<br>
+    >您的Hoshino根目录即为存在requirements.txt的文件夹（Windows可以通过右键标题栏，将地址复制为文本）
+    >
     >若此处有报错信息，请务必解决，大部分错误可通过本文结尾附录查找对应解决办法，如没有请提 issue或自行百度
 
 8. 输入以下命令，启动 HoshinoBot
@@ -93,13 +98,14 @@
     cd wows-stats-bot
     pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
     ```
-    >您的插件目录即为`HoshinoBot/hoshino/moudles`（Windows可以通过右键标题栏，将地址复制为文本）<br>
+    >您的插件目录即为`HoshinoBot/hoshino/moudles`（Windows可以通过右键标题栏，将地址复制为文本）
+    >
     >若此处有报错信息，请务必解决，大部分错误可通过本文结尾附录查找对应解决办法，如没有请提 issue或自行百度
 
 3. 将配置文件 `config_example.json` 拷贝一份后重命名为 `config.json` , 修改配置文件中的设置<br>
-    >```
-    >"token":"api_key:token"    //请加群联系雨季获取api_key和token Q群:967546463
-    >```
+    ```
+    "token":"api_key:token"    //请加群联系雨季获取api_key和token Q群:967546463
+    ```
 4. 在 `config/__bot__.py`的模块列表里加入 `wows-stats-bot`’
 
 5. 在Anaconda Prompt中重启hoshinoBot（您可以使用多次敲击ctrl+C结束进程，并通过方向键上快速选择上一次的启动命令）
@@ -129,7 +135,8 @@
 ## DLC
 
 - **私聊支持：（可能会引起其他插件部分功能异常）<br>**
-    >修改Hoshinobot文件夹中`.\hoshino\priv.py`内check_priv函数，返回值改为True<br>
+    >修改Hoshinobot文件夹中`.\hoshino\priv.py`内check_priv函数，返回值改为True
+    >
     >```
     >def check_priv(ev: CQEvent, require: int) -> bool:
     >if ev['message_type'] == 'group':
@@ -137,12 +144,14 @@
     >else:
     >    return True
     >```
-    >注释Hoshinobot文件夹中`.\hoshino\msghandler.py`内下方代码<br>
+    >注释Hoshinobot文件夹中`.\hoshino\msghandler.py`内下方代码
+    >
     >```
     >if event.detail_type != 'group':
     >    return
     >```
-        >修改Hoshinobot文件夹中`.\hoshino\service.py`内on_message函数,将event='group'及结尾的event替换为*events<br>
+        >修改Hoshinobot文件夹中`.\hoshino\service.py`内on_message函数,将event='group'及结尾的event替换为*events
+    >
     >```
     >def on_message(self, *events) -> Callable:
     >def deco(func) -> Callable:
@@ -163,14 +172,20 @@
 1. 请使用python 3.8，更高版本可能不兼容部分依赖，若不按本文使用conda部署请自行寻找解决办法
 2. pip install时出现SSL ERROR，请关闭您的本地代理工具（科学上网）或切换至PAC模式
 3. windows下出现如下报错，请下载vs生成工具，选择工作负荷-使用C++的桌面开发
->```
->error: Microsoft Visual C++ 14.0 or greater is required. Get it with "Microsoft C++ Build Tools": https://visualstudio.microsoft.com/visual-cpp-build-tools/
->```
+    ```
+    error: Microsoft Visual C++ 14.0 or greater is required. Get it with "Microsoft C++ Build Tools": https://visualstudio.microsoft.com/visual-cpp-build-tools/
+    ```
 4. 使用pypi和清华镜像安装依赖都不成功时先尝试更换阿里源`pip install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/`
 5. 出现如下报错，首先请输入pip show markupsafe，如果提示本地存在，尝试重新安装低版本的包`pip install markupsafe==2.0.1`
->```
->can not import name 'soft_unicode' from 'markupsafe'
->```
+    ```
+    can not import name 'soft_unicode' from 'markupsafe'
+    ```
+
+6. Centos中调用playwrighy可能会出现如下报错,请先安装`apt-get`后执行`playwrighty install-deps`
+    ```
+    playwright._impl.api_types.Error:
+    ```
+
 
 ## 感谢
 

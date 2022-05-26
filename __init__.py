@@ -40,7 +40,7 @@ WWS_help ="""
 sv_help = WWS_help.strip()
 sv = Service('wows-stats-bot', manage_priv=priv.SUPERUSER, enable_on_default=True,help_ = sv_help)
 
-@sv.on_fullmatch('wws帮助','wws 帮助','wws help')
+@sv.on_fullmatch(('wws帮助','wws 帮助','wws help'))
 async def get_help(bot, ev):
     await bot.send(ev, sv_help)
 
