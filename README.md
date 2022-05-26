@@ -15,6 +15,8 @@
 >以下部分将教你如何通过conda或Docker用以避免部署Hoshino时可能遇到的问题<br>
 >如果您已经成功运行Hohisno，请跳过此节转到插件部署
 >
+>注：本插件不支持Centos！
+>
 ### Windows系统
 1. 下载[notepad++](https://notepad-plus-plus.org/downloads/)和[Git](https://git-scm.com/download/win)并安装
 2. 打开一个合适的文件夹，鼠标右键——Git Bash here，输入以下命令克隆Hoshino仓库
@@ -181,12 +183,12 @@
     can not import name 'soft_unicode' from 'markupsafe'
     ```
 
-6. Centos中调用playwrighy可能会出现如下报错，请确保您当前的`python --version`是3.x，执行`python -m playwright install`，centos中默认python可能是2.7.5，因此您可能需要使用`python3.8` 或`py -3.8`
+6. Centos中调用playwright可能会出现如下报错，请确保您当前的`python --version`是3.x，执行`python -m playwright install`，centos中默认python可能是2.7.5，因此您可能需要使用`python3.8` 或`py -3.8`
     ```
     playwright._impl.api_types.Error:
     ```
 
-
+t
 ## 感谢
 
 [HoshinoBot](https://github.com/Ice-Cirno/HoshinoBot)<br>

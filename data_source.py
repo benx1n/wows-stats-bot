@@ -146,14 +146,17 @@ async def set_infoparams(List):
         div2_damageColor = await set_damageColor(None,int(List['pvpTwo']['damage']))
         div3_winsColor = await set_winColor(int(List['pvpThree']['wins']))
         div3_damageColor = await set_damageColor(None,int(List['pvpThree']['damage']))
+        newDamageColor = await set_upinfo_color(List['dwpDataVO']['damage'])
+        newWinsColor = await set_upinfo_color(List['dwpDataVO']['wins'])
+        newPrColor = await set_upinfo_color(List['dwpDataVO']['pr'])
         result = {
             "guild":List['clanInfo']['tag'],
             "userName":List['userName'],
             "karma":List['karma'],
             "serverName":List['serverName'],
-            "newDamage":List['dwpDataVO']['damage'],
-            "newWins":round(List['dwpDataVO']['wins'],2),
-            "newPr":List['dwpDataVO']['pr'],
+            "newDamage":f"{List['dwpDataVO']['damage']:+} ",
+            "newWins":f"{List['dwpDataVO']['wins']:+.2f}",
+            "newPr":f"{List['dwpDataVO']['pr']:+}",
             "prValue":f"{List['pr']['value']} {List['pr']['name']}",
             "time":time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(List['lastDateTime'])),
             "battles":List['pvp']['battles'],
@@ -210,9 +213,9 @@ async def set_infoparams(List):
             "lv8":List['battleCountAll']['8'],
             "lv9":List['battleCountAll']['9'],
             "lv10":List['battleCountAll']['10'],
-            "newDamageColor":None,
-            "newWinsColor":None,
-            "newPrColor":None,
+            "newDamageColor":newDamageColor,
+            "newWinsColor":newWinsColor,
+            "newPrColor":newPrColor,
             "prValueColor":List['pr']['color'],
             "winsColor":winsColor,
             "damageColor":damageColor,
@@ -267,12 +270,15 @@ async def set_recentparams(List):
         
 async def set_shipparams(List):
     try:   
+        damageTopColor = await set_upinfo_color(List['dwpDataVO']['damage'])
+        winsTopColor = await set_upinfo_color(List['dwpDataVO']['wins'])
+        prTopColor = await set_upinfo_color(List['dwpDataVO']['pr'])
         result = {
             "shipNameEn":List['shipInfo']['shipInfo']['nameEnglish'],
             "shipNameCn":List['shipInfo']['shipInfo']['nameCn'],
-            "damageTop":List['dwpDataVO']['damage'],
-            "winsTop":List['dwpDataVO']['wins'],
-            "prTop":List['dwpDataVO']['pr'],
+            "damageTop":f"{List['dwpDataVO']['damage']:+}",
+            "winsTop":f"{List['dwpDataVO']['wins']:+.2f}",
+            "prTop":f"{List['dwpDataVO']['pr']:+}",
             "prValue":f"{List['shipInfo']['pr']['value']} {List['shipInfo']['pr']['name']}",
             "lastTime":time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(List['shipInfo']['lastBattlesTime'])),
             "battles":List['shipInfo']['battles'],
@@ -288,9 +294,9 @@ async def set_shipparams(List):
             "maxFragsBattle":List['shipInfo']['extensionDataInfo']['maxFrags'],
             "maxPlanesKilled":List['shipInfo']['extensionDataInfo']['maxPlanesKilled'],
             "prColor":List['shipInfo']['pr']['color'],
-            "damageTopColor":None,
-            "winsTopColor":None,
-            "prTopColor":None
+            "damageTopColor":damageTopColor,
+            "winsTopColor":winsTopColor,
+            "prTopColor":prTopColor
         }
         return result
     except Exception:
@@ -384,3 +390,11 @@ async def set_winColor(value:int):
     else:
         return color_data["Super Unicum"]
     return None
+
+async def set_upinfo_color(value:int):
+    if value < 0 :
+        return color_data["Bad"]
+    elif value > 0 :
+        return color_data["Good"]
+    else:
+        return None
