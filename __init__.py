@@ -130,11 +130,13 @@ async def check_version(bot, ev:CQEvent):
         result = json.loads(resp.text)
     bot = hoshino.get_bot()
     superid = hoshino.config.SUPERUSERS[0]
-    match,msg = False,f'发现新版本\n'
+    match,msg = False,f'发现新版本'
     for each in result['data']:
         if each['version'] > _version:
             match = True
-            msg += f"{each['date']} v{each['version']}\n  {each['description']}\n\n"
+            msg += f"\n{each['date']} v{each['version']}\n"
+            for i in each['description']:
+                msg += f"{i}\n"
     if match:
         await bot.send_private_msg(user_id=superid, message=msg)
     return

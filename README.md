@@ -42,8 +42,8 @@
 
 6. 在Anaconda Prompt逐条以下命令
     ```
-    conda config --add channels http://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/ conda-forge/
-    conda config --add channels http://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/ msys2/
+    conda config --add channels http://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge/
+    conda config --add channels http://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/msys2/
     conda config --add channels http://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/
     conda config --set ssl_verify false
     conda config --remove channels defaults
