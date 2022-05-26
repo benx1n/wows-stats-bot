@@ -172,6 +172,7 @@
 
 ## HoshinoBot安装报错解决
 1. 请使用python 3.8，更高版本可能不兼容部分依赖，若不按本文使用conda部署请自行寻找解决办法
+2. linux 安装依赖时请带上sudo
 2. pip install时出现SSL ERROR，请关闭您的本地代理工具（科学上网）或切换至PAC模式
 3. windows下出现如下报错，请下载vs生成工具，选择工作负荷-使用C++的桌面开发
     ```
@@ -183,12 +184,10 @@
     can not import name 'soft_unicode' from 'markupsafe'
     ```
 
-6. Centos中调用playwright可能会出现如下报错，请确保您当前的`python --version`是3.x，执行`python -m playwright install`，centos中默认python可能是2.7.5，因此您可能需要使用`python3.8` 或`py -3.8`
+6. 出现如下报错，首先请输入`pip uninstall werkzeug`，重新安装最新版本依赖`pip install werkzeug`
     ```
-    playwright._impl.api_types.Error:
+    no moudle named 'werkzeug.sansio'
     ```
-
-t
 ## 感谢
 
 [HoshinoBot](https://github.com/Ice-Cirno/HoshinoBot)<br>
