@@ -98,7 +98,7 @@
 
 3. 将配置文件 `config_example.json` 拷贝一份后重命名为 `config.json` , 修改配置文件中的设置<br>
     >```
-    >"token":"api_key:token"    //请加群联系雨季获取api_key和token
+    >"token":"api_key:token"    //请加群联系雨季获取api_key和token Q群:967546463
     >```
 4. 在 `config/__bot__.py`的模块列表里加入 `wows-stats-bot`’
 
