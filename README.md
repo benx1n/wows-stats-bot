@@ -1,8 +1,8 @@
 # wows-stats-bot
 战舰世界水表查询插件，基于hoshinobot V2<br>
 水表人，出击！wws me recent！！！<br>
-如果觉得本插件还不错的话请点个Star哦~
-
+如果觉得本插件还不错的话请点个Star哦~<br>
+Nonebot2版：[Hikari](https://github.com/benx1n/HikariBot)——更易部署的战绩Bot，如果您没有一定的python基础请点击链接，搭建该Bot
 ## 特点
 
 - [x] 账号总体、单船、近期战绩
