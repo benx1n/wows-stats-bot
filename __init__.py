@@ -21,7 +21,7 @@ _max = 100
 EXCEED_NOTICE = f'您今天已经冲过{_max}次了，请明早5点后再来！'
 _nlmt = DailyNumberLimiter(_max)
 _flmt = FreqLimiter(5)
-_version = "0.1.0"
+_version = "0.1.2"
 WWS_help ="""
     帮助列表
     wws bind/set/绑定 服务器 游戏昵称：绑定QQ与游戏账号
