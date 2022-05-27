@@ -21,7 +21,7 @@ _max = 100
 EXCEED_NOTICE = f'您今天已经冲过{_max}次了，请明早5点后再来！'
 _nlmt = DailyNumberLimiter(_max)
 _flmt = FreqLimiter(5)
-_version = "0.1.4"
+_version = "0.1.5"
 WWS_help ="""
     帮助列表
     wws bind/set/绑定 服务器 游戏昵称：绑定QQ与游戏账号
@@ -31,6 +31,7 @@ WWS_help ="""
     wws [服务器+游戏昵称][@群友][me] recent [日期]：查询账号近期战绩，默认1天
     wws [服务器+游戏昵称][@群友][me] ship 船名：查询单船总体战绩
     wws [搜/查船名] [国家][等级][类型]：查找符合条件的舰船中英文名称
+    wws 检查更新
     [待开发] wws ship recent
     [待开发] wws rank
     以上指令参数顺序均无强制要求，即你完全可以发送wws eu 7 recent Test以查询欧服Test七天内的战绩
@@ -122,7 +123,7 @@ async def change_select_state(bot, ev):
         SecletProcess[qqid] = SecletProcess[qqid]._replace(SlectIndex = int(msg))
     return
 
-@sv.scheduled_job('cron',hour='4')
+@sv.on_fullmatch('wws 检查更新')
 async def check_version(bot, ev:CQEvent):
     url = 'https://benx1n.oss-cn-beijing.aliyuncs.com/version.json'
     async with httpx.AsyncClient() as client:
@@ -138,5 +139,17 @@ async def check_version(bot, ev:CQEvent):
             for i in each['description']:
                 msg += f"{i}\n"
     if match:
-        await bot.send_private_msg(user_id=superid, message=msg)
+            await bot.send_private_msg(user_id=superid, message=msg)
+            try:
+                await bot.send(ev,msg)
+            except Exception:
+                traceback.print_exc()
+                return
+                
     return
+
+@sv.scheduled_job('cron',hour='12')
+async def job1():
+    bot = get_bot()
+    ev = CQEvent
+    await check_version(bot,ev)
