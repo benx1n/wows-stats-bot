@@ -97,7 +97,7 @@ async def get_ShipInfo(qqid,info,bot,ev):
                 return '找不到船'
         else:
             return '参数似乎出了问题呢'
-        print(f"print('下面是本次请求的参数，如果遇到了问题，请将这部分连同报错日志一起发送给麻麻哦')\n{params}")
+        print(f"下面是本次请求的参数，如果遇到了问题，请将这部分连同报错日志一起发送给麻麻哦\n{params}")
         async with httpx.AsyncClient(headers=headers) as client:
             resp = await client.get(url, params=params, timeout=20)
             result = resp.json()
