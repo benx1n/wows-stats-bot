@@ -10,6 +10,7 @@ from .wws_info import get_AccountInfo
 from .wws_recent import get_RecentInfo
 from .wws_bind import set_BindInfo,get_BindInfo,change_BindInfo
 from .wws_ship import get_ShipInfo,SecletProcess
+from .wws_shiprank import get_ShipRank
 from .data_source import command_list
 from .utils import match_keywords,find_and_replace_keywords
 import base64
@@ -21,7 +22,7 @@ _max = 100
 EXCEED_NOTICE = f'您今天已经冲过{_max}次了，请明早5点后再来！'
 _nlmt = DailyNumberLimiter(_max)
 _flmt = FreqLimiter(5)
-_version = "0.1.5"
+_version = "0.1.6"
 WWS_help ="""
     帮助列表
     wws bind/set/绑定 服务器 游戏昵称：绑定QQ与游戏账号
@@ -30,6 +31,7 @@ WWS_help ="""
     wws [服务器+游戏昵称][@群友][me]：查询账号总体战绩
     wws [服务器+游戏昵称][@群友][me] recent [日期]：查询账号近期战绩，默认1天
     wws [服务器+游戏昵称][@群友][me] ship 船名：查询单船总体战绩
+    wws rank/ship.rank [服务器][战舰名]：查询单船排行榜
     wws [搜/查船名] [国家][等级][类型]：查找符合条件的舰船中英文名称
     wws 检查更新
     [待开发] wws ship recent
@@ -93,6 +95,8 @@ async def selet_command(bot,ev:CQEvent):
                 msg = '待开发：查单船近期战绩'
             else:
                 msg = '：看不懂指令QAQ'
+        elif select_command == 'ship_rank':
+            msg = await get_ShipRank(qqid,search_list,bot,ev)
         elif select_command == 'bind':
             msg = await set_BindInfo(qqid,search_list)
         elif select_command == 'bindlist':
@@ -103,11 +107,14 @@ async def selet_command(bot,ev:CQEvent):
             msg = await get_ship_name(search_list)
         else:
             msg = '看不懂指令QAQ'
-        if isinstance(msg,str):
-            await bot.send(ev,msg)
+        if msg:
+            if isinstance(msg,str):
+                await bot.send(ev,msg)
+            else:
+                img_base64= base64.b64encode(msg).decode('utf8')
+                await bot.send(ev,str(MessageSegment.image("base64://" + img_base64)))
         else:
-            img_base64= base64.b64encode(msg).decode('utf8')
-            await bot.send(ev,str(MessageSegment.image("base64://" + img_base64)))
+            await bot.send('呜呜呜发生了错误，可能是网络问题，如果过段时间不能恢复请联系麻麻哦~')
         return
     except Exception:
         traceback.print_exc()

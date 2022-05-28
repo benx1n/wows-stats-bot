@@ -1,4 +1,30 @@
-# wows-stats-bot
+<!-- markdownlint-disable MD033 MD041 -->
+<p align="center">
+  <a href="https://github.com/benx1n/HikariBot"><img src="https://s2.loli.net/2022/05/28/SFsER8m6TL7jwJ2.png" alt="Hikari " style="width:200px; height:200px" ></a>
+</p>
+
+<div align="center">
+
+# Hikari
+
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable-next-line MD036 -->
+战舰世界水表BOT
+<!-- prettier-ignore-end -->
+
+</div>
+
+<p align="center">
+  <a href="https://pypi.python.org/pypi/hikari-bot">
+    <img src="https://img.shields.io/pypi/v/hikari-bot" alt="pypi">
+  </a>
+  <img src="https://img.shields.io/badge/python-3.8.0+-blue" alt="python">
+  <a href="https://jq.qq.com/?_wv=1027&k=S2WcTKi5">
+    <img src="https://img.shields.io/badge/QQ%E7%BE%A4-967546463-orange?style=flat-square" alt="QQ Chat Group">
+  </a>
+</p>
+
+## 简介
 战舰世界水表查询插件，基于hoshinobot V2<br>
 水表人，出击！wws me recent！！！<br>
 如果觉得本插件还不错的话请点个Star哦~<br>
@@ -106,8 +132,11 @@ Nonebot2版：[Hikari](https://github.com/benx1n/HikariBot)——更易部署的
 
 3. 将配置文件 `config_example.json` 拷贝一份后重命名为 `config.json` , 修改配置文件中的设置<br>
     ```
-    "token":"api_key:token"    //请加群联系雨季获取api_key和token Q群:967546463
+    "token":"api_key:token"    //请加群联系雨季获取api_key和token api_key即您申请TOKEN时使用的QQ号，token即回复您的邮件
     ```
+    >总之最后应该长这样
+   >
+   >"token":"123764323:ba1f2511fc30423bdbb183fe33"
 4. 在 `config/__bot__.py`的模块列表里加入 `wows-stats-bot`’
 
 5. 在Anaconda Prompt中重启hoshinoBot（您可以使用多次敲击ctrl+C结束进程，并通过方向键上快速选择上一次的启动命令）
