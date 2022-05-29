@@ -55,7 +55,7 @@ async def get_BindInfo(user,info):
             else:
                 return '该用户似乎还没绑定窝窝屎账号'
         else:
-            return result['message']
+            return f"{result['message']}\n这是服务器问题，请联系雨季麻麻"
     except Exception:
         traceback.print_exc()
         return 'wuwuwu出了点问题，请联系麻麻解决'
@@ -76,7 +76,7 @@ async def set_BindInfo(user,info):
                         "accountId": param_accountid
                         }
                     else:
-                        return '无法查询该游戏昵称Orz，请检查昵称是否存在'
+                        return '无法查询该游戏昵称Orz，请检查昵称是否存在，也有可能是网络波动，请稍后再试'
                 else:
                     return '服务器参数似乎输错了呢'
             else:
@@ -89,7 +89,7 @@ async def set_BindInfo(user,info):
         if result['code'] == 200 and result['message'] == "success":
             return '绑定成功'
         elif result['code'] == 500:
-            return result['message']
+            return f"{result['message']}\n这是服务器问题，请联系雨季麻麻"
         else:
             return 'wuwuwu出了点问题，请联系麻麻解决'
     except Exception:
@@ -135,7 +135,7 @@ async def change_BindInfo(user,info):
         elif result['code'] == 404:
             return f"{result['message']}"
         elif result['code'] == 500:
-            return f"{result['message']}"
+            return f"{result['message']}\n这是服务器问题，请联系雨季麻麻"
         else:
             return 'wuwuwu出了点问题，请联系麻麻解决'
     except Exception:
