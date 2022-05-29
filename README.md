@@ -149,6 +149,7 @@ Nonebot2版：[Hikari](https://github.com/benx1n/HikariBot)——更易部署的
 1. 在项目文件夹下执行
     >```
     >git pull
+    >pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
     >```
 2. 对比config_example中是否有新增配置项，同步至本地config
 
