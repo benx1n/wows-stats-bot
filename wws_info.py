@@ -7,7 +7,8 @@ import jinja2
 import re
 from pathlib import Path
 from .data_source import servers,set_infoparams
-from .utils import html_to_pic,match_keywords
+from .utils import match_keywords
+from .html_render import html_to_pic
 
 
 dir_path = Path(__file__).parent
@@ -29,6 +30,7 @@ async def get_AccountIdByName(server:str,name:str):
             "server": server,
             "userName": name
         }
+        print(f"下面是本次请求的参数，如果遇到了问题，请将这部分连同报错日志一起发送给麻麻哦\n{params}")
         async with httpx.AsyncClient(headers=headers) as client:
             resp = await client.get(url, params=params, timeout=20)
             result = resp.json()

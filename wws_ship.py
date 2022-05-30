@@ -6,11 +6,13 @@ import jinja2
 import re
 import asyncio
 from pathlib import Path
+from hoshino.typing import MessageSegment
 from .data_source import servers,set_shipparams,tiers
-from .utils import html_to_pic,match_keywords
+from .utils import match_keywords,bytes2b64
 from .wws_info import get_AccountIdByName
 from.publicAPI import get_ship_byName
 from collections import defaultdict, namedtuple
+from .html_render import html_to_pic,text_to_pic
 
 dir_path = Path(__file__).parent
 template_path = dir_path / "template"
@@ -77,13 +79,14 @@ async def get_ShipInfo(qqid,info,bot,ev):
                 if len(shipList) < 2:
                     params["shipId"] = shipList[0][0]
                 else:
-                    msg = f'存在多条名字相似的船，请在二十秒内选择对应的序号\n'
+                    msg = f'存在多条名字相似的船\n请在20秒内选择对应的序号\n'
                     flag = 0
                     for each in shipList:
                         flag += 1
-                        msg += f"{flag}：{tiers[each[3]-1]} {each[1]}：{each[2]}\n"
+                        msg += f"{flag}：{tiers[each[3]-1]} {each[1]}\n"
                     SecletProcess[qqid] = ShipSlectState(False, None, shipList)
-                    await bot.send(ev,msg)
+                    img = await text_to_pic(text=msg,width=230)
+                    await bot.send(ev,str(MessageSegment.image(bytes2b64(img))))
                     a = 0
                     while a < 200 and not SecletProcess[qqid].state:
                         a += 1

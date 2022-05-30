@@ -7,8 +7,9 @@ import time
 import re
 from pathlib import Path
 from .data_source import servers,set_recentparams
-from .utils import html_to_pic,match_keywords
+from .utils import match_keywords
 from .wws_info import get_AccountIdByName
+from .html_render import html_to_pic
 
 dir_path = Path(__file__).parent
 template_path = dir_path / "template"

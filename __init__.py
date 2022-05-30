@@ -12,7 +12,7 @@ from .wws_bind import set_BindInfo,get_BindInfo,change_BindInfo
 from .wws_ship import get_ShipInfo,SecletProcess
 from .wws_shiprank import get_ShipRank
 from .data_source import command_list
-from .utils import match_keywords,find_and_replace_keywords
+from .utils import match_keywords,find_and_replace_keywords,bytes2b64
 import base64
 import traceback
 import httpx
@@ -22,7 +22,7 @@ _max = 100
 EXCEED_NOTICE = f'您今天已经冲过{_max}次了，请明早5点后再来！'
 _nlmt = DailyNumberLimiter(_max)
 _flmt = FreqLimiter(5)
-_version = "0.1.7"
+_version = "0.1.9"
 WWS_help ="""
     帮助列表
     wws bind/set/绑定 服务器 游戏昵称：绑定QQ与游戏账号
@@ -111,8 +111,7 @@ async def selet_command(bot,ev:CQEvent):
             if isinstance(msg,str):
                 await bot.send(ev,msg)
             else:
-                img_base64= base64.b64encode(msg).decode('utf8')
-                await bot.send(ev,str(MessageSegment.image("base64://" + img_base64)))
+                await bot.send(ev,str(MessageSegment.image(bytes2b64(msg))))
         else:
             await bot.send('呜呜呜发生了错误，可能是网络问题，如果过段时间不能恢复请联系麻麻哦~')
         return
