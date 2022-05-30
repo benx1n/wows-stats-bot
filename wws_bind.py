@@ -35,6 +35,8 @@ async def get_BindInfo(user,info):
                     "platformId": match.group(1),
                     }
                     break
+            if not url or not params:
+                return '参数似乎出了问题呢，请使用me或@群友'
         else:
             return '参数似乎出了问题呢，请使用me或@群友'
         async with httpx.AsyncClient(headers=headers) as client:
