@@ -45,7 +45,7 @@ async def get_ShipRank(qqid,info,bot,ev):
                 select_shipId = shipList[0][0]
                 number_url += f"{select_shipId},{shipList[0][2]}"
             else:
-                msg = f'存在多条名字相似的船\n请在20秒内选择对应的序号\n'
+                msg = f'存在多条名字相似的船\n请在20秒内选择对应的序号\n=================\n'
                 flag = 0
                 for each in shipList:
                     flag += 1

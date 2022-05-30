@@ -79,7 +79,7 @@ async def get_ShipInfo(qqid,info,bot,ev):
                 if len(shipList) < 2:
                     params["shipId"] = shipList[0][0]
                 else:
-                    msg = f'存在多条名字相似的船\n请在20秒内选择对应的序号\n'
+                    msg = f'存在多条名字相似的船\n请在20秒内选择对应的序号\n=================\n'
                     flag = 0
                     for each in shipList:
                         flag += 1
