@@ -9,8 +9,7 @@ from pathlib import Path
 from hoshino.typing import MessageSegment
 from .data_source import servers,set_shipparams,tiers
 from .utils import match_keywords,bytes2b64
-from .wws_info import get_AccountIdByName
-from.publicAPI import get_ship_byName
+from.publicAPI import get_ship_byName,get_AccountIdByName
 from collections import defaultdict, namedtuple
 from .html_render import html_to_pic,text_to_pic
 
@@ -35,7 +34,7 @@ async def get_ShipInfo(qqid,info,bot,ev):
         if isinstance(info,List):
             for flag,i in enumerate(info):              #是否包含me或@，包含则调用平台接口
                 if i == 'me':
-                    url = 'https://api.wows.linxun.link/public/wows/account/ship/info'
+                    url = 'https://api.wows.linxun.link/public/wows/account/v2/ship/info'
                     params = {
                     "server": "QQ",
                     "accountId": qqid,
@@ -43,7 +42,7 @@ async def get_ShipInfo(qqid,info,bot,ev):
                     info.remove("me")
                 match = re.search(r"CQ:at,qq=(\d+)",i)
                 if match:
-                    url = 'https://api.wows.linxun.link/public/wows/account/ship/info'
+                    url = 'https://api.wows.linxun.link/public/wows/account/v2/ship/info'
                     params = {
                     "server": "QQ",
                     "accountId": match.group(1),
@@ -58,15 +57,17 @@ async def get_ShipInfo(qqid,info,bot,ev):
                 param_server,info = await match_keywords(info,servers)
                 if param_server:
                     param_accountid = await get_AccountIdByName(param_server,str(info[0]))      #剩余列表第一个是否为游戏名
-                    if param_accountid:
+                    if param_accountid and param_accountid != 404:
                         info.remove(info[0])
-                        url = 'https://api.wows.linxun.link/public/wows/account/ship/info'
+                        url = 'https://api.wows.linxun.link/public/wows/account/v2/ship/info'
                         params = {
                         "server": param_server,
                         "accountId": param_accountid,
                         }
+                    elif param_accountid == 404:
+                        return '无法查询该游戏昵称Orz，请检查昵称是否存在'
                     else:
-                        return '无法查询该游戏昵称Orz，请检查昵称是否存在，也有可能是网络波动，请稍后再试，或尝试将船名放在最后'
+                        return '发生了错误，有可能是网络波动，请稍后再试'
                 else:
                     return '服务器参数似乎输错了呢'
             elif params:
@@ -108,7 +109,9 @@ async def get_ShipInfo(qqid,info,bot,ev):
             template = env.get_template("wws-ship.html")
             template_data = await set_shipparams(result['data'])
             content = await template.render_async(template_data)
-            return await html_to_pic(content, wait=0, viewport={"width": 640, "height": 100})
+            return await html_to_pic(content, wait=0, viewport={"width": 800, "height": 100})
+        elif result['code'] == 403:
+            return f"{result['message']}\n请先绑定账号"
         elif result['code'] == 404:
             return f"{result['message']}"
         elif result['code'] == 500:

@@ -7,6 +7,7 @@ import jinja2
 import re
 from pathlib import Path
 from .data_source import servers,set_infoparams
+from .publicAPI import get_AccountIdByName
 from .utils import match_keywords
 from .html_render import html_to_pic
 
@@ -23,25 +24,6 @@ headers = {
     'Authorization': config['token']
 }
   
-async def get_AccountIdByName(server:str,name:str):
-    try:
-        url = 'https://api.wows.linxun.link/public/wows/account/search/user'
-        params = {
-            "server": server,
-            "userName": name
-        }
-        print(f"下面是本次请求的参数，如果遇到了问题，请将这部分连同报错日志一起发送给麻麻哦\n{params}")
-        async with httpx.AsyncClient(headers=headers) as client:
-            resp = await client.get(url, params=params, timeout=20)
-            result = resp.json()
-        if result['data']:
-            return result['data']['accountId']
-        else:
-            return None
-    except Exception:
-        traceback.print_exc()
-        return None
-    
 
 async def get_AccountInfo(qqid,info):
     try:
@@ -49,7 +31,7 @@ async def get_AccountInfo(qqid,info):
         if isinstance(info,List):
             for i in info:
                 if i == 'me':
-                    url = 'https://api.wows.linxun.link/public/wows/account/user/info'
+                    url = 'https://api.wows.linxun.link/public/wows/account/v2/user/info'
                     params = {
                     "server": "QQ",
                     "accountId": str(qqid)
@@ -57,7 +39,7 @@ async def get_AccountInfo(qqid,info):
                     break
                 match = re.search(r"CQ:at,qq=(\d+)",i)
                 if match:
-                    url = 'https://api.wows.linxun.link/public/wows/account/user/info'
+                    url = 'https://api.wows.linxun.link/public/wows/account/v2/user/info'
                     params = {
                     "server": "QQ",
                     "accountId": match.group(1)
@@ -67,14 +49,16 @@ async def get_AccountInfo(qqid,info):
                 param_server,info = await match_keywords(info,servers)
                 if param_server:
                     param_accountid = await get_AccountIdByName(param_server,str(info[0]))
-                    if param_accountid:
-                        url = 'https://api.wows.linxun.link/public/wows/account/user/info'
+                    if param_accountid and param_accountid != 404:
+                        url = 'https://api.wows.linxun.link/public/wows/account/v2/user/info'
                         params = {
                         "server": param_server,
                         "accountId": param_accountid
                         }
+                    elif param_accountid == 404:
+                        return '无法查询该游戏昵称Orz，请检查昵称是否存在'
                     else:
-                        return '无法查询该游戏昵称Orz，请检查昵称是否存在，也有可能是网络波动，请稍后再试'
+                        return '发生了错误，有可能是网络波动，请稍后再试'
                 else:
                     return '服务器参数似乎输错了呢'
             elif params:
@@ -92,6 +76,8 @@ async def get_AccountInfo(qqid,info):
             template_data = await set_infoparams(result['data'])
             content = await template.render_async(template_data)
             return await html_to_pic(content, wait=0, viewport={"width": 920, "height": 1000})
+        elif result['code'] == 403:
+            return f"{result['message']}\n请先绑定账号"
         elif result['code'] == 404:
             return f"{result['message']}"
         elif result['code'] == 500:

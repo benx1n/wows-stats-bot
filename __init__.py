@@ -5,6 +5,7 @@ from hoshino import R, Service, priv, get_bot
 from hoshino.util import FreqLimiter, DailyNumberLimiter
 from hoshino.typing import CQEvent, MessageSegment
 from nonebot import NoticeSession, on_command
+from .html_render import text_to_pic
 from .publicAPI import get_nation_list,get_ship_name,get_ship_byName
 from .wws_info import get_AccountInfo
 from .wws_recent import get_RecentInfo
@@ -13,7 +14,6 @@ from .wws_ship import get_ShipInfo,SecletProcess
 from .wws_shiprank import get_ShipRank
 from .data_source import command_list
 from .utils import match_keywords,find_and_replace_keywords,bytes2b64
-import base64
 import traceback
 import httpx
 import json
@@ -21,31 +21,27 @@ import json
 _max = 100
 EXCEED_NOTICE = f'您今天已经冲过{_max}次了，请明早5点后再来！'
 _nlmt = DailyNumberLimiter(_max)
-_flmt = FreqLimiter(5)
-_version = "0.1.9"
-WWS_help ="""
-    帮助列表
-    wws bind/set/绑定 服务器 游戏昵称：绑定QQ与游戏账号
-    wws 查询绑定/查绑定/绑定列表[me][@]：查询指定用户的绑定账号
-    wws 切换绑定[id]：使用查绑定中的序号快速切换绑定账号
-    wws [服务器+游戏昵称][@群友][me]：查询账号总体战绩
-    wws [服务器+游戏昵称][@群友][me] recent [日期]：查询账号近期战绩，默认1天
-    wws [服务器+游戏昵称][@群友][me] ship 船名：查询单船总体战绩
-    wws rank/ship.rank [服务器][战舰名]：查询单船排行榜
-    wws [搜/查船名] [国家][等级][类型]：查找符合条件的舰船中英文名称
-    wws 检查更新
-    [待开发] wws ship recent
-    [待开发] wws rank
-    以上指令参数顺序均无强制要求，即你完全可以发送wws eu 7 recent Test以查询欧服Test七天内的战绩
-    搭建bot请加官方群：967546463，如果您觉得bot还可以的话请点个star哦~
-    仓库地址：https://github.com/benx1n/wows-stats-bot
-"""
+_flmt = FreqLimiter(3)
+_version = "0.2.0"
+WWS_help ="""请发送wws help查看帮助"""
 sv_help = WWS_help.strip()
 sv = Service('wows-stats-bot', manage_priv=priv.SUPERUSER, enable_on_default=True,help_ = sv_help)
 
 @sv.on_fullmatch(('wws帮助','wws 帮助','wws help'))
 async def get_help(bot, ev):
-    await bot.send(ev, sv_help)
+    url = 'https://benx1n.oss-cn-beijing.aliyuncs.com/version.json'
+    async with httpx.AsyncClient() as client:
+        resp = await client.get(url, timeout=10)
+        result = json.loads(resp.text)
+    latest_version = result['latest_version']
+    url = 'https://benx1n.oss-cn-beijing.aliyuncs.com/wws_help.txt'
+    async with httpx.AsyncClient() as client:
+        resp = await client.get(url, timeout=10)
+        result = resp.text
+    result = f'''帮助列表                                                当前版本{_version}  最新版本{latest_version}\n{result}'''
+    img = await text_to_pic(text = result, width = 800)
+    await bot.send(ev,str(MessageSegment.image(bytes2b64(img))))
+    return
 
 @sv.on_prefix(('wws 地区','wws地区'))
 async def send_nation_info(bot, ev:CQEvent):

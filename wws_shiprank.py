@@ -8,7 +8,6 @@ from pathlib import Path
 from hoshino.typing import MessageSegment
 from .data_source import servers,set_shipparams,tiers,number_url_homes
 from .utils import match_keywords,bytes2b64
-from .wws_info import get_AccountIdByName
 from .wws_ship import SecletProcess,ShipSlectState
 from.publicAPI import get_ship_byName
 from bs4 import BeautifulSoup
