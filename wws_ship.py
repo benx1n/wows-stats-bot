@@ -70,8 +70,10 @@ async def get_ShipInfo(qqid,info,bot,ev):
                         return '发生了错误，有可能是网络波动，请稍后再试'
                 else:
                     return '服务器参数似乎输错了呢'
+            elif params and len(info) == 1:
+                print(f"{params}")
             elif params:
-                print('下面是本次请求的参数，如果遇到了问题，请将这部分连同报错日志一起发送给麻麻哦')
+                return '您似乎准备用查询自己的单船战绩，请检查参数中是否带有船名，以空格区分'
             else:
                 return '您似乎准备用游戏昵称查询单船战绩，请检查参数中是否包含服务器、游戏昵称和船名，以空格区分'
             shipList = await get_ship_byName(str(info[0]))
