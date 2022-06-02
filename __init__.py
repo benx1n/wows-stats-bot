@@ -9,7 +9,7 @@ from .html_render import text_to_pic
 from .publicAPI import get_nation_list,get_ship_name,get_ship_byName
 from .wws_info import get_AccountInfo
 from .wws_recent import get_RecentInfo
-from .wws_bind import set_BindInfo,get_BindInfo,change_BindInfo
+from .wws_bind import set_BindInfo,get_BindInfo,change_BindInfo,set_special_BindInfo
 from .wws_ship import get_ShipInfo,SecletProcess
 from .wws_shiprank import get_ShipRank
 from .data_source import command_list
@@ -17,12 +17,13 @@ from .utils import match_keywords,find_and_replace_keywords,bytes2b64
 import traceback
 import httpx
 import json
+import re
 
 _max = 100
 EXCEED_NOTICE = f'您今天已经冲过{_max}次了，请明早5点后再来！'
 _nlmt = DailyNumberLimiter(_max)
 _flmt = FreqLimiter(3)
-_version = "0.2.0"
+_version = "0.2.4"
 WWS_help ="""请发送wws help查看帮助"""
 sv_help = WWS_help.strip()
 sv = Service('wows-stats-bot', manage_priv=priv.SUPERUSER, enable_on_default=True,help_ = sv_help)
@@ -69,14 +70,24 @@ async def selet_command(bot,ev:CQEvent):
         if not searchtag or searchtag=="":
             await bot.send(ev,WWS_help.strip())
             return
-        search_list = str(ev.message).split()
+        match = re.search(r"(\(|（)(.*?)(\)|）)",str(ev.message))
+        replace_name = None
+        if match:
+            replace_name = match.group(2)
+            search_list = str(ev.message).replace(match.group(0),'').split()
+        else:
+            search_list = str(ev.message).split()
         select_command,search_list = await find_and_replace_keywords(search_list,command_list)
         if not select_command:
+            if replace_name:
+                search_list.append(replace_name)
             msg = await get_AccountInfo(qqid,search_list)
         elif select_command == 'ship':
             select_command = None
             select_command,search_list = await find_and_replace_keywords(search_list,command_list)         #第二次匹配
             if not select_command:
+                if replace_name:
+                    search_list.append(replace_name)
                 msg = await get_ShipInfo(qqid,search_list,bot,ev)
             elif select_command == 'recent':
                 msg = '待开发：查单船近期战绩'
@@ -86,6 +97,8 @@ async def selet_command(bot,ev:CQEvent):
             select_command = None
             select_command,search_list = await find_and_replace_keywords(search_list,command_list)             #第二次匹配
             if not select_command:
+                if replace_name:
+                    search_list.append(replace_name)
                 msg = await get_RecentInfo(qqid,search_list)
             elif select_command == 'ship':
                 msg = '待开发：查单船近期战绩'
@@ -93,7 +106,11 @@ async def selet_command(bot,ev:CQEvent):
                 msg = '：看不懂指令QAQ'
         elif select_command == 'ship_rank':
             msg = await get_ShipRank(qqid,search_list,bot,ev)
+        elif select_command == 'special_bind':
+            msg = await set_special_BindInfo(qqid,search_list)
         elif select_command == 'bind':
+            if replace_name:
+                search_list.append(replace_name)
             msg = await set_BindInfo(qqid,search_list)
         elif select_command == 'bindlist':
             msg = await get_BindInfo(qqid,search_list)
