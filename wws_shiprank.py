@@ -88,6 +88,7 @@ async def search_ShipRank_Yuyuko(shipId,server):
                 "shipId":int(shipId),
                 "server":server
             }
+            print(f"{url}\n{params}")
             resp = await client.get(url, params=params,timeout=20)
             result = resp.json()
             if result['code'] == 200 and result['data']:
@@ -104,6 +105,7 @@ async def search_ShipRank_Yuyuko(shipId,server):
 async def search_ShipRank_Numbers(url):
     try:
         content = None
+        print(url)
         async with httpx.AsyncClient() as client:
             resp = await client.get(url, timeout=20)
         soup = BeautifulSoup(resp.content, 'html.parser')
@@ -129,6 +131,7 @@ async def post_ShipRank(shipId,server,data):
                 "server": server,
                 "shipId": int(shipId)
             }
+            print(post_data)
             resp = await client.post(url, json = post_data, timeout=20)
             result = resp.json()
             print(result)
