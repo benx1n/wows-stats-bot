@@ -52,7 +52,7 @@ async def get_BindInfo(user,info):
                     flag += 1
                     if bindinfo['defaultId']:
                         msg1 += f"{bindinfo['serverType']} {bindinfo['userName']}\n"
-                msg = msg1+msg2+"本人发送[wws 切换绑定+序号] 切换对应账号"
+                msg = msg1+msg2+"本人发送[wws 切换/删除绑定+序号] 切换/删除对应账号"
                 return msg
             else:
                 return '该用户似乎还没绑定窝窝屎账号'
@@ -117,18 +117,13 @@ async def change_BindInfo(user,info):
             if result['data'] and len(result['data']) >= int(info[0]):
                 account_name = result['data'][int(info[0])-1]['userName']
                 param_server = result['data'][int(info[0])-1]['serverType']
-                param_accountid = await get_AccountIdByName(param_server,account_name)
-                if param_accountid and param_accountid != 404:
-                    url = 'https://api.wows.linxun.link/api/wows/bind/account/platform/bind/put'
-                    params = {
-                    "platformType": "QQ",
-                    "platformId": str(user),
-                    "accountId": param_accountid
-                    }
-                elif param_accountid == 404:
-                        return '无法查询该游戏昵称Orz，请检查昵称是否存在'
-                else:
-                    return '发生了错误，有可能是网络波动，请稍后再试'
+                param_accountid = result['data'][int(info[0])-1]['accountId']
+                url = 'https://api.wows.linxun.link/api/wows/bind/account/platform/bind/put'
+                params = {
+                "platformType": "QQ",
+                "platformId": str(user),
+                "accountId": param_accountid
+                }
             else:
                 return '没有对应序号的绑定记录'
         else:
@@ -137,7 +132,7 @@ async def change_BindInfo(user,info):
             resp = await client.get(url, params=params, timeout=10)
             result = resp.json()
         if result['code'] == 200 and result['message'] == "success":
-            return f'切换绑定成功,当前绑定账号{account_name}'
+            return f'切换绑定成功,当前绑定账号{param_server}：{account_name}'
         elif result['code'] == 403:
             return f"{result['message']}\n请先绑定账号"
         elif result['code'] == 404:
@@ -182,4 +177,49 @@ async def set_special_BindInfo(user,info):
         else:
             return 'wuwuwu出了点问题，请联系麻麻解决'
     except Exception:
+        return 'wuwuwu出了点问题，请联系麻麻解决'
+    
+async def delete_BindInfo(user,info):
+    try:
+        if isinstance(info,List) and len(info) == 1 and str(info[0]).isdigit:
+            url = 'https://api.wows.linxun.link/public/wows/bind/account/platform/bind/list'
+            params = {
+            "platformType": "QQ",
+            "platformId": user,
+            }
+        else:
+            return '参数似乎出了问题呢，请跟随要切换的序号'
+        async with httpx.AsyncClient(headers=headers) as client:
+            resp = await client.get(url, params=params, timeout=10)
+            result = resp.json()
+        if result['code'] == 200 and result['message'] == "success":
+            if result['data'] and len(result['data']) >= int(info[0]):
+                account_name = result['data'][int(info[0])-1]['userName']
+                param_server = result['data'][int(info[0])-1]['serverType']
+                param_accountid = result['data'][int(info[0])-1]['accountId']
+                url = 'https://api.wows.linxun.link/api/wows/bind/account/platform/bind/remove'
+                params = {
+                "platformType": "QQ",
+                "platformId": str(user),
+                "accountId": param_accountid
+                }
+            else:
+                return '没有对应序号的绑定记录'
+        else:
+            return '参数似乎不正确，请确保只跟随了序号'
+        async with httpx.AsyncClient(headers=headers) as client:
+            resp = await client.get(url, params=params, timeout=10)
+            result = resp.json()
+        if result['code'] == 200 and result['message'] == "success":
+            return f'删除绑定成功,删除的账号为{param_server}：{account_name}'
+        elif result['code'] == 403:
+            return f"{result['message']}"
+        elif result['code'] == 404:
+            return f"{result['message']}"
+        elif result['code'] == 500:
+            return f"{result['message']}\n这是服务器问题，请联系雨季麻麻"
+        else:
+            return 'wuwuwu出了点问题，请联系麻麻解决'
+    except Exception:
+        traceback.print_exc()
         return 'wuwuwu出了点问题，请联系麻麻解决'
