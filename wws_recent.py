@@ -3,7 +3,7 @@ import httpx
 import traceback
 import json
 import jinja2
-import time
+from datetime import datetime
 import re
 from pathlib import Path
 from .data_source import servers,set_recentparams
@@ -26,7 +26,9 @@ headers = {
 
 async def get_RecentInfo(qqid,info):
     try:
-        params,day = None,1
+        params,day = None,0
+        if datetime.now().hour < 7:
+            day = 1
         if isinstance(info,List):
             for i in info:              #查找日期,没找到默认一天
                 if str(i).isdigit() and len(i) <= 3:
@@ -34,19 +36,21 @@ async def get_RecentInfo(qqid,info):
                     info.remove(i)
             for i in info:              #是否包含me或@，包含则调用平台接口
                 if i == 'me':
-                    url = 'https://api.wows.linxun.link/api/wows/recent/recent/info'
+                    url = 'https://api.wows.linxun.link//api/wows/recent/v2/recent/info'
                     params = {
                     "server": "QQ",
                     "accountId": qqid,
-                    "seconds": int(time.time())-86400*int(day)
+                    "day": day,
+                    "status": 0
                     }
                 match = re.search(r"CQ:at,qq=(\d+)",i)
                 if match:
-                    url = 'https://api.wows.linxun.link/api/wows/recent/recent/info'
+                    url = 'https://api.wows.linxun.link//api/wows/recent/v2/recent/info'
                     params = {
                     "server": "QQ",
                     "accountId": match.group(1),
-                    "seconds": int(time.time())-86400*int(day)
+                    "day": day,
+                    "status": 0
                     }
                     break
             if not params and len(info) == 2:
@@ -54,11 +58,12 @@ async def get_RecentInfo(qqid,info):
                 if param_server:
                     param_accountid = await get_AccountIdByName(param_server,str(info[0]))
                     if param_accountid and param_accountid != 404:
-                        url = 'https://api.wows.linxun.link/api/wows/recent/recent/info'
+                        url = 'https://api.wows.linxun.link//api/wows/recent/v2/recent/info'
                         params = {
                         "server": param_server,
                         "accountId": param_accountid,
-                        "seconds": int(time.time())-86400*int(day)
+                        "day": day,
+                        "status": 0
                         }
                     elif param_accountid == 404:
                         return '无法查询该游戏昵称Orz，请检查昵称是否存在'
@@ -76,11 +81,14 @@ async def get_RecentInfo(qqid,info):
         async with httpx.AsyncClient(headers=headers) as client:
             resp = await client.get(url, params=params, timeout=20)
             result = resp.json()
-        if result['code'] == 200 and result['data']:
-            template = env.get_template("wws-info-recent.html")
-            template_data = await set_recentparams(result['data'])
-            content = await template.render_async(template_data)
-            return await html_to_pic(content, wait=0, viewport={"width": 1200, "height": 100})
+        if result['code'] == 200:
+            if result['data']['shipData'][0]['shipData']:
+                template = env.get_template("wws-info-recent.html")
+                template_data = await set_recentparams(result['data'])
+                content = await template.render_async(template_data)
+                return await html_to_pic(content, wait=0, viewport={"width": 1200, "height": 100}) 
+            else:
+                return '该日期数据记录不存在'
         elif result['code'] == 403:
             return f"{result['message']}\n请先绑定账号"
         elif result['code'] == 404:
