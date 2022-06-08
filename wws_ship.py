@@ -7,11 +7,12 @@ import re
 import asyncio
 from pathlib import Path
 from hoshino.typing import MessageSegment
-from .data_source import servers,set_shipparams,tiers
+from .data_source import servers,set_shipparams,tiers,number_url_homes
 from .utils import match_keywords,bytes2b64
 from.publicAPI import get_ship_byName,get_AccountIdByName
 from collections import defaultdict, namedtuple
 from .html_render import html_to_pic,text_to_pic
+from bs4 import BeautifulSoup
 
 dir_path = Path(__file__).parent
 template_path = dir_path / "template"
@@ -104,17 +105,19 @@ async def get_ShipInfo(qqid,info,bot,ev):
         else:
             return '参数似乎出了问题呢'
         print(f"下面是本次请求的参数，如果遇到了问题，请将这部分连同报错日志一起发送给麻麻哦\n{params}")
+        ranking = await get_MyShipRank_yuyuko(params)
         async with httpx.AsyncClient(headers=headers) as client:
             resp = await client.get(url, params=params, timeout=20)
             result = resp.json()
         if result['code'] == 200 and result['data']:
             template = env.get_template("wws-ship.html")
             template_data = await set_shipparams(result['data'])
+            template_data['shipRank'] = ranking
             content = await template.render_async(template_data)
             return await html_to_pic(content, wait=0, viewport={"width": 800, "height": 100})
         elif result['code'] == 403:
             return f"{result['message']}\n请先绑定账号"
-        elif result['code'] == 404:
+        elif result['code'] == 404 or result['code'] == 405:
             return f"{result['message']}"
         elif result['code'] == 500:
             return f"{result['message']}\n这是服务器问题，请联系雨季麻麻"
@@ -123,3 +126,66 @@ async def get_ShipInfo(qqid,info,bot,ev):
     except Exception:
         traceback.print_exc()
         return    
+    
+    
+async def get_MyShipRank_yuyuko(params):
+    try:
+        url = 'https://api.wows.linxun.link/upload/numbers/data/upload/user/ship/rank'
+        async with httpx.AsyncClient(headers=headers) as client:
+            resp = await client.get(url, params=params, timeout=20)
+            result = resp.json()
+            if result['code'] == 200 and result['data']:
+                if result['data']['ranking']:
+                    return result['data']['ranking']
+                elif not result['data']['ranking'] and not result['data']['serverId'] == 'cn':
+                    ranking = await get_MyShipRank_Numbers(result['data']['httpUrl'],result['data']['serverId']) 
+                    if ranking:
+                        await post_MyShipRank_yuyuko(result['data']['accountId'],ranking,result['data']['serverId'],result['data']['shipId'])
+                    return ranking
+                else:
+                    return None
+            else:
+                return None
+    except Exception:
+        traceback.print_exc()
+        return None
+    
+async def get_MyShipRank_Numbers(url,server):
+    try:
+        data = None
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(url, timeout=20)
+            if resp.content:
+                result = resp.json()
+                page_url = str(result['url']).replace("\\","")
+                nickname = str(result['nickname'])
+                my_rank_url = f"{number_url_homes[server]}{page_url}"
+                async with httpx.AsyncClient() as client:
+                    resp = await client.get(my_rank_url, timeout=20)
+                    soup = BeautifulSoup(resp.content, 'html.parser')
+                    data = soup.select_one(f'tr[data-nickname="{nickname}"]').select_one('td').string
+        if data.isdigit():
+            print(data)
+            return data
+        else:
+            return None
+    except Exception:
+        traceback.print_exc()
+        return None    
+    
+async def post_MyShipRank_yuyuko(accountId,ranking,serverId,shipId):
+    try:
+        async with httpx.AsyncClient(headers=headers) as client:
+            url = 'https://api.wows.linxun.link/upload/numbers/data/upload/user/ship/rank'
+            post_data = {
+                "accountId": int(accountId),
+                "ranking": int(ranking),
+                "serverId": serverId,
+                "shipId":int(shipId)
+            }
+            resp = await client.post(url, json = post_data, timeout=20)
+            result = resp.json()
+            return
+    except Exception:
+        traceback.print_exc()
+        return

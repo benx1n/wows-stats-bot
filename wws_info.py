@@ -78,12 +78,12 @@ async def get_AccountInfo(qqid,info):
             return await html_to_pic(content, wait=0, viewport={"width": 920, "height": 1000})
         elif result['code'] == 403:
             return f"{result['message']}\n请先绑定账号"
-        elif result['code'] == 404:
+        elif result['code'] == 404 or result['code'] == 405:
             return f"{result['message']}"
         elif result['code'] == 500:
             return f"{result['message']}\n这是服务器问题，请联系雨季麻麻"
         else:
-            return '查询不到对应信息哦~可能是游戏昵称不正确或QQ未绑定'
+            return 'wuwuu好像出了点问题，过一会儿还是不行的话请联系麻麻~'
     except Exception:
         traceback.print_exc()
         return 'wuwuwu出了点问题，请联系麻麻解决'

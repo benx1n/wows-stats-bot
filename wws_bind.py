@@ -52,7 +52,7 @@ async def get_BindInfo(user,info):
                     flag += 1
                     if bindinfo['defaultId']:
                         msg1 += f"{bindinfo['serverType']} {bindinfo['userName']}\n"
-                msg = msg1+msg2+"本人发送[wws 切换/删除绑定+序号] 切换/删除对应账号"
+                msg = msg1+msg2+"本人发送wws [切换/删除]绑定+序号 切换/删除对应账号"
                 return msg
             else:
                 return '该用户似乎还没绑定窝窝屎账号'
@@ -135,7 +135,7 @@ async def change_BindInfo(user,info):
             return f'切换绑定成功,当前绑定账号{param_server}：{account_name}'
         elif result['code'] == 403:
             return f"{result['message']}\n请先绑定账号"
-        elif result['code'] == 404:
+        elif result['code'] == 404 or result['code'] == 405:
             return f"{result['message']}"
         elif result['code'] == 500:
             return f"{result['message']}\n这是服务器问题，请联系雨季麻麻"
@@ -214,7 +214,7 @@ async def delete_BindInfo(user,info):
             return f'删除绑定成功,删除的账号为{param_server}：{account_name}'
         elif result['code'] == 403:
             return f"{result['message']}"
-        elif result['code'] == 404:
+        elif result['code'] == 404 or result['code'] == 405:
             return f"{result['message']}"
         elif result['code'] == 500:
             return f"{result['message']}\n这是服务器问题，请联系雨季麻麻"

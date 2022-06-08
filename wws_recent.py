@@ -91,7 +91,7 @@ async def get_RecentInfo(qqid,info):
                 return '该日期数据记录不存在'
         elif result['code'] == 403:
             return f"{result['message']}\n请先绑定账号"
-        elif result['code'] == 404:
+        elif result['code'] == 404 or result['code'] == 405:
             return f"{result['message']}"
         elif result['code'] == 500:
             return f"{result['message']}\n这是服务器问题，请联系雨季麻麻"
