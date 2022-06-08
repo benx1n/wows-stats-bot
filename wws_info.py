@@ -75,6 +75,7 @@ async def get_AccountInfo(qqid,info):
             template = env.get_template("wws-info.html")
             template_data = await set_infoparams(result['data'])
             content = await template.render_async(template_data)
+            print(content)
             return await html_to_pic(content, wait=0, viewport={"width": 920, "height": 1000})
         elif result['code'] == 403:
             return f"{result['message']}\n请先绑定账号"
