@@ -64,7 +64,7 @@ async def get_AccountInfo(qqid,info):
             elif params:
                 print('下面是本次请求的参数，如果遇到了问题，请将这部分连同报错日志一起发送给麻麻哦')
             else:
-                return '您似乎准备用游戏昵称查询水表，请检查参数中时候包含服务器和游戏昵称，以空格区分'
+                return '您似乎准备用游戏昵称查询水表，请检查参数中时候包含服务器和游戏昵称，以空格区分，如果您准备查询单船战绩，请带上ship参数'
         else:
             return '参数似乎出了问题呢'
         print(params)
