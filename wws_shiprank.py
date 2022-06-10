@@ -6,7 +6,7 @@ import jinja2
 import asyncio
 from pathlib import Path
 from hoshino.typing import MessageSegment
-from .data_source import servers,set_shipparams,tiers,number_url_homes
+from .data_source import servers,set_shipparams,tiers,number_url_homes,set_ShipRank_Numbers
 from .utils import match_keywords,bytes2b64
 from .wws_ship import SecletProcess,ShipSlectState
 from.publicAPI import get_ship_byName
@@ -67,12 +67,12 @@ async def get_ShipRank(qqid,info,bot,ev):
             return '找不到船'
         content = await search_ShipRank_Yuyuko(select_shipId,param_server)
         if content:                                         #存在缓存，直接出图
-            return await html_to_pic(content, wait=0, viewport={"width": 1800, "height": 100})
+            return await html_to_pic(content, wait=0, viewport={"width": 1300, "height": 100})
         else:                                               #无缓存，去Number爬
-            content,numbers_data = await search_ShipRank_Numbers(number_url)
+            content,numbers_data = await search_ShipRank_Numbers(number_url,param_server,select_shipId)
             if content:
-                await post_ShipRank(select_shipId,param_server,numbers_data)     #上报Yuyuko
-                return await html_to_pic(content, wait=0, viewport={"width": 1800, "height": 100})
+                await post_ShipRank(numbers_data)     #上报Yuyuko
+                return await html_to_pic(content, wait=0, viewport={"width": 1300, "height": 100})
             else:
                 return 'wuwuu好像出了点问题，可能是网络问题，过一会儿还是不行的话请联系麻麻~'   
     except Exception:
@@ -83,17 +83,17 @@ async def search_ShipRank_Yuyuko(shipId,server):
     try:
         content = None
         async with httpx.AsyncClient(headers=headers) as client:        #查询是否有缓存
-            url = 'https://api.wows.linxun.link/upload/numbers/data/upload/ship/rank'
+            url = 'https://api.wows.linxun.link/upload/numbers/data/v2/upload/ship/rank'
             params = {
-                "shipId":int(shipId),
-                "server":server
+                "server":server,
+                "shipId":int(shipId)
             }
             print(f"{url}\n{params}")
             resp = await client.get(url, params=params,timeout=20)
             result = resp.json()
             if result['code'] == 200 and result['data']:
-                template = env.get_template("ship-rank.html")
                 result_data = {"data":result['data']}
+                template = env.get_template("ship-rank.html")
                 content = await template.render_async(result_data)
                 return content
             else:
@@ -102,37 +102,32 @@ async def search_ShipRank_Yuyuko(shipId,server):
         traceback.print_exc()
         return None 
         
-async def search_ShipRank_Numbers(url):
+async def search_ShipRank_Numbers(url,server,shipId):
     try:
         content = None
         print(url)
         async with httpx.AsyncClient() as client:
             resp = await client.get(url, timeout=20)
         soup = BeautifulSoup(resp.content, 'html.parser')
-        data = soup.select_one('div[style="clear:both;"]')
-        if data:
+        data = soup.select('tr[class="cells-middle"]')
+        infoList = await set_ShipRank_Numbers(data,server,shipId)
+        if infoList:
+            result_data = {"data":infoList}
             template = env.get_template("ship-rank.html")
-            result_data = {"data":data}
             content = await template.render_async(result_data)
-            return content,data
+            return content,infoList
         else:
             return None,None
     except Exception:
         traceback.print_exc()
         return None,None
             
-async def post_ShipRank(shipId,server,data):
+async def post_ShipRank(data):
     try:
         async with httpx.AsyncClient(headers=headers) as client:
-            url = 'https://api.wows.linxun.link/upload/numbers/data/upload/ship/rank'
-            result = f'''{data}'''
-            post_data = {
-                "bodyHtml": result,
-                "server": server,
-                "shipId": int(shipId)
-            }
-            print(post_data)
-            resp = await client.post(url, json = post_data, timeout=20)
+            url = 'https://api.wows.linxun.link/upload/numbers/data/v2/upload/ship/rank'
+            resp = await client.post(url, json = data, timeout=20)
+            print(resp.request)
             result = resp.json()
             print(result)
     except Exception:
