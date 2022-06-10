@@ -555,7 +555,7 @@ async def set_ShipRank_Numbers(data,server,shipId):
                 "winsColor":winsColor,
                 "xp":xp,
                 "tag":tag,
-                "userName":userName,
+                "userName":userName
             }
             info_list.append(info)
         return info_list
