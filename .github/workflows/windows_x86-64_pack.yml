@@ -1,0 +1,66 @@
+name: Build windows x86-64
+
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        repository: Ice-Cirno/HoshinoBot
+        path: HoshinoBot
+        ref: b8d84846cc0db3f8e7fd368e70547bfc24640a4e
+    - uses: actions/checkout@v3
+      with:
+        path: HoshinoBot\hoshino\modules\wows-stats-bot
+        ref: 'master'
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v3
+      with:
+        python-version: 3.8
+    - name: Latest-tag
+      run: |
+        cd HoshinoBot\hoshino\modules\wows-stats-bot
+        git tag Latest --force
+        git push --force origin refs/tags/Latest:refs/tags/Latest
+        cd ..\..\..\..\
+    - name: Pack windows x86-64 version with pyinstaller
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install pyinstaller 
+        python -m pip install -r HoshinoBot\requirements.txt
+        python -m pip install -r HoshinoBot\hoshino\modules\wows-stats-bot\requirements.txt
+        if (Test-Path HoshinoBot\hoshino\modules\wows-stats-bot\ci\pack.ps1) {cd HoshinoBot; hoshino\modules\wows-stats-bot\ci\pack.ps1; cd ..}
+    - name: Delete latest release
+      uses: actions/github-script@v4
+      with:
+        github-token: ${{secrets.GITHUB_TOKEN}}
+        script: |
+          const { owner, repo } = context.repo
+          const { data: { id } } = await github.repos.getLatestRelease({ owner, repo })
+          await github.repos.deleteRelease({ owner, repo, release_id: id })
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: Latest
+        release_name: Latest Release
+        draft: false
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: HoshinoBot\release.zip
+        asset_name: release_windows.zip
+        asset_content_type: application/zip
