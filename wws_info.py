@@ -71,6 +71,7 @@ async def get_AccountInfo(qqid,info):
         async with httpx.AsyncClient(headers=headers) as client:
             resp = await client.get(url, params=params, timeout=20)
             result = resp.json()
+        print(f"本次请求总耗时{resp.elapsed.total_seconds()*1000}，服务器计算耗时:{result['queryTime']}")
         if result['code'] == 200 and result['data']:
             template = env.get_template("wws-info.html")
             template_data = await set_infoparams(result['data'])
