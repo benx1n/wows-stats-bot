@@ -10,7 +10,8 @@ from .publicAPI import get_nation_list,get_ship_name,get_ship_byName
 from .wws_info import get_AccountInfo
 from .wws_recent import get_RecentInfo
 from .wws_bind import set_BindInfo,get_BindInfo,change_BindInfo,set_special_BindInfo,delete_BindInfo
-from .wws_ship import get_ShipInfo,SecletProcess
+from .wws_ship import get_ShipInfo,get_ShipInfoRecent,ShipSecletProcess
+from .wws_clan import get_ClanInfo,ClanSecletProcess
 from .wws_shiprank import get_ShipRank
 from .data_source import command_list
 from .utils import match_keywords,find_and_replace_keywords,bytes2b64
@@ -90,7 +91,7 @@ async def selet_command(bot,ev:CQEvent):
                     search_list.append(replace_name)
                 msg = await get_ShipInfo(qqid,search_list,bot,ev)
             elif select_command == 'recent':
-                msg = '待开发：查单船近期战绩'
+                msg = await get_ShipInfoRecent(qqid,search_list,bot,ev)
             else:
                 msg = '看不懂指令QAQ'
         elif select_command == 'recent':
@@ -101,9 +102,11 @@ async def selet_command(bot,ev:CQEvent):
                     search_list.append(replace_name)
                 msg = await get_RecentInfo(qqid,search_list)
             elif select_command == 'ship':
-                msg = '待开发：查单船近期战绩'
+                msg = await get_ShipInfoRecent(qqid,search_list,bot,ev)
             else:
                 msg = '：看不懂指令QAQ'
+        elif select_command == 'clan':
+            msg = await get_ClanInfo(qqid,search_list,bot,ev)
         elif select_command == 'ship_rank':
             msg = await get_ShipRank(qqid,search_list,bot,ev)
         elif select_command == 'special_bind':
@@ -139,9 +142,12 @@ async def selet_command(bot,ev:CQEvent):
 async def change_select_state(bot, ev):
     msg = ev["raw_message"]
     qqid = ev['user_id']
-    if SecletProcess[qqid].SelectList and str(msg).isdigit():
-        SecletProcess[qqid] = SecletProcess[qqid]._replace(state = True)
-        SecletProcess[qqid] = SecletProcess[qqid]._replace(SlectIndex = int(msg))
+    if ShipSecletProcess[qqid].SelectList and str(msg).isdigit():
+        ShipSecletProcess[qqid] = ShipSecletProcess[qqid]._replace(state = True)
+        ShipSecletProcess[qqid] = ShipSecletProcess[qqid]._replace(SlectIndex = int(msg))
+    if ClanSecletProcess[qqid].SelectList and str(msg).isdigit():
+        ShipSecletProcess[qqid] = ShipSecletProcess[qqid]._replace(state = True)
+        ShipSecletProcess[qqid] = ShipSecletProcess[qqid]._replace(SlectIndex = int(msg))
     return
 
 @sv.on_fullmatch('wws 检查更新')

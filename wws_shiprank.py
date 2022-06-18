@@ -8,7 +8,7 @@ from pathlib import Path
 from hoshino.typing import MessageSegment
 from .data_source import servers,set_shipparams,tiers,number_url_homes,set_ShipRank_Numbers
 from .utils import match_keywords,bytes2b64
-from .wws_ship import SecletProcess,ShipSlectState
+from .wws_ship import ShipSecletProcess,ShipSlectState
 from.publicAPI import get_ship_byName
 from bs4 import BeautifulSoup
 from .html_render import html_to_pic,text_to_pic
@@ -49,17 +49,16 @@ async def get_ShipRank(qqid,info,bot,ev):
                 for each in shipList:
                     flag += 1
                     msg += f"{flag}：{tiers[each[3]-1]} {each[1]}\n"
-                SecletProcess[qqid] = ShipSlectState(False, None, shipList)
+                ShipSecletProcess[qqid] = ShipSlectState(False, None, shipList)
                 img = await text_to_pic(text=msg,width=230)
                 await bot.send(ev,str(MessageSegment.image(bytes2b64(img))))
                 a = 0
-                while a < 200 and not SecletProcess[qqid].state:
+                while a < 200 and not ShipSecletProcess[qqid].state:
                     a += 1
                     await asyncio.sleep(0.1)
-                    #print(SecletProcess[qqid].SelectList)
-                if SecletProcess[qqid].state and SecletProcess[qqid].SlectIndex <= len(shipList):
-                    select_shipId = int(shipList[SecletProcess[qqid].SlectIndex-1][0])
-                    number_url += f"{select_shipId},{shipList[SecletProcess[qqid].SlectIndex-1][2]}"
+                if ShipSecletProcess[qqid].state and ShipSecletProcess[qqid].SlectIndex <= len(shipList):
+                    select_shipId = int(shipList[ShipSecletProcess[qqid].SlectIndex-1][0])
+                    number_url += f"{select_shipId},{shipList[ShipSecletProcess[qqid].SlectIndex-1][2]}"
                     print(number_url)
                 else:
                     return '已超时退出'
