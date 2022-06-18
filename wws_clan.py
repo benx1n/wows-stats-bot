@@ -7,7 +7,7 @@ import re
 import asyncio
 from pathlib import Path
 from hoshino.typing import MessageSegment
-from .data_source import servers,set_shipparams,tiers,number_url_homes
+from .data_source import servers,set_shipparams
 from .utils import match_keywords,bytes2b64
 from.publicAPI import get_ClanIdByName
 from collections import defaultdict, namedtuple

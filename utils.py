@@ -2,7 +2,6 @@ import datetime
 from nonebot import scheduler
 from apscheduler.triggers.date import DateTrigger
 from base64 import b64encode
-from pathlib import Path
 
 async def match_keywords(match_list,Lists):
     for List in Lists :                        
