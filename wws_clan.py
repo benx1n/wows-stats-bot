@@ -7,7 +7,7 @@ import re
 import asyncio
 from pathlib import Path
 from hoshino.typing import MessageSegment
-from .data_source import servers,set_shipparams
+#from .data_source import servers,set_clanparams
 from .utils import match_keywords,bytes2b64
 from.publicAPI import get_ClanIdByName
 from collections import defaultdict, namedtuple
@@ -97,7 +97,7 @@ async def get_ClanInfo(qqid,info,bot,ev):
             result = resp.json()
         if result['code'] == 200 and result['data']:
             template = env.get_template("wws-clan.html")
-            template_data = await set_shipparams(result['data'])
+            #template_data = await set_clanparams(result['data'])
             content = await template.render_async(template_data)
             return await html_to_pic(content, wait=0, viewport={"width": 800, "height": 100})
         elif result['code'] == 403:
