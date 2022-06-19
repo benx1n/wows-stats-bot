@@ -198,10 +198,10 @@ async def get_ShipInfoRecent(qqid,info,bot,ev):
         if isinstance(info,List):
             for i in info:              #查找日期,没找到默认一天
                 if str(i).isdigit():
-                    if int(i) < 8:
+                    if int(i) <= 30:
                         day = int(i)
                     else:
-                        day = 7
+                        day = 30
                     info.remove(i)
             for flag,i in enumerate(info):              #是否包含me或@，包含则调用平台接口
                 if i == 'me':
