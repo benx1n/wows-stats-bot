@@ -19,6 +19,7 @@ import traceback
 import httpx
 import json
 import re
+import html
 
 _max = 100
 EXCEED_NOTICE = f'您今天已经冲过{_max}次了，请明早5点后再来！'
@@ -67,17 +68,18 @@ async def selet_command(bot,ev:CQEvent):
         _flmt.start_cd(qqid)
         _nlmt.increase(qqid) 
         select_command = None
-        searchtag = str(ev.message).strip()
+        searchtag = html.unescape(str(ev.message)).strip()
         if not searchtag or searchtag=="":
             await bot.send(ev,WWS_help.strip())
             return
-        match = re.search(r"(\(|（)(.*?)(\)|）)",str(ev.message))
+        match = re.search(r"(\(|（)(.*?)(\)|）)",searchtag)
         replace_name = None
         if match:
             replace_name = match.group(2)
-            search_list = str(ev.message).replace(match.group(0),'').split()
+            search_list = searchtag.replace(match.group(0),'').split()
         else:
-            search_list = str(ev.message).split()
+            search_list = searchtag.split()
+        print(search_list)
         select_command,search_list = await find_and_replace_keywords(search_list,command_list)
         if not select_command:
             if replace_name:
