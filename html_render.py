@@ -3,7 +3,6 @@ from pathlib import Path
 
 import jinja2
 import aiofiles
-import markdown
 from nonebot.log import logger
 from .browser import get_new_page
 
@@ -37,72 +36,6 @@ async def text_to_pic(text: str, css_path: str = "", width: int = 500) -> bytes:
         ),
         viewport={"width": width, "height": 10},
     )
-
-
-async def md_to_pic(
-    md: str = "", md_path: str = "", css_path: str = "", width: int = 500
-) -> bytes:
-    """markdown 转 图片
-
-    Args:
-        md (str, optional): markdown 格式文本
-        md_path (str, optional): markdown 文件路径
-        css_path (str,  optional): css文件路径. Defaults to None.
-        width (int, optional): 图片宽度，默认为 500
-
-    Returns:
-        bytes: 图片, 可直接发送
-    """
-    template = env.get_template("markdown.html")
-    if not md:
-        if md_path:
-            md = await read_file(md_path)
-        else:
-            raise Exception("必须输入 md 或 md_path")
-    logger.debug(md)
-    md = markdown.markdown(
-        md,
-        extensions=[
-            "pymdownx.tasklist",
-            "tables",
-            "fenced_code",
-            "codehilite",
-            "mdx_math",
-            "pymdownx.tilde",
-        ],
-        extension_configs={"mdx_math": {"enable_dollar_delimiter": True}},
-    )
-
-    logger.debug(md)
-    extra = ""
-    if "math/tex" in md:
-        katex_css = await read_tpl("katex/katex.min.b64_fonts.css")
-        katex_js = await read_tpl("katex/katex.min.js")
-        mathtex_js = await read_tpl("katex/mathtex-script-type.min.js")
-        extra = (
-            f'<style type="text/css">{katex_css}</style>'
-            f"<script defer>{katex_js}</script>"
-            f"<script defer>{mathtex_js}</script>"
-        )
-
-    if css_path:
-        css = await read_file(css_path)
-    else:
-        css = await read_tpl("github-markdown-light.css") + await read_tpl(
-            "pygments-default.css"
-        )
-
-    return await html_to_pic(
-        template_path=f"file://{css_path if css_path else TEMPLATES_PATH}",
-        html=await template.render_async(md=md, css=css, extra=extra),
-        viewport={"width": width, "height": 10},
-    )
-
-
-# async def read_md(md_path: str) -> str:
-#     async with aiofiles.open(str(Path(md_path).resolve()), mode="r") as f:
-#         md = await f.read()
-#     return markdown.markdown(md)
 
 
 async def read_file(path: str) -> str:
