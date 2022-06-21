@@ -140,40 +140,50 @@ async def selet_command(bot,ev:CQEvent):
 
 @sv.on_message()
 async def change_select_state(bot, ev):
-    msg = ev["raw_message"]
-    qqid = ev['user_id']
-    if ShipSecletProcess[qqid].SelectList and str(msg).isdigit():
-        ShipSecletProcess[qqid] = ShipSecletProcess[qqid]._replace(state = True)
-        ShipSecletProcess[qqid] = ShipSecletProcess[qqid]._replace(SlectIndex = int(msg))
-    if ClanSecletProcess[qqid].SelectList and str(msg).isdigit():
-        ShipSecletProcess[qqid] = ShipSecletProcess[qqid]._replace(state = True)
-        ShipSecletProcess[qqid] = ShipSecletProcess[qqid]._replace(SlectIndex = int(msg))
-    return
+    try:
+        msg = ev["raw_message"]
+        qqid = ev['user_id']
+        if ShipSecletProcess[qqid].SelectList and str(msg).isdigit():
+            if int(msg) <= len( ShipSecletProcess[qqid].SelectList):
+                ShipSecletProcess[qqid] = ShipSecletProcess[qqid]._replace(state = True)
+                ShipSecletProcess[qqid] = ShipSecletProcess[qqid]._replace(SlectIndex = int(msg))
+            else:
+                await bot.send(ev,'请选择列表中的序号哦~')
+        if ClanSecletProcess[qqid].SelectList and str(msg).isdigit():
+            ShipSecletProcess[qqid] = ShipSecletProcess[qqid]._replace(state = True)
+            ShipSecletProcess[qqid] = ShipSecletProcess[qqid]._replace(SlectIndex = int(msg))
+        return
+    except Exception:
+        traceback.print_exc()
+        return
 
 @sv.on_fullmatch('wws 检查更新')
 async def check_version(bot, ev:CQEvent):
-    url = 'https://benx1n.oss-cn-beijing.aliyuncs.com/version.json'
-    async with httpx.AsyncClient() as client:
-        resp = await client.get(url, timeout=10)
-        result = json.loads(resp.text)
-    bot = hoshino.get_bot()
-    superid = hoshino.config.SUPERUSERS[0]
-    match,msg = False,f'发现新版本'
-    for each in result['data']:
-        if each['version'] > _version:
-            match = True
-            msg += f"\n{each['date']} v{each['version']}\n"
-            for i in each['description']:
-                msg += f"{i}\n"
-    if match:
-            await bot.send_private_msg(user_id=superid, message=msg)
-            try:
-                await bot.send(ev,msg)
-            except Exception:
-                traceback.print_exc()
-                return
-                
-    return
+    try:
+        url = 'https://benx1n.oss-cn-beijing.aliyuncs.com/version.json'
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(url, timeout=10)
+            result = json.loads(resp.text)
+        bot = hoshino.get_bot()
+        superid = hoshino.config.SUPERUSERS[0]
+        match,msg = False,f'发现新版本'
+        for each in result['data']:
+            if each['version'] > _version:
+                match = True
+                msg += f"\n{each['date']} v{each['version']}\n"
+                for i in each['description']:
+                    msg += f"{i}\n"
+        if match:
+                await bot.send_private_msg(user_id=superid, message=msg)
+                try:
+                    await bot.send(ev,msg)
+                except Exception:
+                    traceback.print_exc()
+                    return     
+        return
+    except Exception:
+        traceback.print_exc()
+        return
 
 @sv.scheduled_job('cron',hour='12')
 async def job1():

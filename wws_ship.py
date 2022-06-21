@@ -92,10 +92,7 @@ async def get_ShipInfo(qqid,info,bot,ev):
                     ShipSecletProcess[qqid] = ShipSlectState(False, None, shipList)
                     img = await text_to_pic(text=msg,css_path = template_path/"text-ship.css",width=250)
                     await bot.send(ev,str(MessageSegment.image(bytes2b64(img))))
-                    a = 0
-                    while a < 200 and not ShipSecletProcess[qqid].state:
-                        a += 1
-                        await asyncio.sleep(0.1)
+                    await asyncio.sleep(20)
                     if ShipSecletProcess[qqid].state and ShipSecletProcess[qqid].SlectIndex <= len(shipList):
                         params["shipId"] = shipList[ShipSecletProcess[qqid].SlectIndex-1][0]
                     else:
@@ -262,10 +259,7 @@ async def get_ShipInfoRecent(qqid,info,bot,ev):
                     ShipSecletProcess[qqid] = ShipSlectState(False, None, shipList)
                     img = await text_to_pic(text=msg,css_path = template_path/"text-ship.css",width=250)
                     await bot.send(ev,str(MessageSegment.image(bytes2b64(img))))
-                    a = 0
-                    while a < 200 and not ShipSecletProcess[qqid].state:
-                        a += 1
-                        await asyncio.sleep(0.1)
+                    await asyncio.sleep(20)
                     if ShipSecletProcess[qqid].state and ShipSecletProcess[qqid].SlectIndex <= len(shipList):
                         params["shipId"] = shipList[ShipSecletProcess[qqid].SlectIndex-1][0]
                     else:
