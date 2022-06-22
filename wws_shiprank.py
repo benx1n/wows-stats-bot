@@ -51,7 +51,10 @@ async def get_ShipRank(qqid,info,bot,ev):
                 ShipSecletProcess[qqid] = ShipSlectState(False, None, shipList)
                 img = await text_to_pic(text=msg,width=230)
                 await bot.send(ev,str(MessageSegment.image(bytes2b64(img))))
-                await asyncio.sleep(20)
+                a = 0
+                while a < 40 and not ShipSecletProcess[qqid].state:
+                    a += 1
+                    await asyncio.sleep(0.5)
                 if ShipSecletProcess[qqid].state and ShipSecletProcess[qqid].SlectIndex <= len(shipList):
                     select_shipId = int(shipList[ShipSecletProcess[qqid].SlectIndex-1][0])
                     number_url += f"{select_shipId},{shipList[ShipSecletProcess[qqid].SlectIndex-1][2]}"
