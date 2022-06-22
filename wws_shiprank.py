@@ -55,8 +55,10 @@ async def get_ShipRank(qqid,info,bot,ev):
                 if ShipSecletProcess[qqid].state and ShipSecletProcess[qqid].SlectIndex <= len(shipList):
                     select_shipId = int(shipList[ShipSecletProcess[qqid].SlectIndex-1][0])
                     number_url += f"{select_shipId},{shipList[ShipSecletProcess[qqid].SlectIndex-1][2]}"
+                    ShipSecletProcess[qqid] = ShipSlectState(False, None, None)
                     print(number_url)
                 else:
+                    ShipSecletProcess[qqid] = ShipSlectState(False, None, None)
                     return '已超时退出'
         else:
             return '找不到船'

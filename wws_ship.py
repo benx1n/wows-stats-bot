@@ -95,7 +95,9 @@ async def get_ShipInfo(qqid,info,bot,ev):
                     await asyncio.sleep(20)
                     if ShipSecletProcess[qqid].state and ShipSecletProcess[qqid].SlectIndex <= len(shipList):
                         params["shipId"] = shipList[ShipSecletProcess[qqid].SlectIndex-1][0]
+                        ShipSecletProcess[qqid] = ShipSlectState(False, None, None)
                     else:
+                        ShipSecletProcess[qqid] = ShipSlectState(False, None, None)
                         return '已超时退出'
             else:
                 return '找不到船'
@@ -260,7 +262,9 @@ async def get_ShipInfoRecent(qqid,info,bot,ev):
                     await asyncio.sleep(20)
                     if ShipSecletProcess[qqid].state and ShipSecletProcess[qqid].SlectIndex <= len(shipList):
                         params["shipId"] = shipList[ShipSecletProcess[qqid].SlectIndex-1][0]
+                        ShipSecletProcess[qqid] = ShipSlectState(False, None, None)
                     else:
+                        ShipSecletProcess[qqid] = ShipSlectState(False, None, None)
                         return '已超时退出'
             else:
                 return '找不到船'
