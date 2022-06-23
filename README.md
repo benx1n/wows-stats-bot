@@ -35,6 +35,7 @@ Nonebot2版：[Hikari](https://github.com/benx1n/HikariBot)——更易部署的
 - [x] 全指令支持参数乱序
 - [x] 快速切换绑定账号
 - [x] 支持@快速查询
+- [x] 全异步，高并发下性能更优
 
 ## 首次部署Hoshino
 >
