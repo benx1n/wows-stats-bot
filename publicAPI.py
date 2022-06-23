@@ -5,6 +5,8 @@ import json
 import os
 from .data_source import nations,shiptypes,levels
 from .utils import match_keywords
+from httpx import ConnectTimeout
+from asyncio.exceptions import TimeoutError
 
 cfgpath = os.path.join(os.path.dirname(__file__), 'config.json')
 config = json.load(open(cfgpath, 'r', encoding='utf8'))
@@ -96,13 +98,14 @@ async def get_AccountIdByName(server:str,name:str):
             result = resp.json()
         if result['code'] == 200 and result['data']:
             return result['data']['accountId']
-        elif result['code'] == 404:
-            return 404
         else:
-            return None
+            return result['message']
+    except (TimeoutError, ConnectTimeout):
+        traceback.print_exc()
+        return '请求超时了，请过一会儿重试哦~'
     except Exception:
         traceback.print_exc()
-        return None
+        return '好像出了点问题呢，可能是网络问题，如果重试几次还不行的话，请联系麻麻解决'
     
 async def get_ClanIdByName(server:str,name:str):
     try:
