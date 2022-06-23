@@ -66,7 +66,7 @@ async def get_AccountInfo(qqid,info):
             return '参数似乎出了问题呢'
         print(params)
         async with httpx.AsyncClient(headers=headers) as client:
-            resp = await client.get(url, params=params, timeout=20)
+            resp = await client.get(url, params=params, timeout=None)
             result = resp.json()
         print(f"本次请求总耗时{resp.elapsed.total_seconds()*1000}，服务器计算耗时:{result['queryTime']}")
         if result['code'] == 200 and result['data']:

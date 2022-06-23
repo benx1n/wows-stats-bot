@@ -89,7 +89,7 @@ async def search_ShipRank_Yuyuko(shipId,server):
                 "shipId":int(shipId)
             }
             print(f"{url}\n{params}")
-            resp = await client.get(url, params=params,timeout=20)
+            resp = await client.get(url, params=params,timeout=None)
             result = resp.json()
             if result['code'] == 200 and result['data']:
                 result_data = {"data":result['data']}
@@ -107,7 +107,7 @@ async def search_ShipRank_Numbers(url,server,shipId):
         content = None
         print(url)
         async with httpx.AsyncClient() as client:
-            resp = await client.get(url, timeout=20)
+            resp = await client.get(url, timeout=None)
         soup = BeautifulSoup(resp.content, 'html.parser')
         data = soup.select('tr[class="cells-middle"]')
         infoList = await set_ShipRank_Numbers(data,server,shipId)
@@ -126,7 +126,7 @@ async def post_ShipRank(data):
     try:
         async with httpx.AsyncClient(headers=headers) as client:
             url = 'https://api.wows.linxun.link/upload/numbers/data/v2/upload/ship/rank'
-            resp = await client.post(url, json = data, timeout=20)
+            resp = await client.post(url, json = data, timeout=None)
             print(resp.request)
             result = resp.json()
             print(result)

@@ -20,7 +20,7 @@ async def get_nation_list():
         msg = ''
         url = 'https://api.wows.linxun.link/public/wows/encyclopedia/nation/list'
         async with httpx.AsyncClient(headers=headers) as client:
-            resp = await client.get(url, timeout=10)
+            resp = await client.get(url, timeout=None)
             result = resp.json()
         for nation in result['data']:
             msg: str = msg + f"{nation['cn']}：{nation['nation']}\n"
@@ -50,7 +50,7 @@ async def get_ship_name(infolist:List):
         }
         url = 'https://api.wows.linxun.link/public/wows/encyclopedia/ship/search'
         async with httpx.AsyncClient(headers=headers) as client:
-            resp = await client.get(url, params=params, timeout=10)
+            resp = await client.get(url, params=params, timeout=None)
             result = resp.json()
         if result['data']:
             for ship in result['data']:
@@ -72,7 +72,7 @@ async def get_ship_byName(shipname:str):
         "shipType":''
     }
         async with httpx.AsyncClient(headers=headers) as client:
-            resp = await client.get(url, params=params, timeout=10)
+            resp = await client.get(url, params=params, timeout=None)
             result = resp.json()
         List = []
         if result['code'] == 200 and result['data']:
@@ -94,7 +94,7 @@ async def get_AccountIdByName(server:str,name:str):
         }
         print(f"下面是本次请求的参数，如果遇到了问题，请将这部分连同报错日志一起发送给麻麻哦\n{params}")
         async with httpx.AsyncClient(headers=headers) as client:
-            resp = await client.get(url, params=params, timeout=20)
+            resp = await client.get(url, params=params, timeout=None)
             result = resp.json()
         if result['code'] == 200 and result['data']:
             return result['data']['accountId']
@@ -116,7 +116,7 @@ async def get_ClanIdByName(server:str,name:str):
         }
         print(f"下面是本次请求的参数，如果遇到了问题，请将这部分连同报错日志一起发送给麻麻哦\n{params}")
         async with httpx.AsyncClient(headers=headers) as client:
-            resp = await client.get(url, params=params, timeout=20)
+            resp = await client.get(url, params=params, timeout=None)
             result = resp.json()
         List = []
         if result['code'] == 200 and result['data']:

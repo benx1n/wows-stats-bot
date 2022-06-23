@@ -77,7 +77,7 @@ async def get_RecentInfo(qqid,info):
             return '参数似乎出了问题呢'
         print(params)
         async with httpx.AsyncClient(headers=headers) as client:
-            resp = await client.get(url, params=params, timeout=20)
+            resp = await client.get(url, params=params, timeout=None)
             result = resp.json()
         if result['code'] == 200:
             if result['data']['shipData'][0]['shipData']:

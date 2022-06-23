@@ -40,7 +40,7 @@ async def get_BindInfo(user,info):
         else:
             return '参数似乎出了问题呢，请使用me或@群友'
         async with httpx.AsyncClient(headers=headers) as client:
-            resp = await client.get(url, params=params, timeout=10)
+            resp = await client.get(url, params=params, timeout=None)
             result = resp.json()
         if result['code'] == 200 and result['message'] == "success":
             if result['data']:
@@ -88,7 +88,7 @@ async def set_BindInfo(user,info):
         else:
             return '参数似乎输错了呢，请确保后面跟随服务器+游戏昵称'
         async with httpx.AsyncClient(headers=headers) as client:
-            resp = await client.get(url, params=params, timeout=10)
+            resp = await client.get(url, params=params, timeout=None)
             result = resp.json()
         if result['code'] == 200 and result['message'] == "success":
             return '绑定成功'
@@ -111,7 +111,7 @@ async def change_BindInfo(user,info):
         else:
             return '参数似乎出了问题呢，请跟随要切换的序号'
         async with httpx.AsyncClient(headers=headers) as client:
-            resp = await client.get(url, params=params, timeout=10)
+            resp = await client.get(url, params=params, timeout=None)
             result = resp.json()
         if result['code'] == 200 and result['message'] == "success":
             if result['data'] and len(result['data']) >= int(info[0]):
@@ -131,7 +131,7 @@ async def change_BindInfo(user,info):
         else:
             return f"{result['message']}"
         async with httpx.AsyncClient(headers=headers) as client:
-            resp = await client.get(url, params=params, timeout=10)
+            resp = await client.get(url, params=params, timeout=None)
             result = resp.json()
         if result['code'] == 200 and result['message'] == "success":
             return f'切换绑定成功,当前绑定账号{param_server}：{account_name}'
@@ -168,7 +168,7 @@ async def set_special_BindInfo(user,info):
         else:
             return '参数似乎输错了呢，请确保后面跟随服务器+游戏昵称'
         async with httpx.AsyncClient(headers=headers) as client:
-            resp = await client.get(url, params=params, timeout=20)
+            resp = await client.get(url, params=params, timeout=None)
             result = resp.json()
         if result['code'] == 200 and result['message'] == "success":
             return '绑定成功'
@@ -190,7 +190,7 @@ async def delete_BindInfo(user,info):
         else:
             return '参数似乎出了问题呢，请跟随要切换的序号'
         async with httpx.AsyncClient(headers=headers) as client:
-            resp = await client.get(url, params=params, timeout=10)
+            resp = await client.get(url, params=params, timeout=None)
             result = resp.json()
         if result['code'] == 200 and result['message'] == "success":
             if result['data'] and len(result['data']) >= int(info[0]):
@@ -210,7 +210,7 @@ async def delete_BindInfo(user,info):
         else:
             return f"{result['message']}"
         async with httpx.AsyncClient(headers=headers) as client:
-            resp = await client.get(url, params=params, timeout=10)
+            resp = await client.get(url, params=params, timeout=None)
             result = resp.json()
         if result['code'] == 200 and result['message'] == "success":
             return f'删除绑定成功,删除的账号为{param_server}：{account_name}'
