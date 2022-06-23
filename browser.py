@@ -61,8 +61,8 @@ async def install_browser():
         logger.info("正在安装 firefox")
         sys.argv = ["", "install", "firefox"]
     try:
-        main()
         logger.info("正在安装依赖")
         os.system("playwright install-deps")
+        main()
     except SystemExit:
         pass
