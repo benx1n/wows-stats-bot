@@ -22,6 +22,7 @@ command_list = [        #同指令中越长的匹配词越靠前
     matching(("bind","绑定","set"),"bind"),
     matching(("recent","近期",),"recent"),
     matching(("ship","单船",),"ship"),
+    matching(("clan.record","公会记录","公会历史","军团记录","军团历史"),"clanrecord"),
     matching(("clan","军团","公会","工会"),"clan"),
     matching(("搜船名","查船名","船名"),"searchship"),
 ]
@@ -689,6 +690,9 @@ async def set_ShipRank_Numbers(data,server,shipId):
         traceback.print_exc()
         return None
     
+async def set_clanRecord_params():
+    return
+
 async def search_accountId(str):
     try:
         match = re.search(r"/player/(.*?),",str)
