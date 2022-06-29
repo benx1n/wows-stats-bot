@@ -12,7 +12,7 @@ from .wws_recent import get_RecentInfo
 from .wws_bind import set_BindInfo,get_BindInfo,change_BindInfo,set_special_BindInfo,delete_BindInfo
 from .wws_ship import get_ShipInfo,get_ShipInfoRecent,ShipSecletProcess
 from .wws_clan import get_ClanInfo,ClanSecletProcess
-from .wws_clanRecord import get_clanRecord
+from .wws_record import get_record
 from .wws_shiprank import get_ShipRank
 from .data_source import command_list
 from .utils import match_keywords,find_and_replace_keywords,bytes2b64
@@ -107,9 +107,21 @@ async def selet_command(bot,ev:CQEvent):
             else:
                 msg = '：看不懂指令QAQ'
         elif select_command == 'clan':
-            msg = await get_ClanInfo(qqid,search_list,bot,ev)
-        elif select_command == 'clanrecord':
-            msg = await get_clanRecord(qqid,search_list)
+            select_command = None
+            select_command,search_list = await find_and_replace_keywords(search_list,command_list) 
+            if not select_command:                  #查询公会详情信息
+                msg = await get_ClanInfo(qqid,search_list,bot,ev)
+            elif select_command == 'record':        #查询公会历史记录
+                msg = await get_record(qqid,search_list,"clan")
+        elif select_command == 'record':
+            select_command = None
+            select_command,search_list = await find_and_replace_keywords(search_list,command_list) 
+            if replace_name:
+                search_list.append(replace_name)
+            if not select_command:                  #查询个人历史记录
+                msg = await get_record(qqid,search_list,"personal")
+            elif select_command == 'clan':          #查询公会历史记录
+                msg = await get_record(qqid,search_list,"clan")
         elif select_command == 'ship_rank':
             msg = await get_ShipRank(qqid,search_list,bot,ev)
         elif select_command == 'special_bind':

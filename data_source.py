@@ -22,7 +22,7 @@ command_list = [        #同指令中越长的匹配词越靠前
     matching(("bind","绑定","set"),"bind"),
     matching(("recent","近期",),"recent"),
     matching(("ship","单船",),"ship"),
-    matching(("clan.record","公会记录","公会历史","军团记录","军团历史"),"clanrecord"),
+    matching(("record","历史记录"),"record"),
     matching(("clan","军团","公会","工会"),"clan"),
     matching(("搜船名","查船名","船名"),"searchship"),
 ]
@@ -38,7 +38,7 @@ nations = [
     matching(("pan_asia","泛亚",),"pan_asia"),
     matching(("uk","英国","United_Kingdom"),"United_Kingdom"),
     matching(("usa","美国",),"usa"),
-    matching(("ussr","苏联",),"ussr"),
+    matching(("ussr","苏联",),"Russia"),
     matching(("netherlands","荷兰",),"netherlands"),
     matching(("spain","西班牙",),"spain"),
 ]
