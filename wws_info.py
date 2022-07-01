@@ -30,7 +30,7 @@ async def get_AccountInfo(qqid,info):
         if isinstance(info,List):
             for i in info:
                 if i == 'me':
-                    url = 'https://api.wows.linxun.link/public/wows/account/v2/user/info'
+                    url = 'https://api.wows.linxun.link/public/wows/account/v3/user/info'
                     params = {
                     "server": "QQ",
                     "accountId": str(qqid)
@@ -38,7 +38,7 @@ async def get_AccountInfo(qqid,info):
                     break
                 match = re.search(r"CQ:at,qq=(\d+)",i)
                 if match:
-                    url = 'https://api.wows.linxun.link/public/wows/account/v2/user/info'
+                    url = 'https://api.wows.linxun.link/public/wows/account/v3/user/info'
                     params = {
                     "server": "QQ",
                     "accountId": match.group(1)
@@ -49,7 +49,7 @@ async def get_AccountInfo(qqid,info):
                 if param_server:
                     param_accountid = await get_AccountIdByName(param_server,str(info[0]))
                     if isinstance(param_accountid,int):
-                        url = 'https://api.wows.linxun.link/public/wows/account/v2/user/info'
+                        url = 'https://api.wows.linxun.link/public/wows/account/v3/user/info'
                         params = {
                         "server": param_server,
                         "accountId": param_accountid
