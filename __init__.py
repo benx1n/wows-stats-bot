@@ -165,8 +165,11 @@ async def change_select_state(bot, ev):
             else:
                 await bot.send(ev,'请选择列表中的序号哦~')
         if ClanSecletProcess[qqid].SelectList and str(msg).isdigit():
-            ShipSecletProcess[qqid] = ShipSecletProcess[qqid]._replace(state = True)
-            ShipSecletProcess[qqid] = ShipSecletProcess[qqid]._replace(SlectIndex = int(msg))
+            if int(msg) <= len( ClanSecletProcess[qqid].SelectList):
+                ClanSecletProcess[qqid] = ClanSecletProcess[qqid]._replace(state = True)
+                ClanSecletProcess[qqid] = ClanSecletProcess[qqid]._replace(SlectIndex = int(msg))
+            else:
+                await bot.send(ev,'请选择列表中的序号哦~') 
         return
     except Exception:
         traceback.print_exc()

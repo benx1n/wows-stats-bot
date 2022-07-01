@@ -7,7 +7,7 @@ import re
 import asyncio
 from pathlib import Path
 from hoshino.typing import MessageSegment
-#from .data_source import servers,set_clanparams
+from .data_source import servers
 from .utils import match_keywords,bytes2b64
 from.publicAPI import get_ClanIdByName
 from collections import defaultdict, namedtuple
@@ -57,19 +57,23 @@ async def get_ClanInfo(qqid,info,bot,ev):
                     clanList = await get_ClanIdByName(param_server,str(info[0])) 
                     if clanList:
                         if len(clanList) < 2:
-                            selectClanId = clanList[0][0]
+                            selectClanId = clanList[0]['clanId']
                         else:
                             msg = f'存在多个名字相似的军团\n请在20秒内选择对应的序号\n================\n'
                             flag = 0
                             for each in clanList:
                                 flag += 1
-                                msg += f"{flag}：{each[1]}\n"
-                            ClanSecletProcess[qqid] = ClanSecletProcess(False, None, clanList)
+                                msg += f"{flag}：[{each['tag']}]\n"
+                            ClanSecletProcess[qqid] = ClanSlectState(False, None, clanList)
                             img = await text_to_pic(text=msg,css_path = template_path/"text-ship.css",width=250)
                             await bot.send(ev,str(MessageSegment.image(bytes2b64(img))))
-                            await asyncio.sleep(20)
+                            a = 0
+                            while a < 40 and not ClanSecletProcess[qqid].state:
+                                a += 1
+                                await asyncio.sleep(0.5)
                             if ClanSecletProcess[qqid].state and ClanSecletProcess[qqid].SlectIndex <= len(clanList):
-                                selectClanId = clanList[ClanSecletProcess[qqid].SlectIndex-1][0]
+                                selectClanId = clanList[ClanSecletProcess[qqid].SlectIndex-1]['clanId']
+                                ClanSecletProcess[qqid] = ClanSlectState(False, None, None)
                             else:
                                 return '已超时退出'
                     else:
@@ -95,8 +99,8 @@ async def get_ClanInfo(qqid,info,bot,ev):
         if result['code'] == 200 and result['data']:
             template = env.get_template("wws-clan.html")
             #template_data = await set_clanparams(result['data'])
-            content = await template.render_async(template_data)
-            return await html_to_pic(content, wait=0, viewport={"width": 800, "height": 100})
+            #content = await template.render_async(template_data)
+            #return await html_to_pic(content, wait=0, viewport={"width": 800, "height": 100})
         elif result['code'] == 403:
             return f"{result['message']}\n请先绑定账号"
         elif result['code'] == 500:
