@@ -39,7 +39,7 @@ async def get_RecentInfo(qqid,info):
                     url = 'https://api.wows.linxun.link//api/wows/recent/v2/recent/info'
                     params = {
                     "server": "QQ",
-                    "accountId": qqid,
+                    "accountId": int(qqid),
                     "day": day,
                     "status": 0
                     }
@@ -48,7 +48,7 @@ async def get_RecentInfo(qqid,info):
                     url = 'https://api.wows.linxun.link//api/wows/recent/v2/recent/info'
                     params = {
                     "server": "QQ",
-                    "accountId": match.group(1),
+                    "accountId": int(match.group(1)),
                     "day": day,
                     "status": 0
                     }
