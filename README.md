@@ -36,8 +36,9 @@ Nonebot2版：[Hikari](https://github.com/benx1n/HikariBot)——更易部署的
 - [x] 快速切换绑定账号
 - [x] 支持@快速查询
 - [x] 全异步，高并发下性能更优
-
-## 首次部署Hoshino
+## 一键使用
+1. 下载[最新Release](https://github.com/benx1n/wows-stats-bot/releases/download/Latest/release_windows.zip)中的压缩包，按流程走
+## 完整安装（首次部署Hoshino）
 >
 >以下部分将教你如何通过conda或Docker用以避免部署Hoshino时可能遇到的问题<br>
 >如果您已经成功运行Hohisno，请跳过此节转到插件部署
@@ -219,6 +220,10 @@ Nonebot2版：[Hikari](https://github.com/benx1n/HikariBot)——更易部署的
     ```
     no moudle named 'werkzeug.sansio'
     ```
+
+### Recent和绑定提示'鉴权失败'
+1. 检查Token是否配置正确，token格式为`XXXXX:XXXXXX`
+2. 如果配置正确可能是Token失效了，请重新申请
 ## 感谢
 
 [HoshinoBot](https://github.com/Ice-Cirno/HoshinoBot)<br>
