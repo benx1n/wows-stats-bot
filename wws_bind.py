@@ -102,7 +102,7 @@ async def set_BindInfo(user,info):
 
 async def change_BindInfo(user,info):
     try:
-        if isinstance(info,List) and len(info) == 1 and str(info[0]).isdigit:
+        if isinstance(info,List) and len(info) == 1 and str(info[0]).isdigit():
             url = 'https://api.wows.linxun.link/public/wows/bind/account/platform/bind/list'
             params = {
             "platformType": "QQ",
@@ -181,7 +181,7 @@ async def set_special_BindInfo(user,info):
     
 async def delete_BindInfo(user,info):
     try:
-        if isinstance(info,List) and len(info) == 1 and str(info[0]).isdigit:
+        if isinstance(info,List) and len(info) == 1 and str(info[0]).isdigit():
             url = 'https://api.wows.linxun.link/public/wows/bind/account/platform/bind/list'
             params = {
             "platformType": "QQ",
