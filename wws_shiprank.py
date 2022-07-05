@@ -83,7 +83,7 @@ async def search_ShipRank_Yuyuko(shipId,server):
     try:
         content = None
         async with httpx.AsyncClient(headers=headers) as client:        #查询是否有缓存
-            url = 'https://api.wows.linxun.link/upload/numbers/data/v2/upload/ship/rank'
+            url = 'https://api.wows.shinoaki.com/upload/numbers/data/v2/upload/ship/rank'
             params = {
                 "server":server,
                 "shipId":int(shipId)
@@ -125,7 +125,7 @@ async def search_ShipRank_Numbers(url,server,shipId):
 async def post_ShipRank(data):
     try:
         async with httpx.AsyncClient(headers=headers) as client:
-            url = 'https://api.wows.linxun.link/upload/numbers/data/v2/upload/ship/rank'
+            url = 'https://api.wows.shinoaki.com/upload/numbers/data/v2/upload/ship/rank'
             resp = await client.post(url, json = data, timeout=None)
             print(resp.request)
             result = resp.json()

@@ -228,7 +228,7 @@ Nonebot2版：[Hikari](https://github.com/benx1n/HikariBot)——更易部署的
 
 [HoshinoBot](https://github.com/Ice-Cirno/HoshinoBot)<br>
 [go-cqhttp](https://github.com/Mrs4s/go-cqhttp)<br>
-[战舰世界API平台](https://wows.linxun.link/)<br>
+[战舰世界API平台](https://wows.shinoaki.com/)<br>
 
 ## 开源协议
 

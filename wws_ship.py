@@ -36,7 +36,7 @@ async def get_ShipInfo(qqid,info,bot,ev):
         if isinstance(info,List):
             for flag,i in enumerate(info):              #是否包含me或@，包含则调用平台接口
                 if i == 'me':
-                    url = 'https://api.wows.linxun.link/public/wows/account/v2/ship/info'
+                    url = 'https://api.wows.shinoaki.com/public/wows/account/v2/ship/info'
                     params = {
                     "server": "QQ",
                     "accountId": int(qqid),
@@ -44,7 +44,7 @@ async def get_ShipInfo(qqid,info,bot,ev):
                     info.remove("me")
                 match = re.search(r"CQ:at,qq=(\d+)",i)
                 if match:
-                    url = 'https://api.wows.linxun.link/public/wows/account/v2/ship/info'
+                    url = 'https://api.wows.shinoaki.com/public/wows/account/v2/ship/info'
                     params = {
                     "server": "QQ",
                     "accountId": int(match.group(1)),
@@ -61,7 +61,7 @@ async def get_ShipInfo(qqid,info,bot,ev):
                     param_accountid = await get_AccountIdByName(param_server,str(info[0]))      #剩余列表第一个是否为游戏名
                     if isinstance(param_accountid,int):
                         info.remove(info[0])
-                        url = 'https://api.wows.linxun.link/public/wows/account/v2/ship/info'
+                        url = 'https://api.wows.shinoaki.com/public/wows/account/v2/ship/info'
                         params = {
                         "server": param_server,
                         "accountId": param_accountid,
@@ -128,7 +128,7 @@ async def get_ShipInfo(qqid,info,bot,ev):
     
 async def get_MyShipRank_yuyuko(params):
     try:
-        url = 'https://api.wows.linxun.link/upload/numbers/data/upload/user/ship/rank'
+        url = 'https://api.wows.shinoaki.com/upload/numbers/data/upload/user/ship/rank'
         async with httpx.AsyncClient(headers=headers) as client:
             resp = await client.get(url, params=params, timeout=None)
             result = resp.json()
@@ -174,7 +174,7 @@ async def get_MyShipRank_Numbers(url,server):
 async def post_MyShipRank_yuyuko(accountId,ranking,serverId,shipId):
     try:
         async with httpx.AsyncClient(headers=headers) as client:
-            url = 'https://api.wows.linxun.link/upload/numbers/data/upload/user/ship/rank'
+            url = 'https://api.wows.shinoaki.com/upload/numbers/data/upload/user/ship/rank'
             post_data = {
                 "accountId": int(accountId),
                 "ranking": int(ranking),
@@ -203,7 +203,7 @@ async def get_ShipInfoRecent(qqid,info,bot,ev):
                     info.remove(i)
             for flag,i in enumerate(info):              #是否包含me或@，包含则调用平台接口
                 if i == 'me':
-                    url = 'https://api.wows.linxun.link/api/wows/recent/v2/recent/info/ship'
+                    url = 'https://api.wows.shinoaki.com/api/wows/recent/v2/recent/info/ship'
                     params = {
                     "server": "QQ",
                     "accountId": int(qqid),
@@ -212,7 +212,7 @@ async def get_ShipInfoRecent(qqid,info,bot,ev):
                     info.remove("me")
                 match = re.search(r"CQ:at,qq=(\d+)",i)
                 if match:
-                    url = 'https://api.wows.linxun.link/api/wows/recent/v2/recent/info/ship'
+                    url = 'https://api.wows.shinoaki.com/api/wows/recent/v2/recent/info/ship'
                     params = {
                     "server": "QQ",
                     "accountId": int(match.group(1)),
@@ -228,7 +228,7 @@ async def get_ShipInfoRecent(qqid,info,bot,ev):
                     param_accountid = await get_AccountIdByName(param_server,str(info[0]))      #剩余列表第一个是否为游戏名
                     if isinstance(param_accountid,int):
                         info.remove(info[0])
-                        url = 'https://api.wows.linxun.link/api/wows/recent/v2/recent/info/ship'
+                        url = 'https://api.wows.shinoaki.com/api/wows/recent/v2/recent/info/ship'
                         params = {
                         "server": param_server,
                         "accountId": param_accountid,
