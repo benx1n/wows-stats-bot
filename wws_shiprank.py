@@ -49,7 +49,7 @@ async def get_ShipRank(qqid,info,bot,ev):
                     flag += 1
                     msg += f"{flag}：{tiers[each[3]-1]} {each[1]}\n"
                 ShipSecletProcess[qqid] = ShipSlectState(False, None, shipList)
-                img = await text_to_pic(text=msg,width=230)
+                img = await text_to_pic(text=msg,css_path = template_path/"text-ship.css",width=250)
                 await bot.send(ev,str(MessageSegment.image(bytes2b64(img))))
                 a = 0
                 while a < 40 and not ShipSecletProcess[qqid].state:

@@ -70,14 +70,14 @@
             </tr>
             <tr>
                 <td colspan="1" style="text-align: center;"></td>
-                <td colspan="2" style="text-align: center;">刷新时间</td>
-                <td colspan="2" style="text-align: center;">创建时间</td>
+                <td colspan="2" style="text-align: center;">创建日期</td>
+                <td colspan="2" style="text-align: center;">更新日期</td>
                 <td colspan="1" style="text-align: center;"></td>
             </tr>
             <tr>
                 <td colspan="1" style="text-align: center;"></td>
-                <td colspan="2" class="greyColor" style="text-align: center;">2022-06-18 12:47:03</td>
                 <td colspan="2" class="greyColor" style="text-align: center;">2016-07-01 17:05:20</td>
+                <td colspan="2" class="greyColor" style="text-align: center;">2022-06-18 12:47:03</td>
                 <td colspan="1" style="text-align: center;"></td>
             </tr>
             <tr>
@@ -106,122 +106,18 @@
             <tr>
                 <td colspan="2">
                     <div>
-                        <div id="barChart1" style="width: 260px;height:260px;"></div>
+                        <div id="pieChart1" style="width: 260px;height:260px;"></div>
                     </div>
                 </td>
                 <td colspan="2">
 
-                    <div id="barChart2" style="width: 260px;height:260px;"></div>
+                    <div id="pieChart2" style="width: 260px;height:260px;"></div>
                 </td>
                 <td colspan="2">
 
-                    <div id="barChart3" style="width: 260px;height:260px;"></div>
+                    <div id="pieChart3" style="width: 260px;height:260px;"></div>
                 </td>
             </tr>
-            <!--<tr>
-            <td colspan="6" class="bold-data greyColor2" style="text-align: center;">Warships stats by ShipType</td>
-        </tr>
-        <tr>
-            <td class="greyColor">类型</td>
-            <td class="greyColor">场次</td>
-            <td class="greyColor">PR</td>
-            <td class="greyColor">胜率</td>
-            <td class="greyColor">场均</td>
-            <td class="greyColor">命中</td>
-        </tr>
-        {% if bb_battles %}
-        <tr>
-            <td class="bold-data greyColor">战列舰</td>
-            <td class="blueColor">{{bb_battles}}</td>
-            <td class="blueColor" style="color: {{bb_prColor}}">{{bb_pr}}</td>
-            <td class="blueColor" style="color: {{bb_winsColor}}">{{bb_wins}}%</td>
-            <td class="blueColor" style="color: {{bb_damageColor}}">{{bb_damage}}</td>
-            <td class="blueColor">{{bb_hit}}%</td>
-        </tr>
-        {% endif %}
-        {% if ca_battles %}
-        <tr>
-            <td class="bold-data greyColor">巡洋舰</td>
-            <td class="blueColor">{{ca_battles}}</td>
-            <td class="blueColor" style="color: {{ca_prColor}}">{{ca_pr}}</td>
-            <td class="blueColor" style="color: {{ca_winsColor}}">{{ca_wins}}%</td>
-            <td class="blueColor" style="color: {{ca_damageColor}}">{{ca_damage}}</td>
-            <td class="blueColor">{{ca_hit}}%</td>
-        </tr>
-        {% endif %}
-        {% if dd_battles %}
-        <tr>
-            <td class="bold-data greyColor">驱逐舰</td>
-            <td class="blueColor">{{dd_battles}}</td>
-            <td class="blueColor" style="color: {{dd_prColor}}">{{dd_pr}}</td>
-            <td class="blueColor" style="color: {{dd_winsColor}}">{{dd_wins}}%</td>
-            <td class="blueColor" style="color: {{dd_damageColor}}">{{dd_damage}}</td>
-            <td class="blueColor">{{dd_hit}}%</td>
-        </tr>
-        {% endif %}
-        {% if cv_battles %}
-        <tr>
-            <td class="bold-data greyColor">航空母舰</td>
-            <td class="blueColor">{{cv_battles}}</td>
-            <td class="blueColor" style="color: {{cv_prColor}}">{{cv_pr}}</td>
-            <td class="blueColor" style="color: {{cv_winsColor}}">{{cv_wins}}%</td>
-            <td class="blueColor" style="color: {{cv_damageColor}}">{{cv_damage}}</td>
-            <td class="blueColor">N/A</td>
-        </tr>
-        <tr>
-            <td colspan="6" class="bold-data greyColor2" style="text-align: center;">Warships stats by BattleType</td>
-        </tr>
-        <tr>
-            <td class="greyColor">类型</td>
-            <td class="greyColor">场次</td>
-            <td class="greyColor">PR</td>
-            <td class="greyColor">胜率</td>
-            <td class="greyColor">场均</td>
-            <td class="greyColor">击杀</td>
-        </tr>
-        {% endif %}
-
-        {% if solo_battles %}
-        <tr>
-            <td class="bold-data greyColor">单野</td>
-            <td class="blueColor">{{solo_battles}}</td>
-            <td class="blueColor" style="color: {{solo_winsColor}}">{{solo_wins}}%</td>
-            <td class="blueColor" style="color: {{solo_prColor}}">{{solo_pr}}</td>
-            <td class="blueColor" style="color: {{solo_damageColor}}">{{solo_damage}}</td>
-            <td class="blueColor">{{solo_frags}}</td>
-        </tr>
-        {% endif %}
-        {% if div2_battles %}
-
-        <tr>
-            <td class="bold-data greyColor">自行车</td>
-            <td class="blueColor">{{div2_battles}}</td>
-            <td class="blueColor" style="color: {{div2_winsColor}}">{{div2_wins}}%</td>
-            <td class="blueColor" style="color: {{div2_prColor}}">{{div2_pr}}</td>
-            <td class="blueColor" style="color: {{div2_damageColor}}">{{div2_damage}}</td>
-            <td class="blueColor">{{div2_frags}}</td>
-        </tr>
-        {% endif %}
-        {% if div3_battles %}
-        <tr>
-            <td class="bold-data greyColor">三轮车</td>
-            <td class="blueColor">{{div3_battles}}</td>
-            <td class="blueColor" style="color: {{div3_winsColor}}">{{div3_wins}}%</td>
-            <td class="blueColor" style="color: {{div3_prColor}}">{{div3_pr}}</td>
-            <td class="blueColor" style="color: {{div3_damageColor}}">{{div3_damage}}</td>
-            <td class="blueColor">{{div3_frags}}</td>
-        </tr>
-        {% endif %}
-        {% if rank_battles %}
-        <tr>
-            <td class="bold-data greyColor">排位</td>
-            <td class="blueColor">{{rank_battles}}</td>
-            <td class="blueColor" style="color: {{rank_winsColor}}">{{rank_wins}}%</td>
-            <td class="blueColor" style="color: {{rank_prColor}}">{{rank_pr}}</td>
-            <td class="blueColor" style="color: {{rank_damageColor}}">{{rank_damage}}</td>
-            <td class="blueColor">{{rank_frags}}</td>
-        </tr>
-        {% endif %}-->
             <tr>
                 <td colspan="6">
                     <div>
@@ -249,14 +145,18 @@
             </tr>
         </table>
     </div>
+    {% if template_path and template_path/"Chart.min.js" and template_path/"chartjs-plugin-datalabels@1.0.0.js" %}
+    <script src= "{{template_path}}\echarts.js"></script>
+    {% else %}
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.3.3/dist/echarts.js"></script>
+    {% endif %}
 
     <script>
 
         var myChart = echarts.init(document.getElementById('myChart'));
-        var myChart1 = echarts.init(document.getElementById('barChart1'));
-        var myChart2 = echarts.init(document.getElementById('barChart2'));
-        var myChart3 = echarts.init(document.getElementById('barChart3'));
+        var myChart1 = echarts.init(document.getElementById('pieChart1'));
+        var myChart2 = echarts.init(document.getElementById('pieChart2'));
+        var myChart3 = echarts.init(document.getElementById('pieChart3'));
         myChart.setOption(
             {
                 xAxis: {
@@ -265,10 +165,9 @@
                 yAxis: {
                     type: "value",
                 },
-                color: ["#33CCFF", "#7ba3a8", " #bead92", "#f35a4a", "#5b4947"], // 柱状图颜色
+                color: ["#33CCFF", "#7ba3a8", " #bead92", "#f35a4a", "#5b4947"],
                 dataset: {
                     source: [
-                        // 数据源
                         ["Ⅰ", 0, 400, 00, 0, 0],
                         ["Ⅱ", 0, 430, 0, 0, 0],
                         ["Ⅲ", 0, 850, 0, 0, 0],
@@ -283,16 +182,13 @@
                     ]
                 },
                 series: [
-                    // 图标列设置
-                    {
-                        type: "bar", stack: "total", name: "DD", barWidth: 40},
+                    { type: "bar", stack: "total", name: "DD", barWidth: 40},
                     { type: "bar", stack: "total", name: "CA" },
                     { type: "bar", stack: "total", name: "BB" },
                     { type: "bar", stack: "total", name: "CV" },
                     { type: "bar", stack: "total", name: "SS" },
                 ],
                 tooltip: {
-                    // 提示框组件
                 },
                 grid: {
                     left: 0,
@@ -335,7 +231,7 @@
                     label: {
                         position: 'inside',
                         formatter: '{b}\n{d}%',
-                        fontSize: 15, //文字大小
+                        fontSize: 15,
                         fontWeight: 'bold',
                     },
                     data: [
@@ -347,18 +243,18 @@
                     ]
                 }
             ],
-            graphic: { // 添加原生图形元素组件
+            graphic: {
                 elements: [{
-                    type: 'text', // 组件类型
-                    left: 'center', //定位
-                    top: 'center', // 定位
-                    style: { // 样式
-                        text: '舰船\n类型', //文字
-                        fontSize: 25, //文字大小
-                        textAlign: 'center', //定位
+                    type: 'text', 
+                    left: 'center',
+                    top: 'center',
+                    style: {
+                        text: '舰船\n场次',
+                        fontSize: 25, 
+                        textAlign: 'center', 
                         width: 30,
                         height: 30,
-                        fill: 'darkgray' // 字体颜色
+                        fill: 'darkgray'
                     }
                 }]
             }
@@ -383,7 +279,7 @@
                     label: {
                         position: 'inside',
                         formatter: '{b}\n{d}%',
-                        fontSize: 15, //文字大小
+                        fontSize: 15,
                         fontWeight: 'bold',
                     },
                     data: [
@@ -394,18 +290,18 @@
                     ]
                 }
             ],
-            graphic: { // 添加原生图形元素组件
+            graphic: {
                 elements: [{
-                    type: 'text', // 组件类型
-                    left: 'center', //定位
-                    top: 'center', // 定位
-                    style: { // 样式
-                        text: '组队\n类型', //文字
-                        fontSize: 25, //文字大小
-                        textAlign: 'center', //定位
+                    type: 'text',
+                    left: 'center',
+                    top: 'center',
+                    style: {
+                        text: '组队\n场次',
+                        fontSize: 25,
+                        textAlign: 'center',
                         width: 30,
                         height: 30,
-                        fill: 'darkgray' // 字体颜色
+                        fill: 'darkgray'
                     }
                 }]
             }
@@ -429,7 +325,7 @@
                     label: {
                         position: 'inside',
                         formatter: '{b}\n{d}%',
-                        fontSize: 15, //文字大小
+                        fontSize: 15,
                         fontWeight: 'bold',
                     },
                     data: [
@@ -444,18 +340,18 @@
                     ]
                 }
             ],
-            graphic: { // 添加原生图形元素组件
+            graphic: {
                 elements: [{
-                    type: 'text', // 组件类型
-                    left: 'center', //定位
-                    top: 'center', // 定位
-                    style: { // 样式
-                        text: 'PR\n分布', //文字
-                        fontSize: 25, //文字大小
-                        textAlign: 'center', //定位
+                    type: 'text',
+                    left: 'center',
+                    top: 'center',
+                    style: {
+                        text: 'PR\n分布',
+                        fontSize: 25,
+                        textAlign: 'center',
                         width: 30,
                         height: 30,
-                        fill: 'darkgray' // 字体颜色
+                        fill: 'darkgray'
                     }
                 }]
             }

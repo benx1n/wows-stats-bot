@@ -691,6 +691,13 @@ async def set_ShipRank_Numbers(data,server,shipId):
     except Exception:
         traceback.print_exc()
         return None
+
+async def set_clanparams():
+    result = {
+        "template_path":template_path,
+    }
+    return result
+
     
 async def set_clanRecord_params():
     return
