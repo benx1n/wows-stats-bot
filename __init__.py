@@ -207,10 +207,10 @@ async def check_version(bot, ev:CQEvent):
         traceback.print_exc()
         return
     
-@sv.on_fullmatch('wws 测试更新')
-async def startup():
+@sv.on_fullmatch('wws 更新样式')
+async def startup(bot, ev:CQEvent):
     try:
-        url = 'https://benx1n.oss-cn-beijing.aliyuncs.com/template_Hikari/template.json'
+        url = 'https://benx1n.oss-cn-beijing.aliyuncs.com/template_Hoshino/template.json'
         async with httpx.AsyncClient() as client:
             resp = await client.get(url, timeout=20)
             result = resp.json()
@@ -229,3 +229,9 @@ async def job1():
     bot = get_bot()
     ev = CQEvent
     await check_version(bot,ev)
+    
+@sv.scheduled_job('cron',hour='12')
+async def job2():
+    bot = get_bot()
+    ev = CQEvent
+    await startup()
