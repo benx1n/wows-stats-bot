@@ -5,6 +5,7 @@ from hoshino import R, Service, priv, get_bot
 from hoshino.util import FreqLimiter, DailyNumberLimiter
 from hoshino.typing import CQEvent, MessageSegment
 from nonebot import NoticeSession, on_command
+from pathlib import Path
 from .html_render import text_to_pic
 from .publicAPI import get_nation_list,get_ship_name,get_ship_byName
 from .wws_info import get_AccountInfo
@@ -30,6 +31,9 @@ _version = "0.3.2"
 WWS_help ="""请发送wws help查看帮助"""
 sv_help = WWS_help.strip()
 sv = Service('wows-stats-bot', manage_priv=priv.SUPERUSER, enable_on_default=True,help_ = sv_help)
+
+dir_path = Path(__file__).parent
+template_path = dir_path / "template"
 
 @sv.on_fullmatch(('wws帮助','wws 帮助','wws help'))
 async def get_help(bot, ev):
@@ -202,6 +206,23 @@ async def check_version(bot, ev:CQEvent):
     except Exception:
         traceback.print_exc()
         return
+    
+@sv.on_fullmatch('wws 测试更新')
+async def startup():
+    try:
+        url = 'https://benx1n.oss-cn-beijing.aliyuncs.com/template_Hikari/template.json'
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(url, timeout=20)
+            result = resp.json()
+            for each in result:
+                for name, url in each.items():
+                    async with httpx.AsyncClient() as client:
+                        resp = resp = await client.get(url, timeout=20)
+                        with open(template_path/name , "wb+") as file:
+                            file.write(resp.content)
+    except Exception:
+        traceback.print_exc()
+        return 
 
 @sv.scheduled_job('cron',hour='12')
 async def job1():
