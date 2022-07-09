@@ -36,7 +36,6 @@ async def get_ShipInfo(qqid,info,bot,ev):
         if isinstance(info,List):
             for flag,i in enumerate(info):              #是否包含me或@，包含则调用平台接口
                 if i == 'me':
-                    url = 'https://api.wows.shinoaki.com/public/wows/account/v2/ship/info'
                     params = {
                     "server": "QQ",
                     "accountId": int(qqid),
@@ -44,7 +43,6 @@ async def get_ShipInfo(qqid,info,bot,ev):
                     info.remove("me")
                 match = re.search(r"CQ:at,qq=(\d+)",i)
                 if match:
-                    url = 'https://api.wows.shinoaki.com/public/wows/account/v2/ship/info'
                     params = {
                     "server": "QQ",
                     "accountId": int(match.group(1)),
@@ -61,7 +59,6 @@ async def get_ShipInfo(qqid,info,bot,ev):
                     param_accountid = await get_AccountIdByName(param_server,str(info[0]))      #剩余列表第一个是否为游戏名
                     if isinstance(param_accountid,int):
                         info.remove(info[0])
-                        url = 'https://api.wows.shinoaki.com/public/wows/account/v2/ship/info'
                         params = {
                         "server": param_server,
                         "accountId": param_accountid,
@@ -104,7 +101,8 @@ async def get_ShipInfo(qqid,info,bot,ev):
                 return '找不到船'
         else:
             return '参数似乎出了问题呢'
-        print(f"下面是本次请求的参数，如果遇到了问题，请将这部分连同报错日志一起发送给麻麻哦\n{params}")
+        url = 'https://api.wows.shinoaki.com/public/wows/account/v2/ship/info'
+        print(f"下面是本次请求的参数，如果遇到了问题，请将这部分连同报错日志一起发送给麻麻哦\n{url}\n{params}")
         ranking = await get_MyShipRank_yuyuko(params)
         async with httpx.AsyncClient(headers=headers) as client:
             resp = await client.get(url, params=params, timeout=None)
@@ -205,7 +203,6 @@ async def get_ShipInfoRecent(qqid,info,bot,ev):
                     info.remove(i)
             for flag,i in enumerate(info):              #是否包含me或@，包含则调用平台接口
                 if i == 'me':
-                    url = 'https://api.wows.shinoaki.com/api/wows/recent/v2/recent/info/ship'
                     params = {
                     "server": "QQ",
                     "accountId": int(qqid),
@@ -214,7 +211,6 @@ async def get_ShipInfoRecent(qqid,info,bot,ev):
                     info.remove("me")
                 match = re.search(r"CQ:at,qq=(\d+)",i)
                 if match:
-                    url = 'https://api.wows.shinoaki.com/api/wows/recent/v2/recent/info/ship'
                     params = {
                     "server": "QQ",
                     "accountId": int(match.group(1)),
@@ -230,7 +226,6 @@ async def get_ShipInfoRecent(qqid,info,bot,ev):
                     param_accountid = await get_AccountIdByName(param_server,str(info[0]))      #剩余列表第一个是否为游戏名
                     if isinstance(param_accountid,int):
                         info.remove(info[0])
-                        url = 'https://api.wows.shinoaki.com/api/wows/recent/v2/recent/info/ship'
                         params = {
                         "server": param_server,
                         "accountId": param_accountid,
@@ -274,7 +269,8 @@ async def get_ShipInfoRecent(qqid,info,bot,ev):
                 return '找不到船'
         else:
             return '参数似乎出了问题呢'
-        print(f"下面是本次请求的参数，如果遇到了问题，请将这部分连同报错日志一起发送给麻麻哦\n{params}")
+        url = 'https://api.wows.shinoaki.com/api/wows/recent/v2/recent/info/ship'
+        print(f"下面是本次请求的参数，如果遇到了问题，请将这部分连同报错日志一起发送给麻麻哦\n{url}\n{params}")
         async with httpx.AsyncClient(headers=headers) as client:
             resp = await client.get(url, params=params, timeout=None)
             result = resp.json()

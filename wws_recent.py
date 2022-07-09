@@ -36,7 +36,6 @@ async def get_RecentInfo(qqid,info):
                     info.remove(i)
             for i in info:              #是否包含me或@，包含则调用平台接口
                 if i == 'me':
-                    url = 'https://api.wows.shinoaki.com//api/wows/recent/v2/recent/info'
                     params = {
                     "server": "QQ",
                     "accountId": int(qqid),
@@ -45,7 +44,6 @@ async def get_RecentInfo(qqid,info):
                     }
                 match = re.search(r"CQ:at,qq=(\d+)",i)
                 if match:
-                    url = 'https://api.wows.shinoaki.com//api/wows/recent/v2/recent/info'
                     params = {
                     "server": "QQ",
                     "accountId": int(match.group(1)),
@@ -58,7 +56,6 @@ async def get_RecentInfo(qqid,info):
                 if param_server:
                     param_accountid = await get_AccountIdByName(param_server,str(info[0]))
                     if isinstance(param_accountid,int):
-                        url = 'https://api.wows.shinoaki.com//api/wows/recent/v2/recent/info'
                         params = {
                         "server": param_server,
                         "accountId": param_accountid,
@@ -76,6 +73,7 @@ async def get_RecentInfo(qqid,info):
         else:
             return '参数似乎出了问题呢'
         print(params)
+        url = 'https://api.wows.shinoaki.com//api/wows/recent/v2/recent/info'
         async with httpx.AsyncClient(headers=headers) as client:
             resp = await client.get(url, params=params, timeout=None)
             result = resp.json()

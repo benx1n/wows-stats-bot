@@ -30,7 +30,6 @@ async def get_AccountInfo(qqid,info):
         if isinstance(info,List):
             for i in info:
                 if i == 'me':
-                    url = 'https://api.wows.shinoaki.com/public/wows/account/v3/user/info'
                     params = {
                     "server": "QQ",
                     "accountId": int(qqid)
@@ -38,7 +37,6 @@ async def get_AccountInfo(qqid,info):
                     break
                 match = re.search(r"CQ:at,qq=(\d+)",i)
                 if match:
-                    url = 'https://api.wows.shinoaki.com/public/wows/account/v3/user/info'
                     params = {
                     "server": "QQ",
                     "accountId": int(match.group(1))
@@ -49,7 +47,6 @@ async def get_AccountInfo(qqid,info):
                 if param_server:
                     param_accountid = await get_AccountIdByName(param_server,str(info[0]))
                     if isinstance(param_accountid,int):
-                        url = 'https://api.wows.shinoaki.com/public/wows/account/v3/user/info'
                         params = {
                         "server": param_server,
                         "accountId": param_accountid
@@ -65,6 +62,7 @@ async def get_AccountInfo(qqid,info):
         else:
             return '参数似乎出了问题呢'
         print(params)
+        url = 'https://api.wows.shinoaki.com/public/wows/account/v4/user/info'
         async with httpx.AsyncClient(headers=headers) as client:
             resp = await client.get(url, params=params, timeout=None)
             result = resp.json()
