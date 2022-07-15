@@ -5,6 +5,7 @@ import json
 import jinja2
 import re
 import time
+import asyncio
 from pathlib import Path
 from .data_source import servers,set_clanRecord_params
 from .publicAPI import get_AccountIdByName
@@ -159,8 +160,11 @@ async def get_personalRecord_Numbers(url,server,accountId):
                 info_list.append(info.copy())
             print(clan_list)
             clan_url = re.match( r'(.*?)player', url).group(1)
-            for each in clan_list:
-                await get_ClanRecord_Numbers(f"{clan_url}clan/transfers/{each},111/",each)
+            #tasks = []
+            #for each in clan_list:
+            #    tasks.append(asyncio.ensure_future(get_ClanRecord_Numbers(f"{clan_url}clan/transfers/{each},111/",each)))
+            #results = await asyncio.gather(*tasks)
+            results = await asyncio.gather(*[get_ClanRecord_Numbers(f"{clan_url}clan/transfers/{each},111/") for each in clan_list])
             #result = await post_personalRecord_yuyuko(info_list)
             #if result:
             #    return result
