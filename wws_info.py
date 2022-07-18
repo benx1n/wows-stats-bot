@@ -62,7 +62,7 @@ async def get_AccountInfo(qqid,info):
         else:
             return '参数似乎出了问题呢'
         print(params)
-        url = 'https://api.wows.shinoaki.com/public/wows/account/v4/user/info'
+        url = 'https://api.wows.shinoaki.com/public/wows/account/user/info'
         async with httpx.AsyncClient(headers=headers) as client:
             resp = await client.get(url, params=params, timeout=None)
             result = resp.json()
