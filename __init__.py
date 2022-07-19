@@ -210,7 +210,7 @@ async def check_version(bot, ev:CQEvent):
 @sv.on_fullmatch('wws 更新样式')
 async def startup(bot, ev:CQEvent):
     try:
-        url = 'https://benx1n.oss-cn-beijing.aliyuncs.com/template_Hoshino/template.json'
+        url = 'https://benx1n.oss-cn-beijing.aliyuncs.com/template_Hoshino_Latest/template.json'
         async with httpx.AsyncClient() as client:
             resp = await client.get(url, timeout=20)
             result = resp.json()
