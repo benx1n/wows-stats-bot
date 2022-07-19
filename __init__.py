@@ -22,6 +22,7 @@ import httpx
 import json
 import re
 import html
+import asyncio
 
 _max = 100
 EXCEED_NOTICE = f'您今天已经冲过{_max}次了，请明早5点后再来！'
@@ -210,20 +211,25 @@ async def check_version(bot, ev:CQEvent):
 @sv.on_fullmatch('wws 更新样式')
 async def startup(bot, ev:CQEvent):
     try:
+        tasks = []
         url = 'https://benx1n.oss-cn-beijing.aliyuncs.com/template_Hoshino_Latest/template.json'
         async with httpx.AsyncClient() as client:
             resp = await client.get(url, timeout=20)
             result = resp.json()
             for each in result:
                 for name, url in each.items():
-                    async with httpx.AsyncClient() as client:
-                        resp = resp = await client.get(url, timeout=20)
-                        with open(template_path/name , "wb+") as file:
-                            file.write(resp.content)
+                    tasks.append(asyncio.ensure_future(startup_download(url, name)))
+        await asyncio.gather(*tasks)
     except Exception:
         traceback.print_exc()
         return 
-
+    
+async def startup_download(url,name):
+    async with httpx.AsyncClient() as client:
+        resp = resp = await client.get(url, timeout=20)
+        with open(template_path/name , "wb+") as file:
+            file.write(resp.content)
+            
 @sv.scheduled_job('cron',hour='12')
 async def job1():
     bot = get_bot()
