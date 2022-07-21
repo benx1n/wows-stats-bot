@@ -7,6 +7,7 @@ from datetime import datetime
 import re
 import time
 from pathlib import Path
+from loguru import logger
 from .data_source import servers,set_recentparams,set_damageColor,set_winColor,set_upinfo_color
 from .utils import match_keywords
 from .publicAPI import get_AccountIdByName
@@ -96,5 +97,5 @@ async def get_RecentInfo(qqid,info):
         else:
             return f"{result['message']}"
     except Exception:
-        traceback.print_exc()
+        logger.error(traceback.format_exc())
         return

@@ -7,6 +7,7 @@ import re
 import time
 import asyncio
 from pathlib import Path
+from loguru import logger
 from .data_source import servers,set_clanRecord_params
 from .publicAPI import get_AccountIdByName
 from .utils import match_keywords
@@ -121,7 +122,7 @@ async def get_record(qqid,info,type):
                 return f"{result['message']}"
             
     except Exception:
-        traceback.print_exc()
+        logger.error(traceback.format_exc())
         return 'wuwuwu出了点问题，请联系麻麻解决，目前不支持国服哦'
     
     
@@ -171,7 +172,7 @@ async def get_personalRecord_Numbers(url,server,accountId):
             #else:
             #    return None
     except Exception:
-        traceback.print_exc()
+        logger.error(traceback.format_exc())
         return None
     
     
@@ -213,5 +214,5 @@ async def post_personalRecord_yuyuko(post_data):
             else:
                 return None
     except Exception:
-        traceback.print_exc()
+        logger.error(traceback.format_exc())
         return None

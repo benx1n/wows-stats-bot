@@ -4,6 +4,7 @@ import json
 import jinja2
 import asyncio
 from pathlib import Path
+from loguru import logger
 from hoshino.typing import MessageSegment
 from .data_source import servers,set_shipparams,tiers,number_url_homes,set_ShipRank_Numbers
 from .utils import match_keywords,bytes2b64
@@ -76,7 +77,7 @@ async def get_ShipRank(qqid,info,bot,ev):
             else:
                 return 'wuwuu好像出了点问题，可能是网络问题，过一会儿还是不行的话请联系麻麻~'   
     except Exception:
-        traceback.print_exc()
+        logger.error(traceback.format_exc())
         return 'wuwuu好像出了点问题，过一会儿还是不行的话请联系麻麻~'    
    
 async def search_ShipRank_Yuyuko(shipId,server):
@@ -99,7 +100,7 @@ async def search_ShipRank_Yuyuko(shipId,server):
             else:
                 return None
     except Exception:
-        traceback.print_exc()
+        logger.error(traceback.format_exc())
         return None 
         
 async def search_ShipRank_Numbers(url,server,shipId):
@@ -119,7 +120,7 @@ async def search_ShipRank_Numbers(url,server,shipId):
         else:
             return None,None
     except Exception:
-        traceback.print_exc()
+        logger.error(traceback.format_exc())
         return None,None
             
 async def post_ShipRank(data):
@@ -131,4 +132,4 @@ async def post_ShipRank(data):
             result = resp.json()
             print(result)
     except Exception:
-        traceback.print_exc()
+        logger.error(traceback.format_exc())

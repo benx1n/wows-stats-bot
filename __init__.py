@@ -23,6 +23,7 @@ import json
 import re
 import html
 import asyncio
+from loguru import logger
 
 _max = 100
 EXCEED_NOTICE = f'您今天已经冲过{_max}次了，请明早5点后再来！'
@@ -151,10 +152,17 @@ async def selet_command(bot,ev:CQEvent):
             else:
                 await bot.send(ev,str(MessageSegment.image(bytes2b64(msg))))
         else:
-            await bot.send('呜呜呜发生了错误，可能是网络问题，如果过段时间不能恢复请联系麻麻哦~')
+            await bot.send('没有获取到数据，可能是内部问题')
+        return
+    except CQHttpError:
+        logger.error(traceback.format_exc())
+        try:
+            await bot.send(ev,'发不出图片，可能被风控了QAQ')
+        except Exception:
+            pass
         return
     except Exception:
-        traceback.print_exc()
+        logger.error(traceback.format_exc())
         await bot.send(ev,'呜呜呜发生了错误，可能是网络问题，如果过段时间不能恢复请联系麻麻哦~')
         return
 
@@ -177,7 +185,7 @@ async def change_select_state(bot, ev):
                 await bot.send(ev,'请选择列表中的序号哦~') 
         return
     except Exception:
-        traceback.print_exc()
+        logger.error(traceback.format_exc())
         return
 
 @sv.on_fullmatch('wws 检查更新')
@@ -201,11 +209,11 @@ async def check_version(bot, ev:CQEvent):
                 try:
                     await bot.send(ev,msg)
                 except Exception:
-                    traceback.print_exc()
+                    logger.error(traceback.format_exc())
                     return     
         return
     except Exception:
-        traceback.print_exc()
+        logger.error(traceback.format_exc())
         return
     
 @sv.on_fullmatch('wws 更新样式')
@@ -221,7 +229,7 @@ async def startup(bot, ev:CQEvent):
                     tasks.append(asyncio.ensure_future(startup_download(url, name)))
         await asyncio.gather(*tasks)
     except Exception:
-        traceback.print_exc()
+        logger.error(traceback.format_exc())
         return 
     
 async def startup_download(url,name):
@@ -241,3 +249,28 @@ async def job2():
     bot = get_bot()
     ev = CQEvent
     await startup()
+    
+logger.add(
+    str(dir_path/"logs/error.log"),
+    rotation="00:00",
+    retention="1 week",
+    diagnose=False,
+    level="ERROR",
+    encoding="utf-8",
+)
+logger.add(
+    str(dir_path/"logs/info.log"),
+    rotation="00:00",
+    retention="1 week",
+    diagnose=False,
+    level="INFO",
+    encoding="utf-8",
+)
+logger.add(
+    str(dir_path/"logs/warning.log"),
+    rotation="00:00",
+    retention="1 week",
+    diagnose=False,
+    level="WARNING",
+    encoding="utf-8",
+)

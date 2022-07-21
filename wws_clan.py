@@ -12,6 +12,7 @@ from .utils import match_keywords,bytes2b64
 from.publicAPI import get_ClanIdByName
 from collections import defaultdict, namedtuple
 from .html_render import html_to_pic,text_to_pic
+from loguru import logger
 
 dir_path = Path(__file__).parent
 template_path = dir_path / "template"
@@ -108,5 +109,5 @@ async def get_ClanInfo(qqid,info,bot,ev):
         else:
             return f"{result['message']}"
     except Exception:
-        traceback.print_exc()
+        logger.error(traceback.format_exc())
         return 

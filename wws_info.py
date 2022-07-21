@@ -10,7 +10,7 @@ from .data_source import servers,set_infoparams,set_damageColor,set_winColor,set
 from .publicAPI import get_AccountIdByName
 from .utils import match_keywords
 from .html_render import html_to_pic
-
+from loguru import logger
 
 dir_path = Path(__file__).parent
 template_path = dir_path / "template"
@@ -81,5 +81,5 @@ async def get_AccountInfo(qqid,info):
         else:
             return f"{result['message']}"
     except Exception:
-        traceback.print_exc()
+        logger.error(traceback.format_exc())
         return 'wuwuwu出了点问题，请联系麻麻解决'

@@ -4,7 +4,7 @@ import traceback
 import json
 import re
 from pathlib import Path
-
+from loguru import logger
 from requests import head
 
 from .data_source import servers
@@ -61,7 +61,7 @@ async def get_BindInfo(user,info):
         else:
             return f"{result['message']}"
     except Exception:
-        traceback.print_exc()
+        logger.error(traceback.format_exc())
         return 'wuwuwu出了点问题，请联系麻麻解决'
     
 async def set_BindInfo(user,info):
@@ -97,7 +97,7 @@ async def set_BindInfo(user,info):
         else:
             return f"{result['message']}"
     except Exception:
-        traceback.print_exc()
+        logger.error(traceback.format_exc())
         return 'wuwuwu出了点问题，请联系麻麻解决'
 
 async def change_BindInfo(user,info):
@@ -142,7 +142,7 @@ async def change_BindInfo(user,info):
         else:
             return f"{result['message']}"
     except Exception:
-        traceback.print_exc()
+        logger.error(traceback.format_exc())
         return 'wuwuwu出了点问题，请联系麻麻解决'
     
 async def set_special_BindInfo(user,info):
@@ -219,5 +219,5 @@ async def delete_BindInfo(user,info):
         else:
             return f"{result['message']}"
     except Exception:
-        traceback.print_exc()
+        logger.error(traceback.format_exc())
         return 'wuwuwu出了点问题，请联系麻麻解决'

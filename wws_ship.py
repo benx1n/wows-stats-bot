@@ -7,6 +7,7 @@ import re
 import time
 import asyncio
 from pathlib import Path
+from loguru import logger
 from hoshino.typing import MessageSegment
 from .data_source import servers,set_shipparams,set_shipRecentparams,tiers,number_url_homes,set_damageColor,set_winColor,set_upinfo_color
 from .utils import match_keywords,bytes2b64
@@ -124,7 +125,7 @@ async def get_ShipInfo(qqid,info,bot,ev):
         else:
             return f"{result['message']}"
     except Exception:
-        traceback.print_exc()
+        logger.error(traceback.format_exc())
         return    
     
     
@@ -147,7 +148,7 @@ async def get_MyShipRank_yuyuko(params):
             else:
                 return None
     except Exception:
-        traceback.print_exc()
+        logger.error(traceback.format_exc())
         return None
     
 async def get_MyShipRank_Numbers(url,server):
@@ -170,7 +171,7 @@ async def get_MyShipRank_Numbers(url,server):
         else:
             return None
     except Exception:
-        traceback.print_exc()
+        logger.error(traceback.format_exc())
         return None    
     
 async def post_MyShipRank_yuyuko(accountId,ranking,serverId,shipId):
@@ -187,7 +188,7 @@ async def post_MyShipRank_yuyuko(accountId,ranking,serverId,shipId):
             result = resp.json()
             return
     except Exception:
-        traceback.print_exc()
+        logger.error(traceback.format_exc())
         return
     
 async def get_ShipInfoRecent(qqid,info,bot,ev):
@@ -288,5 +289,5 @@ async def get_ShipInfoRecent(qqid,info,bot,ev):
         else:
             return f"{result['message']}"
     except Exception:
-        traceback.print_exc()
+        logger.error(traceback.format_exc())
         return

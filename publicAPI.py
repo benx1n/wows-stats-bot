@@ -7,6 +7,7 @@ from .data_source import nations,shiptypes,levels
 from .utils import match_keywords
 from httpx import ConnectTimeout
 from asyncio.exceptions import TimeoutError
+from loguru import logger
 
 cfgpath = os.path.join(os.path.dirname(__file__), 'config.json')
 config = json.load(open(cfgpath, 'r', encoding='utf8'))
@@ -26,7 +27,7 @@ async def get_nation_list():
             msg: str = msg + f"{nation['cn']}：{nation['nation']}\n"
         return msg
     except Exception:
-        traceback.print_exc()
+        logger.error(traceback.format_exc())
         
 async def get_ship_name(infolist:List):
     try:
@@ -59,7 +60,7 @@ async def get_ship_name(infolist:List):
             msg = '没有符合的船只'
         return msg
     except Exception:
-        traceback.print_exc()
+        logger.error(traceback.format_exc())
         return msg
     
 async def get_ship_byName(shipname:str):
@@ -82,7 +83,7 @@ async def get_ship_byName(shipname:str):
         else:
             return None
     except Exception:
-        traceback.print_exc()
+        logger.error(traceback.format_exc())
         return None
     
 async def get_AccountIdByName(server:str,name:str):
@@ -101,10 +102,10 @@ async def get_AccountIdByName(server:str,name:str):
         else:
             return result['message']
     except (TimeoutError, ConnectTimeout):
-        traceback.print_exc()
+        logger.error(traceback.format_exc())
         return '请求超时了，请过一会儿重试哦~'
     except Exception:
-        traceback.print_exc()
+        logger.error(traceback.format_exc())
         return '好像出了点问题呢，可能是网络问题，如果重试几次还不行的话，请联系麻麻解决'
     
 async def get_ClanIdByName(server:str,tag:str):
@@ -127,5 +128,5 @@ async def get_ClanIdByName(server:str,tag:str):
         else:
             return None
     except Exception:
-        traceback.print_exc()
+        logger.error(traceback.format_exc())
         return None
