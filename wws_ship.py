@@ -33,7 +33,7 @@ headers = {
 ShipSlectState = namedtuple("ShipSlectState", ['state','SlectIndex','SelectList'])
 ShipSecletProcess = defaultdict(lambda: ShipSlectState(False, None, None))
 
-async def get_ShipInfo(qqid,info,bot,ev):
+async def get_ShipInfo(info,bot,ev):
     try:
         params = None
         if isinstance(info,List):
@@ -41,7 +41,7 @@ async def get_ShipInfo(qqid,info,bot,ev):
                 if i == 'me':
                     params = {
                     "server": "QQ",
-                    "accountId": int(qqid),
+                    "accountId": int(ev['user_id']),
                     }
                     info.remove("me")
                 match = re.search(r"CQ:at,qq=(\d+)",i)
@@ -87,18 +87,18 @@ async def get_ShipInfo(qqid,info,bot,ev):
                     for each in shipList:
                         flag += 1
                         msg += f"{flag}：{tiers[each[3]-1]} {each[1]}\n"
-                    ShipSecletProcess[qqid] = ShipSlectState(False, None, shipList)
+                    ShipSecletProcess[ev['user_id']] = ShipSlectState(False, None, shipList)
                     img = await text_to_pic(text=msg,css_path = template_path/"text-ship.css",width=250)
                     await bot.send(ev,str(MessageSegment.image(bytes2b64(img))))
                     a = 0
-                    while a < 40 and not ShipSecletProcess[qqid].state:
+                    while a < 40 and not ShipSecletProcess[ev['user_id']].state:
                         a += 1
                         await asyncio.sleep(0.5)
-                    if ShipSecletProcess[qqid].state and ShipSecletProcess[qqid].SlectIndex <= len(shipList):
-                        params["shipId"] = shipList[ShipSecletProcess[qqid].SlectIndex-1][0]
-                        ShipSecletProcess[qqid] = ShipSlectState(False, None, None)
+                    if ShipSecletProcess[ev['user_id']].state and ShipSecletProcess[ev['user_id']].SlectIndex <= len(shipList):
+                        params["shipId"] = shipList[ShipSecletProcess[ev['user_id']].SlectIndex-1][0]
+                        ShipSecletProcess[ev['user_id']] = ShipSlectState(False, None, None)
                     else:
-                        ShipSecletProcess[qqid] = ShipSlectState(False, None, None)
+                        ShipSecletProcess[ev['user_id']] = ShipSlectState(False, None, None)
                         return '已超时退出'
             else:
                 return '找不到船'
@@ -191,7 +191,7 @@ async def post_MyShipRank_yuyuko(accountId,ranking,serverId,shipId):
         logger.error(traceback.format_exc())
         return
     
-async def get_ShipInfoRecent(qqid,info,bot,ev):
+async def get_ShipInfoRecent(info,bot,ev):
     try:
         params,day = None,0
         if datetime.now().hour < 7:
@@ -208,7 +208,7 @@ async def get_ShipInfoRecent(qqid,info,bot,ev):
                 if i == 'me':
                     params = {
                     "server": "QQ",
-                    "accountId": int(qqid),
+                    "accountId": int(ev['user_id']),
                     "day": day
                     }
                     info.remove("me")
@@ -255,18 +255,18 @@ async def get_ShipInfoRecent(qqid,info,bot,ev):
                     for each in shipList:
                         flag += 1
                         msg += f"{flag}：{tiers[each[3]-1]} {each[1]}\n"
-                    ShipSecletProcess[qqid] = ShipSlectState(False, None, shipList)
+                    ShipSecletProcess[ev['user_id']] = ShipSlectState(False, None, shipList)
                     img = await text_to_pic(text=msg,css_path = template_path/"text-ship.css",width=250)
                     await bot.send(ev,str(MessageSegment.image(bytes2b64(img))))
                     a = 0
-                    while a < 40 and not ShipSecletProcess[qqid].state:
+                    while a < 40 and not ShipSecletProcess[ev['user_id']].state:
                         a += 1
                         await asyncio.sleep(0.5)
-                    if ShipSecletProcess[qqid].state and ShipSecletProcess[qqid].SlectIndex <= len(shipList):
-                        params["shipId"] = shipList[ShipSecletProcess[qqid].SlectIndex-1][0]
-                        ShipSecletProcess[qqid] = ShipSlectState(False, None, None)
+                    if ShipSecletProcess[ev['user_id']].state and ShipSecletProcess[ev['user_id']].SlectIndex <= len(shipList):
+                        params["shipId"] = shipList[ShipSecletProcess[ev['user_id']].SlectIndex-1][0]
+                        ShipSecletProcess[ev['user_id']] = ShipSlectState(False, None, None)
                     else:
-                        ShipSecletProcess[qqid] = ShipSlectState(False, None, None)
+                        ShipSecletProcess[ev['user_id']] = ShipSlectState(False, None, None)
                         return '已超时退出'
             else:
                 return '找不到船'

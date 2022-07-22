@@ -27,7 +27,7 @@ headers = {
     'Content-Type':'application/json',
 }
 
-async def get_ShipRank(qqid,info,bot,ev):
+async def get_ShipRank(info,bot,ev):
     try:
         if len(info) == 2:
             param_server,info = await match_keywords(info,servers)
@@ -49,20 +49,20 @@ async def get_ShipRank(qqid,info,bot,ev):
                 for each in shipList:
                     flag += 1
                     msg += f"{flag}：{tiers[each[3]-1]} {each[1]}\n"
-                ShipSecletProcess[qqid] = ShipSlectState(False, None, shipList)
+                ShipSecletProcess[ev['user_id']] = ShipSlectState(False, None, shipList)
                 img = await text_to_pic(text=msg,css_path = template_path/"text-ship.css",width=250)
                 await bot.send(ev,str(MessageSegment.image(bytes2b64(img))))
                 a = 0
-                while a < 40 and not ShipSecletProcess[qqid].state:
+                while a < 40 and not ShipSecletProcess[ev['user_id']].state:
                     a += 1
                     await asyncio.sleep(0.5)
-                if ShipSecletProcess[qqid].state and ShipSecletProcess[qqid].SlectIndex <= len(shipList):
-                    select_shipId = int(shipList[ShipSecletProcess[qqid].SlectIndex-1][0])
-                    number_url += f"{select_shipId},{shipList[ShipSecletProcess[qqid].SlectIndex-1][2]}"
-                    ShipSecletProcess[qqid] = ShipSlectState(False, None, None)
+                if ShipSecletProcess[ev['user_id']].state and ShipSecletProcess[ev['user_id']].SlectIndex <= len(shipList):
+                    select_shipId = int(shipList[ShipSecletProcess[ev['user_id']].SlectIndex-1][0])
+                    number_url += f"{select_shipId},{shipList[ShipSecletProcess[ev['user_id']].SlectIndex-1][2]}"
+                    ShipSecletProcess[ev['user_id']] = ShipSlectState(False, None, None)
                     print(number_url)
                 else:
-                    ShipSecletProcess[qqid] = ShipSlectState(False, None, None)
+                    ShipSecletProcess[ev['user_id']] = ShipSlectState(False, None, None)
                     return '已超时退出'
         else:
             return '找不到船'

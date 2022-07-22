@@ -27,7 +27,7 @@ headers = {
 }
 
 
-async def get_RecentInfo(qqid,info):
+async def get_RecentInfo(info,bot,ev):
     try:
         params,day = None,0
         if datetime.now().hour < 7:
@@ -41,7 +41,7 @@ async def get_RecentInfo(qqid,info):
                 if i == 'me':
                     params = {
                     "server": "QQ",
-                    "accountId": int(qqid),
+                    "accountId": int(ev['user_id']),
                     "day": day,
                     "status": 0
                     }

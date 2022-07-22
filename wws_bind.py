@@ -17,7 +17,7 @@ headers = {
     'Authorization': config['token']
 }
 
-async def get_BindInfo(user,info):
+async def get_BindInfo(info,bot,ev):
     try:
         if isinstance(info,List) and len(info) == 1:
             for i in info:              #是否包含me或@
@@ -25,7 +25,7 @@ async def get_BindInfo(user,info):
                     url = 'https://api.wows.shinoaki.com/public/wows/bind/account/platform/bind/list'
                     params = {
                     "platformType": "QQ",
-                    "platformId": user,
+                    "platformId": ev['user_id'],
                     }
                 match = re.search(r"CQ:at,qq=(\d+)",i)
                 if match:
@@ -64,7 +64,7 @@ async def get_BindInfo(user,info):
         logger.error(traceback.format_exc())
         return 'wuwuwu出了点问题，请联系麻麻解决'
     
-async def set_BindInfo(user,info):
+async def set_BindInfo(info,bot,ev):
     try:
         param_server = None
         if isinstance (info,List):
@@ -76,7 +76,7 @@ async def set_BindInfo(user,info):
                         url = 'https://api.wows.shinoaki.com/api/wows/bind/account/platform/bind/put'
                         params = {
                         "platformType": "QQ",
-                        "platformId": str(user),
+                        "platformId": str(ev['user_id']),
                         "accountId": param_accountid
                         }
                     else:
@@ -100,13 +100,13 @@ async def set_BindInfo(user,info):
         logger.error(traceback.format_exc())
         return 'wuwuwu出了点问题，请联系麻麻解决'
 
-async def change_BindInfo(user,info):
+async def change_BindInfo(info,bot,ev):
     try:
         if isinstance(info,List) and len(info) == 1 and str(info[0]).isdigit():
             url = 'https://api.wows.shinoaki.com/public/wows/bind/account/platform/bind/list'
             params = {
             "platformType": "QQ",
-            "platformId": user,
+            "platformId": ev['user_id'],
             }
         else:
             return '参数似乎出了问题呢，请跟随要切换的序号'
@@ -121,7 +121,7 @@ async def change_BindInfo(user,info):
                 url = 'https://api.wows.shinoaki.com/api/wows/bind/account/platform/bind/put'
                 params = {
                 "platformType": "QQ",
-                "platformId": str(user),
+                "platformId": str(ev['user_id']),
                 "accountId": param_accountid
                 }
             else:
@@ -145,7 +145,7 @@ async def change_BindInfo(user,info):
         logger.error(traceback.format_exc())
         return 'wuwuwu出了点问题，请联系麻麻解决'
     
-async def set_special_BindInfo(user,info):
+async def set_special_BindInfo(info,bot,ev):
     try:
         param_server = None
         if isinstance (info,List):
@@ -156,7 +156,7 @@ async def set_special_BindInfo(user,info):
                         url = 'https://api.wows.shinoaki.com/api/wows/bind/account/platform/bind/put'
                         params = {
                         "platformType": "QQ",
-                        "platformId": str(user),
+                        "platformId": str(ev['user_id']),
                         "accountId": int(info[0])
                         }
                     else:
@@ -179,13 +179,13 @@ async def set_special_BindInfo(user,info):
     except Exception:
         return 'wuwuwu出了点问题，请联系麻麻解决'
     
-async def delete_BindInfo(user,info):
+async def delete_BindInfo(info,bot,ev):
     try:
         if isinstance(info,List) and len(info) == 1 and str(info[0]).isdigit():
             url = 'https://api.wows.shinoaki.com/public/wows/bind/account/platform/bind/list'
             params = {
             "platformType": "QQ",
-            "platformId": user,
+            "platformId": ev['user_id'],
             }
         else:
             return '参数似乎出了问题呢，请跟随要切换的序号'
@@ -200,7 +200,7 @@ async def delete_BindInfo(user,info):
                 url = 'https://api.wows.shinoaki.com/api/wows/bind/account/platform/bind/remove'
                 params = {
                 "platformType": "QQ",
-                "platformId": str(user),
+                "platformId": str(ev['user_id']),
                 "accountId": param_accountid
                 }
             else:

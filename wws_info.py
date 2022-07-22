@@ -26,7 +26,7 @@ headers = {
 }
   
 
-async def get_AccountInfo(qqid,info):
+async def get_AccountInfo(info,bot,ev):
     try:
         params = None
         if isinstance(info,List):
@@ -34,7 +34,7 @@ async def get_AccountInfo(qqid,info):
                 if i == 'me':
                     params = {
                     "server": "QQ",
-                    "accountId": int(qqid)
+                    "accountId": int(ev['user_id'])
                     }
                     break
                 match = re.search(r"CQ:at,qq=(\d+)",i)

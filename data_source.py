@@ -13,19 +13,6 @@ template_path = dir_path / "template"
 class matching:
     keywords: Tuple[str, ...]
     match_keywords : str
-command_list = [        #同指令中越长的匹配词越靠前
-    matching(("切换绑定","更换绑定","更改绑定"),"changebind"),
-    matching(("查询绑定","绑定查询","绑定列表","查绑定"),"bindlist"),
-    matching(("删除绑定",),"delete_bind"),
-    matching(("特殊绑定",),"special_bind"),
-    matching(("ship.rank","rank"),"ship_rank"),
-    matching(("bind","绑定","set"),"bind"),
-    matching(("recent","近期",),"recent"),
-    matching(("ship","单船",),"ship"),
-    matching(("record","历史记录"),"record"),
-    matching(("clan","军团","公会","工会"),"clan"),
-    matching(("搜船名","查船名","船名"),"searchship"),
-]
 
 nations = [
     matching(("commonwealth","英联邦",),"commonwealth"),

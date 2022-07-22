@@ -28,7 +28,7 @@ headers = {
 }
   
 
-async def get_record(qqid,info,type):
+async def get_record(info,type,bot,ev):
     try:
         params = None
         if isinstance(info,List):
@@ -36,7 +36,7 @@ async def get_record(qqid,info,type):
                 if i == 'me':
                     params = {
                     "server": "QQ",
-                    "accountId": int(qqid)
+                    "accountId": int(ev['user_id'])
                     }
                     break
                 match = re.search(r"CQ:at,qq=(\d+)",i)

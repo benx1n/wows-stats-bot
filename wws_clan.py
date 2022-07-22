@@ -29,7 +29,7 @@ headers = {
 ClanSlectState = namedtuple("ClanSlectState", ['state','SlectIndex','SelectList'])
 ClanSecletProcess = defaultdict(lambda: ClanSlectState(False, None, None))
 
-async def get_ClanInfo(qqid,info,bot,ev):
+async def get_ClanInfo(info,bot,ev):
     try:
         params = None
         if isinstance(info,List):
@@ -38,7 +38,7 @@ async def get_ClanInfo(qqid,info,bot,ev):
                     url = ''
                     params = {
                     "server": "QQ",
-                    "clanId": qqid,
+                    "clanId": ev['user_id'],
                     }
                     info.remove("me")
                 match = re.search(r"CQ:at,qq=(\d+)",i)
@@ -65,16 +65,16 @@ async def get_ClanInfo(qqid,info,bot,ev):
                             for each in clanList:
                                 flag += 1
                                 msg += f"{flag}：[{each['tag']}]\n"
-                            ClanSecletProcess[qqid] = ClanSlectState(False, None, clanList)
+                            ClanSecletProcess[ev['user_id']] = ClanSlectState(False, None, clanList)
                             img = await text_to_pic(text=msg,css_path = template_path/"text-ship.css",width=250)
                             await bot.send(ev,str(MessageSegment.image(bytes2b64(img))))
                             a = 0
-                            while a < 40 and not ClanSecletProcess[qqid].state:
+                            while a < 40 and not ClanSecletProcess[ev['user_id']].state:
                                 a += 1
                                 await asyncio.sleep(0.5)
-                            if ClanSecletProcess[qqid].state and ClanSecletProcess[qqid].SlectIndex <= len(clanList):
-                                selectClanId = clanList[ClanSecletProcess[qqid].SlectIndex-1]['clanId']
-                                ClanSecletProcess[qqid] = ClanSlectState(False, None, None)
+                            if ClanSecletProcess[ev['user_id']].state and ClanSecletProcess[ev['user_id']].SlectIndex <= len(clanList):
+                                selectClanId = clanList[ClanSecletProcess[ev['user_id']].SlectIndex-1]['clanId']
+                                ClanSecletProcess[ev['user_id']] = ClanSlectState(False, None, None)
                             else:
                                 return '已超时退出'
                     else:
