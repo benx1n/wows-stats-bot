@@ -78,6 +78,7 @@ async def get_ShipRank(info,bot,ev):
                 return 'wuwuu好像出了点问题，可能是网络问题，过一会儿还是不行的话请联系麻麻~'   
     except Exception:
         logger.error(traceback.format_exc())
+        ShipSecletProcess[ev['user_id']] = ShipSlectState(False, None, None)
         return 'wuwuu好像出了点问题，过一会儿还是不行的话请联系麻麻~'    
    
 async def search_ShipRank_Yuyuko(shipId,server):

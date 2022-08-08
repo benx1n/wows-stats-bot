@@ -126,6 +126,7 @@ async def get_ShipInfo(info,bot,ev):
             return f"{result['message']}"
     except Exception:
         logger.error(traceback.format_exc())
+        ShipSecletProcess[ev['user_id']] = ShipSlectState(False, None, None)
         return    
     
     
@@ -290,4 +291,5 @@ async def get_ShipInfoRecent(info,bot,ev):
             return f"{result['message']}"
     except Exception:
         logger.error(traceback.format_exc())
+        ShipSecletProcess[ev['user_id']] = ShipSlectState(False, None, None)
         return
