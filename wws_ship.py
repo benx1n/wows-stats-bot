@@ -101,7 +101,7 @@ async def get_ShipInfo(info,bot,ev):
                         ShipSecletProcess[ev['user_id']] = ShipSlectState(False, None, None)
                         return '已超时退出'
             else:
-                return '找不到船'
+                return '找不到船，请确认船名是否正确，可以使用【wws 查船名】查询船只中英文'
         else:
             return '参数似乎出了问题呢'
         url = 'https://api.wows.shinoaki.com/public/wows/account/ship/info'
@@ -270,7 +270,7 @@ async def get_ShipInfoRecent(info,bot,ev):
                         ShipSecletProcess[ev['user_id']] = ShipSlectState(False, None, None)
                         return '已超时退出'
             else:
-                return '找不到船'
+                return '找不到船，请确认船名是否正确，可以使用【wws 查船名】查询船只中英文'
         else:
             return '参数似乎出了问题呢'
         url = 'https://api.wows.shinoaki.com/api/wows/recent/v2/recent/info/ship'
