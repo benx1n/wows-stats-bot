@@ -82,7 +82,7 @@ async def get_RecentInfo(info,bot,ev):
             result = resp.json()
         if result['code'] == 200:
             if result['data']['shipData'][0]['shipData']:
-                template = env.get_template("wws-info-recent.html")
+                template = env.get_template("wws-info-recent-Test.html")
                 template_data = await set_recentparams(result['data'])
                 content = await template.render_async(template_data)
                 return await html_to_pic(content, wait=0, viewport={"width": 1200, "height": 100}) 
