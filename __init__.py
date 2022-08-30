@@ -90,7 +90,7 @@ async def main(bot,ev:CQEvent):
             else:
                 await bot.send(ev,str(MessageSegment.image(bytes2b64(msg))))
         else:
-            await bot.send('没有获取到数据，可能是内部问题')
+            await bot.send(ev,'没有获取到数据，可能是内部问题')
         return
     except CQHttpError:
         logger.error(traceback.format_exc())
