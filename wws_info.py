@@ -70,7 +70,7 @@ async def get_AccountInfo(info,bot,ev):
             result = resp.json()
         print(f"本次请求总耗时{resp.elapsed.total_seconds()*1000}，服务器计算耗时:{result['queryTime']}")
         if result['code'] == 200 and result['data']:
-            template = env.get_template("wws-info-Test.html")
+            template = env.get_template("wws-info.html")
             template_data = await set_infoparams(result['data'])
             content = await template.render_async(template_data)
             return await html_to_pic(content, wait=0, viewport={"width": 920, "height": 1000})
