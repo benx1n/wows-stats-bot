@@ -12,6 +12,7 @@ from .wws_ship import ShipSecletProcess
 from .wws_clan import ClanSecletProcess
 from .utils import bytes2b64
 from .command_select import select_command
+from .game.pupu import get_pupu_msg
 import traceback
 import httpx
 import json
@@ -31,6 +32,8 @@ sv = Service('wows-stats-bot', manage_priv=priv.SUPERUSER, enable_on_default=Tru
 
 dir_path = Path(__file__).parent
 template_path = dir_path / "template"
+cfgpath = dir_path / 'config.json'
+config = json.load(open(cfgpath, 'r', encoding='utf8'))
 
 @sv.on_fullmatch(('wws帮助','wws 帮助','wws help'))
 async def get_help(bot, ev):
@@ -212,3 +215,22 @@ logger.add(
     level="WARNING",
     encoding="utf-8",
 )
+
+
+@sv.on_fullmatch('噗噗')
+async def send_pupu_msg(bot, ev:CQEvent):
+    try:
+        if config['pupu']:
+            msg = await get_pupu_msg()
+            await bot.send(ev,msg)
+    except CQHttpError:
+        logger.error(traceback.format_exc())
+        try:
+            await bot.send(ev,'噗噗寄了>_<可能被风控了QAQ')
+        except Exception:
+            pass
+        return
+    except Exception:
+        logger.error(traceback.format_exc())
+        await bot.send(ev,'呜呜呜发生了错误，可能是网络问题，如果过段时间不能恢复请联系麻麻哦~')
+        return
