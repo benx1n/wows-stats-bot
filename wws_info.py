@@ -7,7 +7,7 @@ import re
 import time
 from pathlib import Path
 from .data_source import servers,set_infoparams,set_damageColor,set_winColor,set_upinfo_color
-from .publicAPI import get_AccountIdByName
+from .publicAPI import get_AccountIdByName,check_yuyuko_cache
 from .utils import match_keywords
 from .html_render import html_to_pic
 from loguru import logger
@@ -64,6 +64,11 @@ async def get_AccountInfo(info,bot,ev):
         else:
             return '参数似乎出了问题呢'
         print(params)
+        is_cache = await check_yuyuko_cache(params['server'],params['accountId'])
+        if is_cache:
+            print('上报数据成功')
+        else:
+            print('跳过上报数据，直接请求')
         url = 'https://api.wows.shinoaki.com/public/wows/account/user/info'
         async with httpx.AsyncClient(headers=headers) as client:
             resp = await client.get(url, params=params, timeout=None)

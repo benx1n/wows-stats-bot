@@ -1,4 +1,5 @@
 {
     "token":"",
-    "pupu":true
+    "pupu":true,
+    "check_cache":true
 }
