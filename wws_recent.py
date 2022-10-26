@@ -10,7 +10,7 @@ from pathlib import Path
 from loguru import logger
 from .data_source import servers,set_recentparams,set_damageColor,set_winColor,set_upinfo_color
 from .utils import match_keywords
-from .publicAPI import get_AccountIdByName
+from .publicAPI import get_AccountIdByName,check_yuyuko_cache
 from .html_render import html_to_pic
 
 dir_path = Path(__file__).parent
@@ -76,6 +76,11 @@ async def get_RecentInfo(info,bot,ev):
         else:
             return '参数似乎出了问题呢'
         print(params)
+        is_cache = await check_yuyuko_cache(params['server'],params['accountId'])
+        if is_cache:
+            print('上报数据成功')
+        else:
+            print('跳过上报数据，直接请求')
         url = 'https://api.wows.shinoaki.com//api/wows/recent/v2/recent/info'
         async with httpx.AsyncClient(headers=headers) as client:
             resp = await client.get(url, params=params, timeout=None)

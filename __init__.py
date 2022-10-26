@@ -25,7 +25,7 @@ _max = 100
 EXCEED_NOTICE = f'您今天已经冲过{_max}次了，请明早5点后再来！'
 _nlmt = DailyNumberLimiter(_max)
 _flmt = FreqLimiter(3)
-_version = "0.3.5.2"
+_version = "0.3.5.3"
 WWS_help ="""请发送wws help查看帮助"""
 sv_help = WWS_help.strip()
 sv = Service('wows-stats-bot', manage_priv=priv.SUPERUSER, enable_on_default=True,help_ = sv_help)

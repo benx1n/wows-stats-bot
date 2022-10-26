@@ -11,7 +11,7 @@ from loguru import logger
 from hoshino.typing import MessageSegment
 from .data_source import servers,set_shipparams,set_shipRecentparams,tiers,number_url_homes,set_damageColor,set_winColor,set_upinfo_color
 from .utils import match_keywords,bytes2b64
-from.publicAPI import get_ship_byName,get_AccountIdByName
+from.publicAPI import get_ship_byName,get_AccountIdByName,check_yuyuko_cache
 from collections import defaultdict, namedtuple
 from .html_render import html_to_pic,text_to_pic
 from bs4 import BeautifulSoup
@@ -104,6 +104,11 @@ async def get_ShipInfo(info,bot,ev):
                 return '找不到船，请确认船名是否正确，可以使用【wws 查船名】查询船只中英文'
         else:
             return '参数似乎出了问题呢'
+        is_cache = await check_yuyuko_cache(params['server'],params['accountId'])
+        if is_cache:
+            print('上报数据成功')
+        else:
+            print('跳过上报数据，直接请求')
         url = 'https://api.wows.shinoaki.com/public/wows/account/ship/info'
         print(f"下面是本次请求的参数，如果遇到了问题，请将这部分连同报错日志一起发送给麻麻哦\n{url}\n{params}")
         ranking = await get_MyShipRank_yuyuko(params)
@@ -273,6 +278,11 @@ async def get_ShipInfoRecent(info,bot,ev):
                 return '找不到船，请确认船名是否正确，可以使用【wws 查船名】查询船只中英文'
         else:
             return '参数似乎出了问题呢'
+        is_cache = await check_yuyuko_cache(params['server'],params['accountId'])
+        if is_cache:
+            print('上报数据成功')
+        else:
+            print('跳过上报数据，直接请求')
         url = 'https://api.wows.shinoaki.com/api/wows/recent/v2/recent/info/ship'
         print(f"下面是本次请求的参数，如果遇到了问题，请将这部分连同报错日志一起发送给麻麻哦\n{url}\n{params}")
         async with httpx.AsyncClient(headers=headers) as client:
