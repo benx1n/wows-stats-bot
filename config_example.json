@@ -1,5 +1,6 @@
 {
     "token":"",
     "pupu":true,
-    "check_cache":true
+    "check_cache":true,
+    "proxy":""
 }
