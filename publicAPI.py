@@ -165,6 +165,7 @@ async def check_yuyuko_cache(server,id):
                     await asyncio.gather(*tasks)
                 if not cache_data:
                     return False
+                print(type(gzip.compress(json.dumps(cache_data).encode('utf-8'))))
                 data_base64 = b64encode(gzip.compress(json.dumps(cache_data).encode('utf-8'))).decode()
                 params['data'] = data_base64
                 async with httpx.AsyncClient(headers=headers) as client:

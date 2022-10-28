@@ -20,6 +20,7 @@ import re
 import html
 import asyncio
 from loguru import logger
+from .game.ocr import pic2txt_byOCR
 
 _max = 100
 EXCEED_NOTICE = f'您今天已经冲过{_max}次了，请明早5点后再来！'
@@ -233,4 +234,63 @@ async def send_pupu_msg(bot, ev:CQEvent):
     except Exception:
         logger.error(traceback.format_exc())
         await bot.send(ev,'呜呜呜发生了错误，可能是网络问题，如果过段时间不能恢复请联系麻麻哦~')
+        return
+    
+@sv.on_message()
+async def OCR_listen(bot, ev:CQEvent):
+    try:
+        if not config['ocr_on']:
+            return
+        if not (str(ev.message).find("[CQ:image")+1):  #判断收到的信息是否为图片，不是就退出
+            return
+        for seg in ev.message:
+            if seg.type == 'image':
+                try:
+                    tencent_url = seg.data['url']
+                    ocr_text = await pic2txt_byOCR(tencent_url)
+                    if ocr_text:
+                        print(ocr_text)
+                        match = re.search(r"^(/?)wws(.*?)$",ocr_text)
+                        if match:
+                            qqid = ev['user_id']
+                            if not _nlmt.check(qqid):
+                                await bot.send(ev, EXCEED_NOTICE, at_sender=True)
+                                return
+                            if not _flmt.check(qqid):
+                                await bot.send(ev, '您冲得太快了，请稍候再冲', at_sender=True)
+                                return
+                            _flmt.start_cd(qqid)
+                            _nlmt.increase(qqid) 
+                            replace_name = None
+                            searchtag = re.sub(r"^(/?)wws","",ocr_text)        #删除wws和/wws
+                            searchtag = html.unescape(str(searchtag)).strip()
+                            if not searchtag:
+                                await bot.send(ev,WWS_help.strip())
+                                return
+                            match = re.search(r"(\(|（)(.*?)(\)|）)",searchtag)
+                            if match:
+                                replace_name = match.group(2)
+                                search_list = searchtag.replace(match.group(0),'').split()
+                            else:
+                                search_list = searchtag.split()
+                            command,search_list = await select_command(search_list)
+                            if replace_name:
+                                search_list.append(replace_name)
+                            msg = await command(search_list,bot,ev)
+                            if msg:
+                                if isinstance(msg,str):
+                                    await bot.send(ev,msg)
+                                else:
+                                    await bot.send(ev,str(MessageSegment.image(bytes2b64(msg))))
+                            else:
+                                await bot.send(ev,'没有获取到数据，可能是内部问题')
+                except CQHttpError:
+                    logger.error(traceback.format_exc())
+                    try:
+                        await bot.send(ev,'发不出图片，可能被风控了QAQ')
+                    except Exception:
+                        pass
+                return
+    except Exception:
+        logger.error(traceback.format_exc())
         return

@@ -2,5 +2,7 @@
     "token":"",
     "pupu":true,
     "check_cache":true,
-    "proxy":""
+    "proxy":"",
+    "ocr_on":true,
+    "ocr_url":"http://mc.youthnp.cn:23338/OCR/"
 }
