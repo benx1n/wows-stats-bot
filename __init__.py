@@ -20,7 +20,7 @@ import re
 import html
 import asyncio
 from loguru import logger
-from .game.ocr import pic2txt_byOCR,upload_OcrResult
+from .game.ocr import pic2txt_byOCR,upload_OcrResult,downlod_OcrResult
 
 _max = 100
 EXCEED_NOTICE = f'您今天已经冲过{_max}次了，请明早5点后再来！'
@@ -192,6 +192,10 @@ async def job2():
     ev = CQEvent
     await startup()
     
+@sv.scheduled_job('interval',minutes=10)
+async def job3():
+    await downlod_OcrResult()
+    
 logger.add(
     str(dir_path/"logs/error.log"),
     rotation="00:00",
@@ -246,7 +250,8 @@ async def OCR_listen(bot, ev:CQEvent):
         for seg in ev.message:
             if seg.type == 'image':
                 tencent_url = seg.data['url']
-        ocr_text,img_md5 = await pic2txt_byOCR(tencent_url)
+                filename = str(seg.data['file']).replace(".image","")
+        ocr_text = await pic2txt_byOCR(tencent_url,filename)
         if ocr_text:
             match = re.search(r"^(/?)wws(.*?)$",ocr_text)
             if match:
@@ -278,11 +283,14 @@ async def OCR_listen(bot, ev:CQEvent):
                 if msg:
                     if isinstance(msg,str):
                         await bot.send(ev,msg)
+                        await upload_OcrResult(ocr_text,filename)
                     else:
                         await bot.send(ev,str(MessageSegment.image(bytes2b64(msg))))
-                        await upload_OcrResult(ocr_text,img_md5)
+                        await upload_OcrResult(ocr_text,filename)
                 else:
                     await bot.send(ev,'没有获取到数据，可能是内部问题')
+            else:
+                return
     except CQHttpError:
         logger.error(traceback.format_exc())
         try:
