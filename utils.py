@@ -1,7 +1,9 @@
+from cgitb import reset
 import datetime
 from nonebot import scheduler
 from apscheduler.triggers.date import DateTrigger
 from base64 import b64encode
+import hashlib
 
 async def match_keywords(match_list,Lists):
     for List in Lists :                        
@@ -45,3 +47,6 @@ def call_later(delay, func, job_id):
         max_instances=1,
     )
 
+async def byte2md5(bytes):
+    res = hashlib.md5(bytes).hexdigest()
+    return res

@@ -130,3 +130,4 @@ dmypy.json
 config.json
 echarts.js
 .vscode
+game/ocr_data.json
