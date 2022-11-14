@@ -69,7 +69,7 @@ number_url_homes={
     "eu":"https://wows-numbers.com",
     "na":"https://na.wows-numbers.com",
     "ru":"https://ru.wows-numbers.com",
-    "cn": None
+    "cn": ""
 }
 
 pr_select = [
