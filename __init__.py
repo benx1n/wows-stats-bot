@@ -190,7 +190,7 @@ async def job1():
 async def job2():
     bot = get_bot()
     ev = CQEvent
-    await startup()
+    await startup(bot,ev)
     
 @sv.scheduled_job('interval',minutes=10)
 async def job3():
