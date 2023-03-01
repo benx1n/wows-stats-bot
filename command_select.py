@@ -11,6 +11,7 @@ from .wws_record import get_record
 from .wws_shiprank import get_ShipRank
 from .wws_realTime import mqtt_test
 from .game.roll import roll_ship
+from .game.ocr import get_Random_Ocr_Pic
 from .game.sx import get_sx_info
 from .game.box_check import check_christmas_box
 from .utils import match_keywords,bytes2b64
@@ -37,6 +38,7 @@ first_command_list = [        #同指令中越长的匹配词越靠前
     command(("record","历史记录"),None,get_record),
     command(("clan","军团","公会","工会"),None,get_ClanInfo),
     command(("mqtt测试","实时战绩"),mqtt_test),
+    command(("随机表情包",), get_Random_Ocr_Pic),
     command(("roll","随机"),roll_ship),
     command(("sx","扫雪"),get_sx_info),
     command(("box","sd","圣诞船池"),check_christmas_box),

@@ -1,12 +1,11 @@
-from socket import timeout
-import time
-import httpx
-import traceback
 import json
-from base64 import b64encode,b64decode
-from loguru import logger
+import time
+import traceback
+from base64 import b64decode, b64encode
 from pathlib import Path
 
+import httpx
+from loguru import logger
 
 dir_path = Path(__file__).parent.parent
 game_path = Path(__file__).parent
@@ -91,3 +90,14 @@ async def downlod_OcrResult():
     except:
         ocr_filename_data = json.load(open(ocr_data_path, 'r', encoding='utf8'))
         logger.error(traceback.format_exc())
+        
+async def get_Random_Ocr_Pic(info,bot,ev):
+    try:
+        async with httpx.AsyncClient(headers=headers, timeout=None) as client:
+            resp = await client.post('http://mc.youthnp.cn:23338/ImageRandom/')
+            img = b64decode(resp.text)
+        return img
+    except:
+        logger.error(traceback.format_exc())  
+        return 'OCR服务器出了点问题，请稍后再试哦' 
+        

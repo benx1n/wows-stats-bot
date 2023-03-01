@@ -19,6 +19,7 @@ import json
 import re
 import html
 import asyncio
+import random
 from loguru import logger
 from .game.ocr import pic2txt_byOCR,upload_OcrResult,downlod_OcrResult
 
@@ -26,7 +27,7 @@ _max = 100
 EXCEED_NOTICE = f'您今天已经冲过{_max}次了，请明早5点后再来！'
 _nlmt = DailyNumberLimiter(_max)
 _flmt = FreqLimiter(3)
-_version = "0.3.6.1"
+_version = "0.3.6.5"
 WWS_help ="""请发送wws help查看帮助"""
 sv_help = WWS_help.strip()
 sv = Service('wows-stats-bot', manage_priv=priv.SUPERUSER, enable_on_default=True,help_ = sv_help)
@@ -73,6 +74,9 @@ async def main(bot,ev:CQEvent):
             return
         _flmt.start_cd(qqid)
         _nlmt.increase(qqid) 
+        if random.randint(1,1000) == 1:
+            await bot.send(ev, "一天到晚惦记你那b水表，就nm离谱")
+            return
         replace_name = None
         searchtag = html.unescape(str(ev.message)).strip()
         if not searchtag:
