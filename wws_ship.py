@@ -9,7 +9,7 @@ import asyncio
 from pathlib import Path
 from loguru import logger
 from hoshino.typing import MessageSegment
-from .data_source import servers,set_shipparams,set_shipRecentparams,tiers,number_url_homes,set_damageColor,set_winColor,set_upinfo_color
+from .data_source import servers,set_shipparams,set_shipRecentparams,tiers,number_url_homes,set_damageColor,set_winColor,set_upinfo_color,set_shipSelectparams
 from .utils import match_keywords,bytes2b64
 from.publicAPI import get_ship_byName,get_AccountIdByName,check_yuyuko_cache
 from collections import defaultdict, namedtuple
@@ -82,13 +82,15 @@ async def get_ShipInfo(info,bot,ev):
                 if len(shipList) < 2:
                     params["shipId"] = shipList[0][0]
                 else:
-                    msg = f'存在多条名字相似的船\n请在20秒内选择对应的序号\n================\n'
-                    flag = 0
-                    for each in shipList:
-                        flag += 1
-                        msg += f"{flag}：{tiers[each[3]-1]} {each[1]}\n"
-                    ShipSecletProcess[ev['user_id']] = ShipSlectState(False, None, shipList)
-                    img = await text_to_pic(text=msg,css_path = template_path/"text-ship.css",width=250)
+                    ShipSecletProcess[ev['user_id']] = ShipSlectState(
+                        False, None, shipList
+                    )
+                    template = env.get_template("select-ship.html")
+                    template_data = await set_shipSelectparams(shipList)
+                    content = await template.render_async(template_data)
+                    img = await html_to_pic(
+                        content, wait=0, viewport={"width": 360, "height": 100}
+                    )
                     await bot.send(ev,str(MessageSegment.image(bytes2b64(img))))
                     a = 0
                     while a < 40 and not ShipSecletProcess[ev['user_id']].state:
@@ -256,13 +258,15 @@ async def get_ShipInfoRecent(info,bot,ev):
                 if len(shipList) < 2:
                     params["shipId"] = shipList[0][0]
                 else:
-                    msg = f'存在多条名字相似的船\n请在20秒内选择对应的序号\n================\n'
-                    flag = 0
-                    for each in shipList:
-                        flag += 1
-                        msg += f"{flag}：{tiers[each[3]-1]} {each[1]}\n"
-                    ShipSecletProcess[ev['user_id']] = ShipSlectState(False, None, shipList)
-                    img = await text_to_pic(text=msg,css_path = template_path/"text-ship.css",width=250)
+                    ShipSecletProcess[ev['user_id']] = ShipSlectState(
+                        False, None, shipList
+                    )
+                    template = env.get_template("select-ship.html")
+                    template_data = await set_shipSelectparams(shipList)
+                    content = await template.render_async(template_data)
+                    img = await html_to_pic(
+                        content, wait=0, viewport={"width": 360, "height": 100}
+                    )
                     await bot.send(ev,str(MessageSegment.image(bytes2b64(img))))
                     a = 0
                     while a < 40 and not ShipSecletProcess[ev['user_id']].state:

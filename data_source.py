@@ -153,6 +153,13 @@ async def set_recentparams(List):
     except Exception:
         traceback.print_exc()
         
+async def set_shipSelectparams(List):
+    try:
+        result = {"data": List}
+        return result
+    except Exception:
+        traceback.print_exc()
+        
 async def set_shipparams(List):
     try:   
         result = {
