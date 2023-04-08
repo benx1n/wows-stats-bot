@@ -62,7 +62,7 @@ async def get_ShipRank(info,bot,ev):
                 if ShipSecletProcess[ev['user_id']].state and ShipSecletProcess[ev['user_id']].SlectIndex <= len(shipList):
                     select_shipId = int(shipList[ShipSecletProcess[ev['user_id']].SlectIndex-1][0])
                     shipInfo = {
-                        "shipNameCn": shipList[ShipSecletProcess[ev['user_id'].SlectIndex - 1][1],
+                        "shipNameCn": shipList[ShipSecletProcess[ev['user_id']].SlectIndex - 1][1],
                         "tier": shipList[ShipSecletProcess[ev['user_id']].SlectIndex - 1][3]
                     }
                     number_url += f"{select_shipId},{shipList[ShipSecletProcess[ev['user_id']].SlectIndex-1][2]}"
@@ -128,7 +128,7 @@ async def search_ShipRank_Numbers(url,server,shipId,shipInfo):
         data = soup.select('tr[class="cells-middle"]')
         infoList = await set_ShipRank_Numbers(data,server,shipId)
         if infoList:
-            result_data = {"data": result["data"], "shipInfo": shipInfo}
+            result_data = {"data": infoList, "shipInfo": shipInfo}
             template = env.get_template("ship-rank.html")
             content = await template.render_async(result_data)
             return content,infoList
