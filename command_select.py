@@ -7,7 +7,7 @@ from .game.box_check import check_christmas_box
 from .game.ocr import get_Random_Ocr_Pic
 from .game.roll import roll_ship
 from .game.sx import get_sx_info
-from .publicAPI import get_nation_list, get_ship_byName, get_ship_name
+from .moudle.publicAPI import get_nation_list, get_ship_byName, get_ship_name
 from .utils import bytes2b64, match_keywords
 from .moudle.wws_bind import (change_BindInfo, delete_BindInfo, get_BindInfo,
                        set_BindInfo, set_special_BindInfo)

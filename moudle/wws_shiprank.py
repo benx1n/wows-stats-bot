@@ -14,7 +14,7 @@ from ..data_source import (config, number_url_homes, servers, set_shipparams,
 from ..utils import bytes2b64, match_keywords
 from .wws_ship import ShipSecletProcess, ShipSlectState
 
-from..publicAPI import get_ship_byName
+from.publicAPI import get_ship_byName
 from bs4 import BeautifulSoup
 
 from ..html_render import html_to_pic, text_to_pic

@@ -13,7 +13,7 @@ from loguru import logger
 
 from ..data_source import config, servers, set_clanRecord_params, template_path
 from ..html_render import html_to_pic
-from ..publicAPI import get_AccountIdByName
+from .publicAPI import get_AccountIdByName
 from ..utils import match_keywords
 from .wws_clan import ClanSecletProcess, ClanSlectState
 

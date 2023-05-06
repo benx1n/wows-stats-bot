@@ -10,7 +10,7 @@ from loguru import logger
 from ..data_source import config, servers, template_path
 from ..html_render import html_to_pic
 from ..HttpClient_pool import client_yuyuko
-from ..publicAPI import get_AccountIdByName
+from ..moudle.publicAPI import get_AccountIdByName
 from ..utils import match_keywords
 from ..moudle.wws_bind import get_DefaultBindInfo
 

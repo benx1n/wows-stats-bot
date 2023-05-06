@@ -17,7 +17,7 @@ from ..data_source import (config, number_url_homes, servers, set_damageColor,
                            set_winColor, template_path, tiers)
 from ..utils import bytes2b64, match_keywords
 
-from..publicAPI import get_ship_byName,get_AccountIdByName,check_yuyuko_cache
+from.publicAPI import get_ship_byName,get_AccountIdByName,check_yuyuko_cache
 from collections import defaultdict, namedtuple
 from datetime import datetime
 

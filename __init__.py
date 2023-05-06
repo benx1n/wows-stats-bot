@@ -21,7 +21,7 @@ from .game.ocr import downlod_OcrResult, pic2txt_byOCR, upload_OcrResult
 from .game.pupu import get_pupu_msg
 from .html_render import text_to_pic
 from .HttpClient_pool import client_default
-from .publicAPI import get_nation_list
+from .moudle.publicAPI import get_nation_list
 from .utils import bytes2b64
 from .moudle.wws_clan import ClanSecletProcess
 from .moudle.wws_ship import ShipSecletProcess

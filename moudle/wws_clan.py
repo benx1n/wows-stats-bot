@@ -12,7 +12,7 @@ from hoshino.typing import MessageSegment
 from ..data_source import config, servers, template_path
 from ..utils import bytes2b64, match_keywords
 
-from..publicAPI import get_ClanIdByName
+from.publicAPI import get_ClanIdByName
 from collections import defaultdict, namedtuple
 
 from loguru import logger

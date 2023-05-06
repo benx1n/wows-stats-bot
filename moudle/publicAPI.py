@@ -9,9 +9,9 @@ import orjson
 from httpx import ConnectTimeout
 from loguru import logger
 
-from .data_source import config, levels, nations, shiptypes
-from .HttpClient_pool import client_wg, client_yuyuko
-from .utils import match_keywords
+from ..data_source import config, levels, nations, shiptypes
+from ..HttpClient_pool import client_wg, client_yuyuko
+from ..utils import match_keywords
 
 
 async def get_nation_list():
