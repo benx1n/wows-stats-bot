@@ -1,29 +1,24 @@
-from typing import List
-import httpx
-import traceback
-import json
-import jinja2
 import re
 import time
+import traceback
 from pathlib import Path
-from .data_source import servers,set_infoparams,set_damageColor,set_winColor,set_upinfo_color
-from .publicAPI import get_AccountIdByName,check_yuyuko_cache
-from .utils import match_keywords
-from .html_render import html_to_pic
+from typing import List
+
+import jinja2
+import orjson
 from loguru import logger
 
-dir_path = Path(__file__).parent
-template_path = dir_path / "template"
-cfgpath = dir_path / 'config.json'
-config = json.load(open(cfgpath, 'r', encoding='utf8'))
+from .data_source import (config, servers, set_damageColor, set_infoparams,
+                          set_upinfo_color, set_winColor, template_path)
+from .html_render import html_to_pic
+from .HttpClient_pool import client_yuyuko
+from .publicAPI import check_yuyuko_cache, get_AccountIdByName
+from .utils import match_keywords
+
 env = jinja2.Environment(
     loader=jinja2.FileSystemLoader(template_path), enable_async=True
 )
 env.globals.update(set_damageColor=set_damageColor,set_winColor=set_winColor,set_upinfo_color=set_upinfo_color,time=time,int=int,abs=abs,enumerate=enumerate)
-
-headers = {
-    'Authorization': config['token']
-}
   
 
 async def get_AccountInfo(info,bot,ev):
@@ -58,22 +53,20 @@ async def get_AccountInfo(info,bot,ev):
                 else:
                     return '服务器参数似乎输错了呢'
             elif params:
-                print('下面是本次请求的参数，如果遇到了问题，请将这部分连同报错日志一起发送给麻麻哦')
+                pass
             else:
                 return '您似乎准备用游戏昵称查询水表，请检查参数中时候包含服务器和游戏昵称，以空格区分，如果您准备查询单船战绩，请带上ship参数'
         else:
             return '参数似乎出了问题呢'
-        print(params)
         is_cache = await check_yuyuko_cache(params['server'],params['accountId'])
         if is_cache:
-            print('上报数据成功')
+            logger.success('上报数据成功')
         else:
-            print('跳过上报数据，直接请求')
+            logger.success('跳过上报数据，直接请求')
         url = 'https://api.wows.shinoaki.com/public/wows/account/user/info'
-        async with httpx.AsyncClient(headers=headers) as client:
-            resp = await client.get(url, params=params, timeout=None)
-            result = resp.json()
-        print(f"本次请求总耗时{resp.elapsed.total_seconds()*1000}，服务器计算耗时:{result['queryTime']}")
+        resp = await client_yuyuko.get(url, params=params, timeout=None)
+        result = orjson.loads(resp.content)
+        logger.info(f"本次请求总耗时{resp.elapsed.total_seconds()*1000}，服务器计算耗时:{result['queryTime']}")
         if result['code'] == 200 and result['data']:
             template = env.get_template("wws-info.html")
             template_data = await set_infoparams(result['data'])

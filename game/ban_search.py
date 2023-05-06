@@ -1,29 +1,23 @@
-from typing import List
-import httpx
-import traceback
-import json
-import jinja2
 import re
 import time
-from pathlib import Path
-from ..data_source import servers
-from ..publicAPI import get_AccountIdByName
-from ..utils import match_keywords
-from ..html_render import html_to_pic
-from ..wws_bind import get_DefaultBindInfo
+import traceback
+from typing import List
+
+import jinja2
+import orjson
 from loguru import logger
 
-dir_path = Path(__file__).parent.parent
-template_path = dir_path / "template"
-cfgpath = dir_path / 'config.json'
-config = json.load(open(cfgpath, 'r', encoding='utf8'))
+from ..data_source import config, servers, template_path
+from ..html_render import html_to_pic
+from ..HttpClient_pool import client_yuyuko
+from ..publicAPI import get_AccountIdByName
+from ..utils import match_keywords
+from ..wws_bind import get_DefaultBindInfo
+
 env = jinja2.Environment(
     loader=jinja2.FileSystemLoader(template_path), enable_async=True
 )
 
-headers = {
-    'Authorization': config['token']
-}
   
 
 async def get_BanInfo(info,bot,ev):
@@ -66,10 +60,9 @@ async def get_BanInfo(info,bot,ev):
         else:
             return '参数似乎出了问题呢'
         url = 'https://api.wows.shinoaki.com/public/wows/ban/cn/user'
-        async with httpx.AsyncClient(headers=headers) as client:
-            resp = await client.post(url, json={"accountId":param_accountid}, timeout=None)
-            result = resp.json()
-        print(f"本次请求总耗时{resp.elapsed.total_seconds()*1000}，服务器计算耗时:{result['queryTime']}")
+        resp = await client_yuyuko.post(url, json={"accountId":param_accountid}, timeout=None)
+        result = orjson.loads(resp.content)
+        logger.info(f"本次请求总耗时{resp.elapsed.total_seconds()*1000}，服务器计算耗时:{result['queryTime']}")
         if result['code'] == 200 and result['data']:
             template = env.get_template("wws-ban.html")
             template_data = {"data": result["data"]}

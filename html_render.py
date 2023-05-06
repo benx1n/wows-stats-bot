@@ -1,9 +1,10 @@
 from os import getcwd
 from pathlib import Path
 
-import jinja2
 import aiofiles
+import jinja2
 from nonebot.log import logger
+
 from .browser import get_new_page
 
 TEMPLATES_PATH = str(Path(__file__).parent / "template")

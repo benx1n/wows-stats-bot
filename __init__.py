@@ -1,27 +1,30 @@
-from nonebot.typing import State_T
-from nonebot.exceptions import CQHttpError
-import hoshino
-from hoshino import R, Service, priv, get_bot
-from hoshino.util import FreqLimiter, DailyNumberLimiter
-from hoshino.typing import CQEvent, MessageSegment
-from nonebot import NoticeSession, on_command
-from pathlib import Path
-from .html_render import text_to_pic
-from .publicAPI import get_nation_list
-from .wws_ship import ShipSecletProcess
-from .wws_clan import ClanSecletProcess
-from .utils import bytes2b64
-from .command_select import select_command
-from .game.pupu import get_pupu_msg
-import traceback
-import httpx
-import json
-import re
-import html
 import asyncio
+import html
 import random
+import re
+import traceback
+
+import hoshino
+import httpx
+import orjson
+from hoshino import R, Service, get_bot, priv
+from hoshino.typing import CQEvent, MessageSegment
+from hoshino.util import DailyNumberLimiter, FreqLimiter
 from loguru import logger
-from .game.ocr import pic2txt_byOCR,upload_OcrResult,downlod_OcrResult
+from nonebot import NoticeSession, on_command
+from nonebot.exceptions import CQHttpError
+from nonebot.typing import State_T
+
+from .command_select import select_command
+from .data_source import config, dir_path, template_path
+from .game.ocr import downlod_OcrResult, pic2txt_byOCR, upload_OcrResult
+from .game.pupu import get_pupu_msg
+from .html_render import text_to_pic
+from .HttpClient_pool import client_default
+from .publicAPI import get_nation_list
+from .utils import bytes2b64
+from .wws_clan import ClanSecletProcess
+from .wws_ship import ShipSecletProcess
 
 _max = 100
 EXCEED_NOTICE = f'您今天已经冲过{_max}次了，请明早5点后再来！'
@@ -32,22 +35,15 @@ WWS_help ="""请发送wws help查看帮助"""
 sv_help = WWS_help.strip()
 sv = Service('wows-stats-bot', manage_priv=priv.SUPERUSER, enable_on_default=True,help_ = sv_help)
 
-dir_path = Path(__file__).parent
-template_path = dir_path / "template"
-cfgpath = dir_path / 'config.json'
-config = json.load(open(cfgpath, 'r', encoding='utf8'))
-
 @sv.on_fullmatch(('wws帮助','wws 帮助','wws help'))
 async def get_help(bot, ev):
     url = 'https://benx1n.oss-cn-beijing.aliyuncs.com/version.json'
-    async with httpx.AsyncClient() as client:
-        resp = await client.get(url, timeout=10)
-        result = json.loads(resp.text)
+    resp = await client_default.get(url, timeout=10)
+    result = orjson.loads(resp.content)
     latest_version = result['latest_version']
     url = 'https://benx1n.oss-cn-beijing.aliyuncs.com/wws_help.txt'
-    async with httpx.AsyncClient() as client:
-        resp = await client.get(url, timeout=10)
-        result = resp.text
+    resp = await client_default.get(url, timeout=10)
+    result = resp.text
     result = f'''帮助列表                                                当前版本{_version}  最新版本{latest_version}\n{result}'''
     img = await text_to_pic(text = result, width = 800)
     await bot.send(ev,str(MessageSegment.image(bytes2b64(img))))
@@ -138,9 +134,8 @@ async def change_select_state(bot, ev):
 async def check_version(bot, ev:CQEvent):
     try:
         url = 'https://benx1n.oss-cn-beijing.aliyuncs.com/version.json'
-        async with httpx.AsyncClient() as client:
-            resp = await client.get(url, timeout=10)
-            result = json.loads(resp.text)
+        resp = await client_default.get(url, timeout=10)
+        result = orjson.loads(resp.content)
         bot = hoshino.get_bot()
         superid = hoshino.config.SUPERUSERS[0]
         match,msg = False,f'发现新版本'
@@ -169,7 +164,7 @@ async def startup(bot, ev:CQEvent):
         url = 'https://benx1n.oss-cn-beijing.aliyuncs.com/template_Hoshino_Latest/template.json'
         async with httpx.AsyncClient() as client:
             resp = await client.get(url, timeout=20)
-            result = resp.json()
+            result = orjson.loads(resp.content)
             for each in result:
                 for name, url in each.items():
                     tasks.append(asyncio.ensure_future(startup_download(url, name)))

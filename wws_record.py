@@ -1,19 +1,21 @@
-from typing import List
-import httpx
-import traceback
+import asyncio
 import json
-import jinja2
 import re
 import time
-import asyncio
+import traceback
 from pathlib import Path
+from typing import List
+
+import httpx
+import jinja2
+from bs4 import BeautifulSoup
 from loguru import logger
-from .data_source import servers,set_clanRecord_params
+
+from .data_source import servers, set_clanRecord_params
+from .html_render import html_to_pic
 from .publicAPI import get_AccountIdByName
 from .utils import match_keywords
-from .wws_clan import ClanSlectState,ClanSecletProcess
-from .html_render import html_to_pic
-from bs4 import BeautifulSoup
+from .wws_clan import ClanSecletProcess, ClanSlectState
 
 dir_path = Path(__file__).parent
 template_path = dir_path / "template"
@@ -62,7 +64,7 @@ async def get_record(info,type,bot,ev):
                 else:
                     return '服务器参数似乎输错了呢'
             elif params:
-                print('下面是本次请求的参数，如果遇到了问题，请将这部分连同报错日志一起发送给麻麻哦')
+                pass
             else:
                 return '您似乎准备用游戏昵称查询公会进出记录，请检查参数中时候包含服务器和游戏昵称，以空格区分，如果您准备查询单船战绩，请带上ship参数'
         else:

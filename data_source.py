@@ -1,13 +1,18 @@
-from dataclasses import dataclass
-from typing import Tuple,List
+import re
 import time
 import traceback
+from dataclasses import dataclass
 from pathlib import Path
+from typing import List, Tuple
+
+import orjson
 from bs4 import BeautifulSoup
-import re
 
 dir_path = Path(__file__).parent
 template_path = dir_path / "template"
+cfgpath = dir_path / 'config.json'
+with open(cfgpath, "rb") as f:    
+    config = orjson.loads(f.read())
 
 @dataclass
 class matching:

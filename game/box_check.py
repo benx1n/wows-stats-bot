@@ -1,30 +1,24 @@
-from typing import List
-import httpx
-import traceback
-import jinja2
 import re
 import time
-import json
-from pathlib import Path
-from ..data_source import servers,set_infoparams,set_damageColor,set_winColor,set_upinfo_color
-from ..publicAPI import get_AccountIdByName,check_yuyuko_cache
-from ..utils import match_keywords
-from ..html_render import html_to_pic
+import traceback
+from typing import List
+
+import jinja2
+import orjson
 from loguru import logger
 
-dir_path = Path(__file__).parent.parent
-game_path = Path(__file__).parent
-cfgpath = dir_path / 'config.json'
-config = json.load(open(cfgpath, 'r', encoding='utf8'))
-template_path = dir_path / "template"
+from ..data_source import (config, servers, set_damageColor, set_infoparams,
+                           set_upinfo_color, set_winColor, template_path)
+from ..html_render import html_to_pic
+from ..HttpClient_pool import client_yuyuko
+from ..publicAPI import check_yuyuko_cache, get_AccountIdByName
+from ..utils import match_keywords
+
 env = jinja2.Environment(
     loader=jinja2.FileSystemLoader(template_path), enable_async=True
 )
 env.globals.update(set_damageColor=set_damageColor,set_winColor=set_winColor,set_upinfo_color=set_upinfo_color,time=time,int=int,abs=abs,enumerate=enumerate)
 
-headers = {
-    'Authorization': config['token']
-}
   
 async def check_christmas_box(info,bot,ev):
     try:
@@ -70,11 +64,10 @@ async def check_christmas_box(info,bot,ev):
             return '参数似乎出了问题呢'
         url = 'https://api.wows.shinoaki.com/public/wows/christmas/ship/box'
         logger.success(f"下面是本次请求的参数，如果遇到了问题，请将这部分连同报错日志一起发送给麻麻哦\n{url}\n{params}")
-        async with httpx.AsyncClient(headers=headers) as client:
-            resp = await client.get(url, params=params, timeout=None)
-            result = resp.json()
-            logger.success(f"本次请求返回的状态码:{result['code']}")
-            logger.success(f"本次请求服务器计算时间:{result['queryTime']}")
+        resp = await client_yuyuko.get(url, params=params, timeout=None)
+        result = orjson.loads(resp.content)
+        logger.success(f"本次请求返回的状态码:{result['code']}")
+        logger.success(f"本次请求服务器计算时间:{result['queryTime']}")
         if result['code'] == 200 and result['data']:
             template = env.get_template("wws-box-christmas.html")
             template_data = await set_infoparams(result['data'])

@@ -1,31 +1,28 @@
-import httpx
-import traceback
-import json
-import jinja2
 import asyncio
+import traceback
 from pathlib import Path
-from loguru import logger
+
+import httpx
+import jinja2
+import orjson
 from hoshino.typing import MessageSegment
-from .data_source import servers,set_shipparams,tiers,number_url_homes,set_ShipRank_Numbers,set_shipSelectparams
-from .utils import match_keywords,bytes2b64
-from .wws_ship import ShipSecletProcess,ShipSlectState
+from loguru import logger
+
+from .data_source import (config, number_url_homes, servers, set_shipparams,
+                          set_ShipRank_Numbers, set_shipSelectparams,
+                          template_path, tiers)
+from .utils import bytes2b64, match_keywords
+from .wws_ship import ShipSecletProcess, ShipSlectState
+
 from.publicAPI import get_ship_byName
 from bs4 import BeautifulSoup
-from .html_render import html_to_pic,text_to_pic
 
-dir_path = Path(__file__).parent
-template_path = dir_path / "template"
-cfgpath = dir_path / 'config.json'
-config = json.load(open(cfgpath, 'r', encoding='utf8'))
+from .html_render import html_to_pic, text_to_pic
+from .HttpClient_pool import client_default, client_yuyuko
+
 env = jinja2.Environment(
     loader=jinja2.FileSystemLoader(template_path), enable_async=True
 )
-
-headers = {
-    'Authorization': config['token'],
-    'accept':'application/json',
-    'Content-Type':'application/json',
-}
 
 async def get_ShipRank(info,bot,ev):
     try:
@@ -97,23 +94,21 @@ async def get_ShipRank(info,bot,ev):
    
 async def search_ShipRank_Yuyuko(shipId,server,shipInfo):
     try:
-        content = None
-        async with httpx.AsyncClient(headers=headers) as client:        #查询是否有缓存
-            url = 'https://api.wows.shinoaki.com/upload/numbers/data/v2/upload/ship/rank'
-            params = {
-                "server":server,
-                "shipId":int(shipId)
-            }
-            print(f"{url}\n{params}")
-            resp = await client.get(url, params=params,timeout=None)
-            result = resp.json()
-            if result['code'] == 200 and result['data']:
-                result_data = {"data": result["data"], "shipInfo": shipInfo}
-                template = env.get_template("ship-rank.html")
-                content = await template.render_async(result_data)
-                return content
-            else:
-                return None
+        content = None                              #查询是否有缓存  
+        url = 'https://api.wows.shinoaki.com/upload/numbers/data/v2/upload/ship/rank'
+        params = {
+            "server":server,
+            "shipId":int(shipId)
+        }
+        resp = await client_yuyuko.get(url, params=params,timeout=None)
+        result = orjson.loads(resp.content)
+        if result['code'] == 200 and result['data']:
+            result_data = {"data": result["data"], "shipInfo": shipInfo}
+            template = env.get_template("ship-rank.html")
+            content = await template.render_async(result_data)
+            return content
+        else:
+            return None
     except Exception:
         logger.error(traceback.format_exc())
         return None 
@@ -122,8 +117,7 @@ async def search_ShipRank_Numbers(url,server,shipId,shipInfo):
     try:
         content = None
         print(url)
-        async with httpx.AsyncClient() as client:
-            resp = await client.get(url, timeout=None)
+        resp = await client_default.get(url, timeout=None)
         soup = BeautifulSoup(resp.content, 'html.parser')
         data = soup.select('tr[class="cells-middle"]')
         infoList = await set_ShipRank_Numbers(data,server,shipId)
@@ -140,37 +134,33 @@ async def search_ShipRank_Numbers(url,server,shipId,shipInfo):
             
 async def post_ShipRank(data):
     try:
-        async with httpx.AsyncClient(headers=headers) as client:
-            url = 'https://api.wows.shinoaki.com/upload/numbers/data/v2/upload/ship/rank'
-            resp = await client.post(url, json = data, timeout=None)
-            print(resp.request)
-            result = resp.json()
-            print(result)
+        url = 'https://api.wows.shinoaki.com/upload/numbers/data/v2/upload/ship/rank'
+        resp = await client_yuyuko.post(url, json = data, timeout=None)
+        result = orjson.loads(resp.content)
     except Exception:
         logger.error(traceback.format_exc())
                 
         
 async def search_cn_rank(shipId,server,page,shipInfo):
     try:
-        content = None
-        async with httpx.AsyncClient(headers=headers) as client:        #查询是否有缓存
-            url = 'https://api.wows.shinoaki.com/wows/rank/ship/server'
-            params = {
-                "server":server,
-                "shipId":int(shipId),
-                "page":int(page)
-            }
-            logger.success(f"下面是本次请求的参数，如果遇到了问题，请将这部分连同报错日志一起发送给麻麻哦\n{url}\n{params}")
-            resp = await client.get(url, params=params,timeout=None)
-            result = resp.json()
-            logger.success(f"本次请求返回的状态码:{result['code']}")
-            if result['code'] == 200 and result['data']:
-                template = env.get_template("ship-rank.html")
-                result_data = {"data": result["data"], "shipInfo": shipInfo}
-                content = await template.render_async(result_data)
-                return content
-            else:
-                return None
+        content = None       #查询是否有缓存
+        url = 'https://api.wows.shinoaki.com/wows/rank/ship/server'
+        params = {
+            "server":server,
+            "shipId":int(shipId),
+            "page":int(page)
+        }
+        logger.success(f"下面是本次请求的参数，如果遇到了问题，请将这部分连同报错日志一起发送给麻麻哦\n{url}\n{params}")
+        resp = await client_yuyuko.get(url, params=params,timeout=None)
+        result = orjson.loads(resp.content)
+        logger.success(f"本次请求返回的状态码:{result['code']}")
+        if result['code'] == 200 and result['data']:
+            template = env.get_template("ship-rank.html")
+            result_data = {"data": result["data"], "shipInfo": shipInfo}
+            content = await template.render_async(result_data)
+            return content
+        else:
+            return None
     except Exception:
         logger.error(traceback.format_exc())
         return None 

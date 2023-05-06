@@ -1,21 +1,15 @@
-from typing import List
-import httpx
-import traceback
-import json
 import re
-from pathlib import Path
+import traceback
+from typing import List
+
+import orjson
 from loguru import logger
-from requests import head
 
 from .data_source import servers
+from .HttpClient_pool import client_yuyuko
 from .publicAPI import get_AccountIdByName
 from .utils import match_keywords
-dir_path = Path(__file__).parent
-cfgpath = dir_path / 'config.json'
-config = json.load(open(cfgpath, 'r', encoding='utf8'))
-headers = {
-    'Authorization': config['token']
-}
+
 
 async def get_BindInfo(info,bot,ev):
     try:
@@ -39,9 +33,8 @@ async def get_BindInfo(info,bot,ev):
                 return '参数似乎出了问题呢，请使用me或@群友'
         else:
             return '参数似乎出了问题呢，请使用me或@群友'
-        async with httpx.AsyncClient(headers=headers) as client:
-            resp = await client.get(url, params=params, timeout=None)
-            result = resp.json()
+        resp = await client_yuyuko.get(url, params=params, timeout=None)
+        result = orjson.loads(resp.content)
         if result['code'] == 200 and result['message'] == "success":
             if result['data']:
                 msg1 = f'当前绑定账号\n'
@@ -87,9 +80,8 @@ async def set_BindInfo(info,bot,ev):
                 return '参数似乎输错了呢，请确保后面跟随服务器+游戏昵称'
         else:
             return '参数似乎输错了呢，请确保后面跟随服务器+游戏昵称'
-        async with httpx.AsyncClient(headers=headers) as client:
-            resp = await client.get(url, params=params, timeout=None)
-            result = resp.json()
+        resp = await client_yuyuko.get(url, params=params, timeout=None)
+        result = orjson.loads(resp.content)
         if result['code'] == 200 and result['message'] == "success":
             return '绑定成功'
         elif result['code'] == 500:
@@ -110,9 +102,8 @@ async def change_BindInfo(info,bot,ev):
             }
         else:
             return '参数似乎出了问题呢，请跟随要切换的序号'
-        async with httpx.AsyncClient(headers=headers) as client:
-            resp = await client.get(url, params=params, timeout=None)
-            result = resp.json()
+        resp = await client_yuyuko.get(url, params=params, timeout=None)
+        result = orjson.loads(resp.content)
         if result['code'] == 200 and result['message'] == "success":
             if result['data'] and len(result['data']) >= int(info[0]):
                 account_name = result['data'][int(info[0])-1]['userName']
@@ -130,9 +121,8 @@ async def change_BindInfo(info,bot,ev):
             return f"{result['message']}\n这是服务器问题，请联系雨季麻麻"
         else:
             return f"{result['message']}"
-        async with httpx.AsyncClient(headers=headers) as client:
-            resp = await client.get(url, params=params, timeout=None)
-            result = resp.json()
+        resp = await client_yuyuko.get(url, params=params, timeout=None)
+        result = orjson.loads(resp.content)
         if result['code'] == 200 and result['message'] == "success":
             return f'切换绑定成功,当前绑定账号{param_server}：{account_name}'
         elif result['code'] == 403:
@@ -167,9 +157,8 @@ async def set_special_BindInfo(info,bot,ev):
                 return '参数似乎输错了呢，请确保后面跟随服务器+网页查询到的AccountID'
         else:
             return '参数似乎输错了呢，请确保后面跟随服务器+游戏昵称'
-        async with httpx.AsyncClient(headers=headers) as client:
-            resp = await client.get(url, params=params, timeout=None)
-            result = resp.json()
+        resp = await client_yuyuko.get(url, params=params, timeout=None)
+        result = orjson.loads(resp.content)
         if result['code'] == 200 and result['message'] == "success":
             return '绑定成功'
         elif result['code'] == 500:
@@ -189,9 +178,8 @@ async def delete_BindInfo(info,bot,ev):
             }
         else:
             return '参数似乎出了问题呢，请跟随要切换的序号'
-        async with httpx.AsyncClient(headers=headers) as client:
-            resp = await client.get(url, params=params, timeout=None)
-            result = resp.json()
+        resp = await client_yuyuko.get(url, params=params, timeout=None)
+        result = orjson.loads(resp.content)
         if result['code'] == 200 and result['message'] == "success":
             if result['data'] and len(result['data']) >= int(info[0]):
                 account_name = result['data'][int(info[0])-1]['userName']
@@ -209,9 +197,8 @@ async def delete_BindInfo(info,bot,ev):
             return f"{result['message']}\n这是服务器问题，请联系雨季麻麻"
         else:
             return f"{result['message']}"
-        async with httpx.AsyncClient(headers=headers) as client:
-            resp = await client.get(url, params=params, timeout=None)
-            result = resp.json()
+        resp = await client_yuyuko.get(url, params=params, timeout=None)
+        result = orjson.loads(resp.content)
         if result['code'] == 200 and result['message'] == "success":
             return f'删除绑定成功,删除的账号为{param_server}：{account_name}'
         elif result['code'] == 500:
@@ -229,9 +216,8 @@ async def get_DefaultBindInfo(platformType,platformId):
             "platformType": platformType,
             "platformId": platformId,
         }
-        async with httpx.AsyncClient(headers=headers) as client:
-            resp = await client.get(url, params=params, timeout=None)
-            result = resp.json()
+        resp = await client_yuyuko.get(url, params=params, timeout=None)
+        result = orjson.loads(resp.content)
         if result['code'] == 200 and result['message'] == "success":
             if result['data']:
                 for each in result['data']:

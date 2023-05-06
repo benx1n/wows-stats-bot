@@ -1,38 +1,25 @@
-from typing import List
-import httpx
-import traceback
-import json
-import os
-import gzip
 import asyncio
-from .data_source import nations,shiptypes,levels
-from .utils import match_keywords,bytes2b64
-from base64 import b64encode
-from httpx import ConnectTimeout
+import gzip
+import traceback
 from asyncio.exceptions import TimeoutError
+from base64 import b64encode
+from typing import List
+
+import orjson
+from httpx import ConnectTimeout
 from loguru import logger
 
-cfgpath = os.path.join(os.path.dirname(__file__), 'config.json')
-config = json.load(open(cfgpath, 'r', encoding='utf8'))
+from .data_source import config, levels, nations, shiptypes
+from .HttpClient_pool import client_wg, client_yuyuko
+from .utils import match_keywords
 
-headers = {
-    'Authorization': config['token']
-}
-if config['proxy']:
-    proxy={
-        'https://': config['proxy']
-    }
-else:
-    proxy={
-    }
 
 async def get_nation_list():
     try:
         msg = ''
         url = 'https://api.wows.shinoaki.com/public/wows/encyclopedia/nation/list'
-        async with httpx.AsyncClient(headers=headers) as client:
-            resp = await client.get(url, timeout=None)
-            result = resp.json()
+        resp = await client_yuyuko.get(url, timeout=None)
+        result = orjson.loads(resp.content)
         for nation in result['data']:
             msg: str = msg + f"{nation['cn']}：{nation['nation']}\n"
         return msg
@@ -60,9 +47,8 @@ async def get_ship_name(infolist:List,bot,ev):
             "shipType":param_shiptype
         }
         url = 'https://api.wows.shinoaki.com/public/wows/encyclopedia/ship/search'
-        async with httpx.AsyncClient(headers=headers) as client:
-            resp = await client.get(url, params=params, timeout=None)
-            result = resp.json()
+        resp = await client_yuyuko.get(url, params=params, timeout=None)
+        result = orjson.loads(resp.content)
         if result['data']:
             for ship in result['data']:
                 msg += f"{ship['shipNameCn']}：{ship['shipNameNumbers']}\n"
@@ -82,9 +68,8 @@ async def get_ship_byName(shipname:str):
         "shipName":shipname,
         "shipType":''
     }
-        async with httpx.AsyncClient(headers=headers) as client:
-            resp = await client.get(url, params=params, timeout=None)
-            result = resp.json()
+        resp = await client_yuyuko.get(url, params=params, timeout=None)
+        result = orjson.loads(resp.content)
         List = []
         if result['code'] == 200 and result['data']:
             for each in result["data"]:
@@ -111,10 +96,8 @@ async def get_AccountIdByName(server:str,name:str):
             "server": server,
             "userName": name
         }
-        print(f"下面是本次请求的参数，如果遇到了问题，请将这部分连同报错日志一起发送给麻麻哦\n{params}")
-        async with httpx.AsyncClient(headers=headers) as client:
-            resp = await client.get(url, params=params, timeout=None)
-            result = resp.json()
+        resp = await client_yuyuko.get(url, params=params, timeout=None)
+        result = orjson.loads(resp.content)
         if result['code'] == 200 and result['data']:
             return result['data']['accountId']
         else:
@@ -134,10 +117,8 @@ async def get_ClanIdByName(server:str,tag:str):
             "tag": tag,
             "type": 1
         }
-        print(f"下面是本次请求的参数，如果遇到了问题，请将这部分连同报错日志一起发送给麻麻哦\n{params}")
-        async with httpx.AsyncClient(headers=headers) as client:
-            resp = await client.get(url, params=params, timeout=None)
-            result = resp.json()
+        resp = await client_yuyuko.get(url, params=params, timeout=None)
+        result = orjson.loads(resp.content)
         List = []
         if result['code'] == 200 and result['data']:
             #for each in result['data']:
@@ -157,10 +138,8 @@ async def check_yuyuko_cache(server,id):
                 "accountId": id,
                 "server": server
             }
-            print(f"下面是本次请求的参数，如果遇到了问题，请将这部分连同报错日志一起发送给麻麻哦\n{params}")
-            async with httpx.AsyncClient(headers=headers) as client:
-                resp = await client.post(yuyuko_cache_url, json=params, timeout=5)
-                result = resp.json()
+            resp = await client_yuyuko.post(yuyuko_cache_url, json=params, timeout=5)
+            result = orjson.loads(resp.content)
             cache_data = {}
             if result['code'] == 201:
                 if 'DEV' in result['data']:
@@ -173,13 +152,11 @@ async def check_yuyuko_cache(server,id):
                     await asyncio.gather(*tasks)
                 if not cache_data:
                     return False
-                print(type(gzip.compress(json.dumps(cache_data).encode('utf-8'))))
-                data_base64 = b64encode(gzip.compress(json.dumps(cache_data).encode('utf-8'))).decode()
+                data_base64 = b64encode(gzip.compress(orjson.dumps(cache_data))).decode()
                 params['data'] = data_base64
-                async with httpx.AsyncClient(headers=headers) as client:
-                    resp = await client.post(yuyuko_cache_url, json=params, timeout=5)
-                    result = resp.json()
-                    print(result)
+                resp = await client_yuyuko.post(yuyuko_cache_url, json=params, timeout=5)
+                result = orjson.loads(resp.content)
+                logger.success(result)
                 if result['code'] == 200:
                     return True
                 else:
@@ -192,9 +169,8 @@ async def check_yuyuko_cache(server,id):
     
 async def get_wg_info(params,key,url):
     try:
-        async with httpx.AsyncClient(headers=headers,proxies=proxy) as client:
-            resp = await client.get(url, timeout=5, follow_redirects = True)
-            wg_result = resp.json()
+        resp = await client_wg.get(url, timeout=5, follow_redirects = True)
+        wg_result = orjson.loads(resp.content)
         if resp.status_code == 200 and wg_result['status'] == 'ok':
             params[key] = resp.text
     except Exception:

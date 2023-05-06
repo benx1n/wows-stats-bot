@@ -1,9 +1,10 @@
-from typing import Optional, AsyncIterator
 from contextlib import asynccontextmanager
 from sys import platform
+from typing import AsyncIterator, Optional
 
 from nonebot.log import logger
-from playwright.async_api import Page, Error, Browser, Playwright, async_playwright
+from playwright.async_api import (Browser, Error, Page, Playwright,
+                                  async_playwright)
 
 _browser: Optional[Browser] = None
 _playwright: Optional[Playwright] = None
@@ -51,7 +52,8 @@ async def shutdown_browser():
 
 
 async def install_browser():
-    import sys,os
+    import os
+    import sys
 
     from playwright.__main__ import main
     if "win" in platform.lower():

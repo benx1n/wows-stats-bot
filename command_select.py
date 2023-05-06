@@ -1,21 +1,23 @@
 from dataclasses import dataclass
 from email.policy import default
-from typing import List, Tuple,Protocol
-from .publicAPI import get_nation_list,get_ship_name,get_ship_byName
+from typing import List, Protocol, Tuple
+
+from .game.ban_search import get_BanInfo
+from .game.box_check import check_christmas_box
+from .game.ocr import get_Random_Ocr_Pic
+from .game.roll import roll_ship
+from .game.sx import get_sx_info
+from .publicAPI import get_nation_list, get_ship_byName, get_ship_name
+from .utils import bytes2b64, match_keywords
+from .wws_bind import (change_BindInfo, delete_BindInfo, get_BindInfo,
+                       set_BindInfo, set_special_BindInfo)
+from .wws_clan import ClanSecletProcess, get_ClanInfo
 from .wws_info import get_AccountInfo
 from .wws_recent import get_RecentInfo
-from .wws_bind import set_BindInfo,get_BindInfo,change_BindInfo,set_special_BindInfo,delete_BindInfo
-from .wws_ship import get_ShipInfo,get_ShipInfoRecent,ShipSecletProcess
-from .wws_clan import get_ClanInfo,ClanSecletProcess
 from .wws_record import get_record
+from .wws_ship import ShipSecletProcess, get_ShipInfo, get_ShipInfoRecent
 from .wws_shiprank import get_ShipRank
-from .wws_realTime import mqtt_test
-from .game.roll import roll_ship
-from .game.ocr import get_Random_Ocr_Pic
-from .game.sx import get_sx_info
-from .game.box_check import check_christmas_box
-from .game.ban_search import get_BanInfo
-from .utils import match_keywords,bytes2b64
+
 
 class Func(Protocol):
     async def __call__(self, **kwargs):
@@ -38,7 +40,6 @@ first_command_list = [        #同指令中越长的匹配词越靠前
     command(("ship","单船",),None,get_ShipInfo),
     command(("record","历史记录"),None,get_record),
     command(("clan","军团","公会","工会"),None,get_ClanInfo),
-    command(("mqtt测试","实时战绩"),mqtt_test),
     command(("随机表情包",), get_Random_Ocr_Pic),
     command(("roll","随机"),roll_ship),
     command(("sx","扫雪"),get_sx_info),
