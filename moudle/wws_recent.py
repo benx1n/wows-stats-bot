@@ -14,8 +14,8 @@ from ..data_source import (config, servers, set_damageColor, set_recentparams,
                            set_upinfo_color, set_winColor, template_path)
 from ..html_render import html_to_pic
 from ..HttpClient_pool import client_yuyuko
-from .publicAPI import check_yuyuko_cache, get_AccountIdByName
 from ..utils import match_keywords
+from .publicAPI import check_yuyuko_cache, get_AccountIdByName
 
 env = jinja2.Environment(
     loader=jinja2.FileSystemLoader(template_path), enable_async=True
