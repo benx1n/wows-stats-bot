@@ -67,7 +67,7 @@ async def get_sx_info(info,bot,ev):
         url = 'https://api.wows.shinoaki.com/public/wows/christmas/ship/christmas'
         resp = await client_yuyuko.get(url, params=params, timeout=None)
         result = orjson.loads(resp.content)
-        logger.success(f"本次请求返回的状态码:{result['code']},服务器计算时间:{result['queryTime']}")
+        logger.success(f"本次请求总耗时{resp.elapsed.total_seconds()*1000}，服务器计算耗时:{result['queryTime']}")
         if result['code'] == 200 and result['data']:
             template = env.get_template("wws-sx.html")
             template_data = await set_infoparams(result['data'])

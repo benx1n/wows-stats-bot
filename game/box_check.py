@@ -66,8 +66,7 @@ async def check_christmas_box(info,bot,ev):
         logger.success(f"下面是本次请求的参数，如果遇到了问题，请将这部分连同报错日志一起发送给麻麻哦\n{url}\n{params}")
         resp = await client_yuyuko.get(url, params=params, timeout=None)
         result = orjson.loads(resp.content)
-        logger.success(f"本次请求返回的状态码:{result['code']}")
-        logger.success(f"本次请求服务器计算时间:{result['queryTime']}")
+        logger.success(f"本次请求总耗时{resp.elapsed.total_seconds()*1000}，服务器计算耗时:{result['queryTime']}")
         if result['code'] == 200 and result['data']:
             template = env.get_template("wws-box-christmas.html")
             template_data = await set_infoparams(result['data'])

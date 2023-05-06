@@ -153,7 +153,6 @@ async def search_cn_rank(shipId,server,page,shipInfo):
         logger.success(f"下面是本次请求的参数，如果遇到了问题，请将这部分连同报错日志一起发送给麻麻哦\n{url}\n{params}")
         resp = await client_yuyuko.get(url, params=params,timeout=None)
         result = orjson.loads(resp.content)
-        logger.success(f"本次请求返回的状态码:{result['code']}")
         if result['code'] == 200 and result['data']:
             template = env.get_template("ship-rank.html")
             result_data = {"data": result["data"], "shipInfo": shipInfo}
