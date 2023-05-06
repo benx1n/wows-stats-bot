@@ -9,20 +9,16 @@ import httpx
 import jinja2
 from hoshino.typing import MessageSegment
 
-from .data_source import servers
-from .utils import bytes2b64, match_keywords
+from ..data_source import config, servers, template_path
+from ..utils import bytes2b64, match_keywords
 
-from.publicAPI import get_ClanIdByName
+from..publicAPI import get_ClanIdByName
 from collections import defaultdict, namedtuple
 
 from loguru import logger
 
-from .html_render import html_to_pic, text_to_pic
+from ..html_render import html_to_pic, text_to_pic
 
-dir_path = Path(__file__).parent
-template_path = dir_path / "template"
-cfgpath = dir_path / 'config.json'
-config = json.load(open(cfgpath, 'r', encoding='utf8'))
 env = jinja2.Environment(
     loader=jinja2.FileSystemLoader(template_path), enable_async=True
 )

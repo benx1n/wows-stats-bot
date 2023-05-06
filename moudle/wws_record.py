@@ -11,16 +11,12 @@ import jinja2
 from bs4 import BeautifulSoup
 from loguru import logger
 
-from .data_source import servers, set_clanRecord_params
-from .html_render import html_to_pic
-from .publicAPI import get_AccountIdByName
-from .utils import match_keywords
+from ..data_source import config, servers, set_clanRecord_params, template_path
+from ..html_render import html_to_pic
+from ..publicAPI import get_AccountIdByName
+from ..utils import match_keywords
 from .wws_clan import ClanSecletProcess, ClanSlectState
 
-dir_path = Path(__file__).parent
-template_path = dir_path / "template"
-cfgpath = dir_path / 'config.json'
-config = json.load(open(cfgpath, 'r', encoding='utf8'))
 env = jinja2.Environment(
     loader=jinja2.FileSystemLoader(template_path), enable_async=True
 )
