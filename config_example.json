@@ -5,5 +5,6 @@
     "proxy":"",
     "ocr_on":true,
     "ocr_offline":false,
-    "ocr_url":"http://ocr.benx1n.com:23338"
+    "ocr_url":"http://ocr.benx1n.com:23338",
+    "http2":true
 }
