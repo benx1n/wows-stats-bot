@@ -165,10 +165,9 @@ async def get_MyShipRank_Numbers(url,server):
             page_url = str(result['url']).replace("\\","")
             nickname = str(result['nickname'])
             my_rank_url = f"{number_url_homes[server]}{page_url}"
-            async with httpx.AsyncClient() as client:
-                resp = await client.get(my_rank_url, timeout=10)
-                soup = BeautifulSoup(resp.content, 'html.parser')
-                data = soup.select_one(f'tr[data-nickname="{nickname}"]').select_one('td').string
+            resp = await client_default.get(my_rank_url, timeout=10)
+            soup = BeautifulSoup(resp.content, 'html.parser')
+            data = soup.select_one(f'tr[data-nickname="{nickname}"]').select_one('td').string
         if data and data.isdigit():
             print(data)
             return data

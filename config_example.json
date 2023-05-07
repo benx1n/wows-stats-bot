@@ -5,5 +5,5 @@
     "proxy":"",
     "ocr_on":true,
     "ocr_offline":false,
-    "ocr_url":"http://mc.youthnp.cn:23338/OCR/"
+    "ocr_url":"http://ocr.benx1n.com:23338"
 }
