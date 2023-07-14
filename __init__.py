@@ -1,65 +1,39 @@
 import asyncio
-import html
-import random
 import re
+import sys
 import traceback
+from collections import defaultdict, namedtuple
 
 import hoshino
-import httpx
-import orjson
-from hoshino import R, Service, get_bot, priv
+from hikari_core import callback_hikari, init_hikari, set_hikari_config
+from hikari_core.game.help import check_version
+from hikari_core.model import Hikari_Model
+from hoshino import Service, get_bot, priv
 from hoshino.typing import CQEvent, MessageSegment
 from hoshino.util import DailyNumberLimiter, FreqLimiter
 from loguru import logger
-from nonebot import NoticeSession, on_command
 from nonebot.exceptions import CQHttpError
-from nonebot.typing import State_T
 
-from .command_select import select_command
-from .data_source import config, dir_path, template_path
-from .game.ocr import downlod_OcrResult, pic2txt_byOCR, upload_OcrResult
+from .data_source import config, dir_path
+from .game.ocr import downlod_OcrResult, get_Random_Ocr_Pic, pic2txt_byOCR, upload_OcrResult
 from .game.pupu import get_pupu_msg
-from .html_render import text_to_pic
-from .HttpClient_pool import client_default
-from .moudle.publicAPI import get_nation_list
-from .moudle.wws_clan import ClanSecletProcess
-from .moudle.wws_ship import ShipSecletProcess
 from .utils import bytes2b64
 
 _max = 100
 EXCEED_NOTICE = f'您今天已经冲过{_max}次了，请明早5点后再来！'
 _nlmt = DailyNumberLimiter(_max)
 _flmt = FreqLimiter(3)
-_version = "0.3.9.1"
-WWS_help ="""请发送wws help查看帮助"""
+WWS_help = """请发送wws help查看帮助"""
 sv_help = WWS_help.strip()
-sv = Service('wows-stats-bot', manage_priv=priv.SUPERUSER, enable_on_default=True,help_ = sv_help)
+sv = Service('wows-stats-bot', manage_priv=priv.ADMIN, enable_on_default=True, help_=sv_help)
+set_hikari_config(use_broswer=config['browser'], http2=config['http2'], proxy=config['proxy'], token=config['token'])
 
-@sv.on_fullmatch(('wws帮助','wws 帮助','wws help'))
-async def get_help(bot, ev):
-    url = 'https://benx1n.oss-cn-beijing.aliyuncs.com/version.json'
-    resp = await client_default.get(url, timeout=10)
-    result = orjson.loads(resp.content)
-    latest_version = result['latest_version']
-    url = 'https://benx1n.oss-cn-beijing.aliyuncs.com/wws_help.txt'
-    resp = await client_default.get(url, timeout=10)
-    result = resp.text
-    result = f'''帮助列表                                                当前版本{_version}  最新版本{latest_version}\n{result}'''
-    img = await text_to_pic(text = result, width = 800)
-    await bot.send(ev,str(MessageSegment.image(bytes2b64(img))))
-    return
+SlectState = namedtuple('SlectState', ['state', 'SlectIndex', 'SelectList'])
+SecletProcess = defaultdict(lambda: SlectState(False, None, None))
 
-@sv.on_prefix(('wws 地区','wws地区'))
-async def send_nation_info(bot, ev:CQEvent):
-    msg = await get_nation_list()
-    if msg:
-        await bot.send(ev,msg)
-    else:
-        await bot.send(ev,"wuwuwu~好像出了点问题")
-    return
 
 @sv.on_prefix(('wws'))
-async def main(bot,ev:CQEvent):
+async def main(bot, ev: CQEvent):
     try:
         qqid = ev['user_id']
         if not _nlmt.check(qqid):
@@ -69,190 +43,158 @@ async def main(bot,ev:CQEvent):
             await bot.send(ev, '您冲得太快了，请稍候再冲', at_sender=True)
             return
         _flmt.start_cd(qqid)
-        _nlmt.increase(qqid) 
-        if random.randint(1,1000) == 1:
-            await bot.send(ev, "一天到晚惦记你那b水表，就nm离谱")
-            return
-        replace_name = None
-        searchtag = html.unescape(str(ev.message)).strip()
-        if not searchtag:
-            await bot.send(ev,WWS_help.strip())
-            return
-        match = re.search(r"(\(|（)(.*?)(\)|）)",searchtag)
-        if match:
-            replace_name = match.group(2)
-            search_list = searchtag.replace(match.group(0),'').split()
+        _nlmt.increase(qqid)
+        hikari = await init_hikari(platform='QQ', PlatformId=str(ev['user_id']), command_text=str(ev.message))
+        if hikari.Status == 'success':
+            if isinstance(hikari.Output.Data, bytes):
+                await bot.send(ev, str(MessageSegment.image(bytes2b64(hikari.Output.Data))))
+            elif isinstance(hikari.Output.Data, str):
+                await bot.send(ev, str(hikari.Output.Data))
+        elif hikari.Status == 'wait':
+            await bot.send(ev, str(MessageSegment.image(bytes2b64(hikari.Output.Data))))
+            hikari = await wait_to_select(hikari)
+            if hikari.Status == 'error':
+                await bot.send(ev, str(hikari.Output.Data))
+                return
+            hikari = await callback_hikari(hikari)
+            if isinstance(hikari.Output.Data, bytes):
+                await bot.send(ev, str(MessageSegment.image(bytes2b64(hikari.Output.Data))))
+            elif isinstance(hikari.Output.Data, str):
+                await bot.send(ev, str(hikari.Output.Data))
         else:
-            search_list = searchtag.split()
-        command,search_list = await select_command(search_list)
-        if replace_name:
-            search_list.append(replace_name)
-        msg = await command(search_list,bot,ev)
-        if msg:
-            if isinstance(msg,str):
-                await bot.send(ev,msg)
-            else:
-                await bot.send(ev,str(MessageSegment.image(bytes2b64(msg))))
-        else:
-            await bot.send(ev,'没有获取到数据，可能是内部问题')
-        return
+            await bot.send(ev, str(hikari.Output.Data))
     except CQHttpError:
         logger.error(traceback.format_exc())
         try:
-            await bot.send(ev,'发不出图片，可能被风控了QAQ')
+            await bot.send(ev, '发不出图片，可能被风控了QAQ')
         except Exception:
             pass
         return
     except Exception:
         logger.error(traceback.format_exc())
-        await bot.send(ev,'呜呜呜发生了错误，可能是网络问题，如果过段时间不能恢复请联系麻麻哦~')
+        await bot.send(ev, '呜呜呜发生了错误，可能是网络问题，如果过段时间不能恢复请联系麻麻哦~')
         return
+
 
 @sv.on_message()
 async def change_select_state(bot, ev):
     try:
-        msg = ev["raw_message"]
-        qqid = ev['user_id']
-        if ShipSecletProcess[qqid].SelectList and str(msg).isdigit():
-            if int(msg) <= len( ShipSecletProcess[qqid].SelectList):
-                ShipSecletProcess[qqid] = ShipSecletProcess[qqid]._replace(state = True)
-                ShipSecletProcess[qqid] = ShipSecletProcess[qqid]._replace(SlectIndex = int(msg))
+        msg = ev['raw_message']
+        qqid = str(ev['user_id'])
+        if SecletProcess[qqid].state and str(msg).isdigit():
+            if int(msg) <= len(SecletProcess[qqid].SelectList):
+                SecletProcess[qqid] = SecletProcess[qqid]._replace(state=False)
+                SecletProcess[qqid] = SecletProcess[qqid]._replace(SlectIndex=int(msg))
             else:
-                await bot.send(ev,'请选择列表中的序号哦~')
-        if ClanSecletProcess[qqid].SelectList and str(msg).isdigit():
-            if int(msg) <= len( ClanSecletProcess[qqid].SelectList):
-                ClanSecletProcess[qqid] = ClanSecletProcess[qqid]._replace(state = True)
-                ClanSecletProcess[qqid] = ClanSecletProcess[qqid]._replace(SlectIndex = int(msg))
-            else:
-                await bot.send(ev,'请选择列表中的序号哦~') 
+                await bot.send(ev, '请选择列表中的序号哦~')
         return
     except Exception:
         logger.error(traceback.format_exc())
         return
 
-@sv.on_fullmatch('wws 检查更新')
-async def check_version(bot, ev:CQEvent):
-    try:
-        url = 'https://benx1n.oss-cn-beijing.aliyuncs.com/version.json'
-        resp = await client_default.get(url, timeout=10)
-        result = orjson.loads(resp.content)
-        bot = hoshino.get_bot()
-        superid = hoshino.config.SUPERUSERS[0]
-        match,msg = False,f'发现新版本'
-        for each in result['data']:
-            if each['version'] > _version:
-                match = True
-                msg += f"\n{each['date']} v{each['version']}\n"
-                for i in each['description']:
-                    msg += f"{i}\n"
-        if match:
-                await bot.send_private_msg(user_id=superid, message=msg)
-                try:
-                    await bot.send(ev,msg)
-                except Exception:
-                    logger.error(traceback.format_exc())
-                    return     
-        return
-    except Exception:
-        logger.error(traceback.format_exc())
-        return
-    
-@sv.on_fullmatch('wws 更新样式')
-async def startup(bot, ev:CQEvent):
-    try:
-        tasks = []
-        url = 'https://benx1n.oss-cn-beijing.aliyuncs.com/template_Hoshino_Latest/template.json'
-        async with httpx.AsyncClient() as client:
-            resp = await client.get(url, timeout=20)
-            result = orjson.loads(resp.content)
-            for each in result:
-                for name, url in each.items():
-                    tasks.append(asyncio.ensure_future(startup_download(url, name)))
-        await asyncio.gather(*tasks)
-    except Exception:
-        logger.error(traceback.format_exc())
-        return 
-    
-async def startup_download(url,name):
-    async with httpx.AsyncClient() as client:
-        resp = resp = await client.get(url, timeout=20)
-        with open(template_path/name , "wb+") as file:
-            file.write(resp.content)
-            
-@sv.scheduled_job('cron',hour='12')
+
+async def wait_to_select(hikari):
+    SecletProcess[hikari.UserInfo.PlatformId] = SlectState(True, None, hikari.Input.Select_Data)
+    a = 0
+    while a < 40 and not SecletProcess[hikari.UserInfo.PlatformId].SlectIndex:
+        a += 1
+        await asyncio.sleep(0.5)
+    if SecletProcess[hikari.UserInfo.PlatformId].SlectIndex:
+        hikari.Input.Select_Index = SecletProcess[hikari.UserInfo.PlatformId].SlectIndex
+        SecletProcess[hikari.UserInfo.PlatformId] = SlectState(False, None, None)
+        return hikari
+    else:
+        SecletProcess[hikari.UserInfo.PlatformId] = SlectState(False, None, None)
+        return hikari.error('已超时退出')
+
+
+@sv.scheduled_job('cron', hour='12')
 async def job1():
     bot = get_bot()
-    ev = CQEvent
-    await check_version(bot,ev)
-    
-@sv.scheduled_job('cron',hour='12')
-async def job2():
-    bot = get_bot()
-    ev = CQEvent
-    await startup(bot,ev)
-    
-@sv.scheduled_job('interval',minutes=10)
+    hikari = Hikari_Model()
+    hikari = await check_version(hikari)
+    superid = hoshino.config.SUPERUSERS[0]
+    await bot.send_private_msg(user_id=superid, message=hikari.Output.Data)
+
+
+@sv.scheduled_job('interval', minutes=10)
 async def job3():
     await downlod_OcrResult()
-    
+
+
 logger.add(
-    str(dir_path/"logs/error.log"),
-    rotation="00:00",
-    retention="1 week",
+    str(dir_path / 'logs/error.log'),
+    rotation='00:00',
+    retention='1 week',
     diagnose=False,
-    level="ERROR",
-    encoding="utf-8",
+    level='ERROR',
+    encoding='utf-8',
 )
 logger.add(
-    str(dir_path/"logs/info.log"),
-    rotation="00:00",
-    retention="1 week",
+    str(dir_path / 'logs/info.log'),
+    rotation='00:00',
+    retention='1 week',
     diagnose=False,
-    level="INFO",
-    encoding="utf-8",
+    level='INFO',
+    encoding='utf-8',
 )
 logger.add(
-    str(dir_path/"logs/warning.log"),
-    rotation="00:00",
-    retention="1 week",
+    str(dir_path / 'logs/warning.log'),
+    rotation='00:00',
+    retention='1 week',
     diagnose=False,
-    level="WARNING",
-    encoding="utf-8",
+    level='WARNING',
+    encoding='utf-8',
 )
 
 
 @sv.on_fullmatch('噗噗')
-async def send_pupu_msg(bot, ev:CQEvent):
+async def send_pupu_msg(bot, ev: CQEvent):
     try:
         if config['pupu']:
             msg = await get_pupu_msg()
-            await bot.send(ev,msg)
+            await bot.send(ev, msg)
     except CQHttpError:
         logger.error(traceback.format_exc())
         try:
-            await bot.send(ev,'噗噗寄了>_<可能被风控了QAQ')
+            await bot.send(ev, '噗噗寄了>_<可能被风控了QAQ')
         except Exception:
             pass
         return
     except Exception:
         logger.error(traceback.format_exc())
-        await bot.send(ev,'呜呜呜发生了错误，可能是网络问题，如果过段时间不能恢复请联系麻麻哦~')
+        await bot.send(ev, '呜呜呜发生了错误，可能是网络问题，如果过段时间不能恢复请联系麻麻哦~')
         return
-    
+
+
+@sv.on_fullmatch('wws 随机表情包')
+async def send_random_ocr_image(bot, ev: CQEvent):
+    try:
+        img = await get_Random_Ocr_Pic()
+        if isinstance(img, bytes):
+            await bot.send(ev, str(MessageSegment.image(bytes2b64(img))))
+        elif isinstance(img, str):
+            await bot.send(ev, str(img))
+    except Exception:
+        logger.error(traceback.format_exc())
+        await bot.send(ev, '呜呜呜发生了错误，可能是网络问题，如果过段时间不能恢复请联系麻麻哦~')
+        return
+
+
 @sv.on_message()
-async def OCR_listen(bot, ev:CQEvent):
+async def OCR_listen(bot, ev: CQEvent):
     try:
         if not config['ocr_on']:
             return
-        if not (str(ev.message).find("[CQ:image")+1):  #判断收到的信息是否为图片，不是就退出
+        if not (str(ev.message).find('[CQ:image') + 1):  # 判断收到的信息是否为图片，不是就退出
             return
         for seg in ev.message:
             if seg.type == 'image':
                 tencent_url = seg.data['url']
-                filename = str(seg.data['file']).replace(".image","")
-        ocr_text = await pic2txt_byOCR(tencent_url,filename)
+                filename = str(seg.data['file']).replace('.image', '')
+        ocr_text = await pic2txt_byOCR(tencent_url, filename)
         if ocr_text:
-            match = re.search(r"^(/?)wws(.*?)$",ocr_text)
+            match = re.search(r'^(/?)wws(.*?)$', ocr_text)
             if match:
                 qqid = ev['user_id']
                 if not _nlmt.check(qqid):
@@ -262,38 +204,34 @@ async def OCR_listen(bot, ev:CQEvent):
                     await bot.send(ev, '您冲得太快了，请稍候再冲', at_sender=True)
                     return
                 _flmt.start_cd(qqid)
-                _nlmt.increase(qqid) 
-                replace_name = None
-                searchtag = re.sub(r"^(/?)wws","",ocr_text)        #删除wws和/wws
-                searchtag = html.unescape(str(searchtag)).strip()
-                if not searchtag:
-                    await bot.send(ev,WWS_help.strip())
-                    return
-                match = re.search(r"(\(|（)(.*?)(\)|）)",searchtag)
-                if match:
-                    replace_name = match.group(2)
-                    search_list = searchtag.replace(match.group(0),'').split()
+                _nlmt.increase(qqid)
+                searchtag = re.sub(r'^(/?)wws', '', ocr_text)  # 删除wws和/wws
+                hikari = await init_hikari(platform='QQ', PlatformId=str(ev['user_id']), command_text=str(searchtag))
+                if hikari.Status == 'success':
+                    if isinstance(hikari.Output.Data, bytes):
+                        await bot.send(ev, str(MessageSegment.image(bytes2b64(hikari.Output.Data))))
+                    elif isinstance(hikari.Output.Data, str):
+                        await bot.send(ev, str(hikari.Output.Data))
+                elif hikari.Status == 'wait':
+                    await bot.send(ev, str(MessageSegment.image(bytes2b64(hikari.Output.Data))))
+                    hikari = await wait_to_select(hikari)
+                    if hikari.Status == 'error':
+                        await bot.send(ev, str(hikari.Output.Data))
+                        return
+                    hikari = await callback_hikari(hikari)
+                    if isinstance(hikari.Output.Data, bytes):
+                        await bot.send(ev, str(MessageSegment.image(bytes2b64(hikari.Output.Data))))
+                    elif isinstance(hikari.Output.Data, str):
+                        await bot.send(ev, str(hikari.Output.Data))
                 else:
-                    search_list = searchtag.split()
-                command,search_list = await select_command(search_list)
-                if replace_name:
-                    search_list.append(replace_name)
-                msg = await command(search_list,bot,ev)
-                if msg:
-                    if isinstance(msg,str):
-                        await bot.send(ev,msg)
-                        await upload_OcrResult(ocr_text,filename)
-                    else:
-                        await bot.send(ev,str(MessageSegment.image(bytes2b64(msg))))
-                        await upload_OcrResult(ocr_text,filename)
-                else:
-                    await bot.send(ev,'没有获取到数据，可能是内部问题')
+                    await bot.send(ev, str(hikari.Output.Data))
+                await upload_OcrResult(ocr_text, filename)
             else:
                 return
     except CQHttpError:
         logger.error(traceback.format_exc())
         try:
-            await bot.send(ev,'发不出图片，可能被风控了QAQ')
+            await bot.send(ev, '发不出图片，可能被风控了QAQ')
         except Exception:
             pass
     except Exception:
