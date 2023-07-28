@@ -8,6 +8,7 @@ import hoshino
 from hikari_core import callback_hikari, init_hikari, set_hikari_config
 from hikari_core.game.help import check_version
 from hikari_core.model import Hikari_Model
+from hikari_core.moudle.wws_real_game import get_diff_ship
 from hoshino import Service, get_bot, priv
 from hoshino.typing import CQEvent, MessageSegment
 from hoshino.util import DailyNumberLimiter, FreqLimiter
@@ -26,7 +27,13 @@ _flmt = FreqLimiter(3)
 WWS_help = """请发送wws help查看帮助"""
 sv_help = WWS_help.strip()
 sv = Service('wows-stats-bot', manage_priv=priv.ADMIN, enable_on_default=True, help_=sv_help)
-set_hikari_config(use_broswer=config['browser'], http2=config['http2'], proxy=config['proxy'], token=config['token'])
+set_hikari_config(
+    use_broswer=config['browser'],
+    http2=config['http2'],
+    proxy=config['proxy'],
+    token=config['token'],
+    game_path=str(dir_path / 'game'),
+)
 
 SlectState = namedtuple('SlectState', ['state', 'SlectIndex', 'SelectList'])
 SecletProcess = defaultdict(lambda: SlectState(False, None, None))
@@ -36,6 +43,9 @@ SecletProcess = defaultdict(lambda: SlectState(False, None, None))
 async def main(bot, ev: CQEvent):
     try:
         qqid = ev['user_id']
+        group_id = None
+        if ev['message_type'] == 'group':
+            group_id = ev['group_id']
         if not _nlmt.check(qqid):
             await bot.send(ev, EXCEED_NOTICE, at_sender=True)
             return
@@ -44,7 +54,7 @@ async def main(bot, ev: CQEvent):
             return
         _flmt.start_cd(qqid)
         _nlmt.increase(qqid)
-        hikari = await init_hikari(platform='QQ', PlatformId=str(ev['user_id']), command_text=str(ev.message))
+        hikari = await init_hikari(platform='QQ', PlatformId=str(ev['user_id']), command_text=str(ev.message), GroupId=group_id)
         if hikari.Status == 'success':
             if isinstance(hikari.Output.Data, bytes):
                 await bot.send(ev, str(MessageSegment.image(bytes2b64(hikari.Output.Data))))
@@ -118,8 +128,18 @@ async def job1():
 
 
 @sv.scheduled_job('interval', minutes=10)
-async def job3():
+async def job2():
     await downlod_OcrResult()
+
+
+@sv.scheduled_job('interval', minutes=1)
+async def job3():
+    bot = get_bot()
+    hikari = Hikari_Model()
+    hikari = await get_diff_ship(hikari)
+    if hikari.Status == 'success':
+        for _each in hikari.Output.Data:
+            await bot.send_group_msg(group_id=_each['group_id'], message=_each['msg'])
 
 
 logger.add(
