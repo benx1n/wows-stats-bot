@@ -1,0 +1,33 @@
+{
+    //请加群联系雨季获取api_key和token Q群:967546463
+    "yuyuko_token":"",
+    //代理地址,格式http://ip:port,为空即不启用
+    "proxy_url":"",
+    //群聊开关,开启true,禁用false,默认开启
+    "group_on":true,
+    //私聊开关,开启true,禁用false,默认禁用
+    "private_on":false,
+    //噗噗开关,开启true,禁用false,默认开启
+    "pupu_on":true,
+    //群列表黑名单，默认屏蔽了开发者交流群
+    "ban_group_list":[967546463],
+    //用户黑名单
+    "ban_user_list":[],
+    //缓存上报开关,可降低高峰期延迟,如果错误日志中频繁报错上报url:XXXXXXXX,请关闭此项或配置代理
+    "check_cache_on":true,
+    //ocr开关(识图指令)
+    "ocr_on":true,
+    //本地ocr,开启后只能识别服务器已记录的图片，如果群较多(>300)导致响应延迟较高可以开启
+    "ocr_offline":false,
+    //ocr地址,如有变动请查看群内公告
+    "ocr_url":"http://ocr.benx1n.com:23338"
+    #！！！以下配置不要随便动！！！
+    //自动填充模板，默认启用
+    "auto_rendering":true,
+    //是否自动渲染，默认启用，若auto_rending未启用则该项配置无效
+    "auto_image":true,
+    //渲染内核,chromium/firefox，默认chromium，性能大约为firefox三倍
+    "use_broswer":"chromium",
+    //是否使用http2,默认启用
+    "http2":true
+}

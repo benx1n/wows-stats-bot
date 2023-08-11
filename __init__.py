@@ -54,6 +54,11 @@ async def main(bot, ev: CQEvent):
             return
         _flmt.start_cd(qqid)
         _nlmt.increase(qqid)
+        superuser_command_list = ['添加监控', '删除监控']
+        for each in superuser_command_list:
+            if each in str(ev.message) and qqid not in hoshino.config.SUPERUSERS:
+                await bot.send(ev, '请联系机器人搭建者添加权限')
+                return
         hikari = await init_hikari(platform='QQ', PlatformId=str(ev['user_id']), command_text=str(ev.message), GroupId=group_id)
         if hikari.Status == 'success':
             if isinstance(hikari.Output.Data, bytes):

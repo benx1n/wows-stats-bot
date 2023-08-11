@@ -20,7 +20,7 @@ headers = {'Authorization': config['token']}
 
 try:
     with open(ocr_data_path, 'w', encoding='UTF-8') as f:
-        resp = httpx.get(download_url, headers=headers, timeout=None)
+        resp = httpx.get(download_url, headers=headers)
         result = orjson.loads(resp.content)
         if result['code'] == 200 and result['data']:
             f.write(orjson.dumps(result['data']).decode())
@@ -59,7 +59,7 @@ async def pic2txt_byOCR(img_path, filename):
 async def upload_OcrResult(result_text, filename):
     try:
         params = {'md5': filename, 'text': b64encode(result_text.encode('utf-8')).decode('utf-8')}
-        async with httpx.AsyncClient(headers=headers, timeout=None) as client:
+        async with httpx.AsyncClient(headers=headers, timeout=5) as client:
             resp = await client.post(upload_url, json=params)
             result = orjson.loads(resp.content)
             if result['code'] == 200:
@@ -71,7 +71,7 @@ async def upload_OcrResult(result_text, filename):
 
 async def downlod_OcrResult():
     try:
-        async with httpx.AsyncClient(headers=headers, timeout=None) as client:
+        async with httpx.AsyncClient(headers=headers, timeout=10) as client:
             resp = await client.get(download_url)
             result = orjson.loads(resp.content)
             with open(ocr_data_path, 'w', encoding='UTF-8') as f:
