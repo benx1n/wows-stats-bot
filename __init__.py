@@ -54,8 +54,13 @@ async def main(bot, ev: CQEvent):
             return
         _flmt.start_cd(qqid)
         _nlmt.increase(qqid)
-        superuser_command_list = ['添加监控', '删除监控']
+        superuser_command_list = ['重置监控']
+        adminuser_command_list = ['添加监控', '删除监控']
         for each in superuser_command_list:
+            if each in str(ev.message) and int(qqid) not in hoshino.config.SUPERUSERS:
+                await bot.send(ev, '该命令仅限超级管理员使用')
+                return
+        for each in adminuser_command_list:
             if each in str(ev.message) and int(qqid) not in config['listen_admin']:
                 await bot.send(ev, '请联系机器人搭建者添加权限')
                 return
