@@ -7,5 +7,6 @@
     "ocr_offline":false,
     "ocr_url":"http://ocr.benx1n.com:23338",
     "http2":true,
-    "browser":"chromium"
+    "browser":"chromium",
+    "listen_admin":[1119809439,2622749113]
 }

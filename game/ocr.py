@@ -5,6 +5,7 @@ from pathlib import Path
 
 import httpx
 import orjson
+from httpx import TimeoutException
 from loguru import logger
 
 from ..data_source import config
@@ -51,6 +52,9 @@ async def pic2txt_byOCR(img_path, filename):
             if result['code'] == 200:
                 logger.success(f"OCR结果：{result['data']['msg']},耗时{end-start:.4f}s\n图片url:{img_path}")
                 return result['data']['msg']
+    except TimeoutException:
+        logger.error('ocr超时，请确认OCR服务是否在线')
+        return ''
     except Exception:
         logger.error(traceback.format_exc())
         return ''
@@ -86,6 +90,7 @@ async def downlod_OcrResult():
                     # ocr_filename_data = json.load(open(ocr_data_path, 'r', encoding='utf8'))
             return
     except Exception:
+        logger.error('请检查token是否配置正确，如无问题请尝试重启，可能是网络波动或服务器原因')
         with open(ocr_data_path, 'rb') as f:
             ocr_filename_data = orjson.loads(f.read())
         # ocr_filename_data = json.load(open(ocr_data_path, 'r', encoding='utf8'))
