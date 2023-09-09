@@ -233,3 +233,9 @@ Nonebot2版：[Hikari](https://github.com/benx1n/HikariBot)——更易部署的
 ## 开源协议
 
 GPL-3.0 License
+
+## 赞助
+<p align="left">
+  <a href="https://afdian.net/a/JustOneSummer?tab=home"><img src="https://hikari-resource.oss-cn-shanghai.aliyuncs.com/%E7%88%B1%E5%8F%91%E7%94%B5.png" alt="afdian" ></a>
+</p>
+
