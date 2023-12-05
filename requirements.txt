@@ -2,10 +2,10 @@ APScheduler~=3.10.1
 httpx[http2]~=0.24.0
 Jinja2~=3.0.3
 nonebot==1.9.1
-playwright~=1.40.1
+playwright~=1.40.0
 requests~=2.27.1
 beautifulsoup4~=4.12.2
-loguru==0.6.0
+loguru==0.7.0
 paho-mqtt==1.6.1
 orjson~=3.8.11
-hikari-core~=1.0.0
+hikari-core~=1.0.8
