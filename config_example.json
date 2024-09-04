@@ -8,5 +8,9 @@
     "ocr_url":"http://ocr.benx1n.com:23338",
     "http2":true,
     "browser":"chromium",
-    "listen_admin":[1119809439,2622749113]
+    "listen_admin":[1119809439,2622749113],
+    "minimap_renderer_on":false,
+    "minimap_renderer_url":"http://localhost:9876",
+    "minimap_renderer_user_name":"yuyuko",
+    "minimap_renderer_password":"yuyuko"
 }

@@ -10,13 +10,14 @@ from hikari_core.game.help import check_version
 from hikari_core.model import Hikari_Model
 from hikari_core.moudle.wws_real_game import get_diff_ship
 from hoshino import Service, get_bot, priv
-from hoshino.typing import CQEvent, MessageSegment
+from hoshino.typing import CQEvent, MessageSegment, NoticeSession
 from hoshino.util import DailyNumberLimiter, FreqLimiter
 from loguru import logger
 from nonebot.exceptions import CQHttpError
 
 from .data_source import config, dir_path
 from .game.ocr import downlod_OcrResult, get_Random_Ocr_Pic, pic2txt_byOCR, upload_OcrResult
+from .game.minimap_renderer import get_file, get_rep
 from .game.pupu import get_pupu_msg
 from .utils import bytes2b64
 
@@ -267,3 +268,29 @@ async def OCR_listen(bot, ev: CQEvent):
     except Exception:
         logger.error(traceback.format_exc())
         return
+
+@sv.on_notice('group_upload')
+async def handle_group_file_upload(session: NoticeSession):
+    try:
+        if not config['minimap_renderer_on']:
+            return
+
+        upload_file = session.ctx.get('file')
+        upload_file_id = upload_file.get('id')
+        # 判断文件是否是需要处理的类型
+        if not upload_file.get('name').endswith('.wowsreplay'):
+            return 
+
+        if 'url' in upload_file:
+            base64_file = await get_file(upload_file.get('url'))
+            await get_rep(base64_file, session)
+        else:
+            base64_file = await session.bot.get_file(file_id=upload_file_id)
+            if 'base64' not in base64_file:
+                await get_rep(base64_file['url'], session)
+            else:
+                await get_rep(base64_file['base64'], session)
+
+    except Exception:
+        logger.error(traceback.format_exc())
+        await session.send(MessageSegment.text('请求minimap_renderer服务异常'))
