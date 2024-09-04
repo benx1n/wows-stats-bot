@@ -29,5 +29,13 @@
     //渲染内核,chromium/firefox，默认chromium，性能大约为firefox三倍
     "use_broswer":"chromium",
     //是否使用http2,默认启用
-    "http2":true
+    "http2":true,
+    //是否启用minimap_renderer
+    "minimap_renderer_on" = false,
+    //minimap_renderer地址
+    "minimap_renderer_url" = "http://localhost:9876",
+    //鉴权用户名 参考minimap_renderer的token.json文件
+    "minimap_renderer_user_name" = "yuyuko",
+    //鉴权用户密码 参考minimap_renderer的token.json文件
+    "minimap_renderer_password" = "yuyuko"
 }
