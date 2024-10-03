@@ -282,7 +282,7 @@ async def handle_group_file_upload(session: NoticeSession):
             return 
 
         #此项兼容docker部署协议端获取文件，自行配置协议端启动base64功能
-        if upload_file.get('url').startswith('file://'):
+        if hasattr(upload_file, 'url') and upload_file.get('url') and upload_file.get('url').startswith('file://'):
             base64_file = await bot.get_image(file=ev.file.id)
             if not str(base64_file).__contains__("'base64':"):
                 await get_rep(base64_file['url'], bot, ev)
