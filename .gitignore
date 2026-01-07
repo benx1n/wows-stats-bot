@@ -133,3 +133,10 @@ echarts.js
 game/ocr_data.json
 game/listen_config.json
 game/account_data
+__init__.py
+game/ship_cache.zip
+game/ship_cache
+game/browsers
+game/browser_temp
+game/ship_cache_hash.json
+game/real_game
